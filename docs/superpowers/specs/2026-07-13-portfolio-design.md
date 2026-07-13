@@ -34,3 +34,19 @@ R3F scene degrades on mobile (fewer planes, disable parallax, simpler CSS/GSAP t
 
 ## Testing / verification
 No unit-test suite for visual work. Verification is manual via dev server + browser: loader completes, hero/about render, work vortex scroll-dive triggers and artworks are clickable, all routes reachable, mobile viewport check.
+
+---
+
+## Addendum 2026-07-13: "awwwards-tier" pass
+
+Direction: whole site was already vortex-themed end to end (see prior work); this pass raises production value specifically — bespoke artwork, richer/faster color life, loader identity, cursor interaction, and a contact page that matches the stan.vision reference more closely.
+
+- **Custom placeholder artwork**: replace flat accent-color plane fills in the Work vortex (and gallery/detail hero blocks) with generative, deterministic-per-project textures — layered gradient wash (accent + a computed complementary), one bold geometric mark, subtle grain — rendered once per project (seeded by slug, not `Math.random()` at render time) so each project has a distinct, consistent "poster" look. This is the "custom placeholder" — not real photography, but no longer flat rectangles either.
+- **Vibrancy / quick color switches**: the shared vortex backdrop and Work planes get a color life beyond static accents — hue/tint drift over time plus a quick pulse/switch keyed to scroll velocity spikes (fast scroll = a snappier color beat), and glow/bloom-style emphasis near the camera. Keep the palette disciplined (drawn from `lib/projects.ts` accents + a couple of derived tones) — vibrant, not random-rainbow noise.
+- **Smoother animation**: replace any linear scrub easing with eased/lerped camera and object motion; add scale/tilt reactivity as planes approach camera; richer stagger and entrance choreography on Hero/About (already scroll-triggered — this pass adds polish, not new mechanics).
+- **Loader identity**: headline copy "Good things take time" in large display type as the dominant element; keep the thin progress line/percentage as a secondary/small detail beneath it, not the focal point.
+- **Mouse interaction**: a lightweight global cursor-reactive layer — subtle parallax/glow following the pointer, magnetic hover extended from Nav to gallery cards and contact links, cursor-proximity reactivity on Work vortex planes. Must degrade gracefully on touch devices (no pointer) and respect `prefers-reduced-motion`.
+- **Contact page**: tighten toward the stan.vision reference — larger kinetic email link (per-letter or line hover distort), underline-wipe hover on socials, animated focus states on form fields, background gets a subtle vortex-color bleed instead of flat black. Same no-backend static success state as before.
+- **Bar**: awwwards-tier polish — consistent premium easing curves everywhere, no linear/robotic transitions, no motion added without purpose.
+
+No new routes, no new dependencies unless a strong case emerges (check what's installed — three, @react-three/fiber, @react-three/drei, gsap, framer-motion — before reaching further). `prefers-reduced-motion` and mobile/perf fallbacks from the original spec still apply and extend to all new motion.
