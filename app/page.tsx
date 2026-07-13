@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Loader from '@/components/Loader';
+import VortexBackdrop from '@/components/home/VortexBackdrop';
 import Hero from '@/components/home/Hero';
 import About from '@/components/home/About';
 import WorkVortex from '@/components/home/WorkVortex';
@@ -13,8 +14,9 @@ export default function Home() {
   return (
     <>
       {loading && <Loader onDone={() => setLoading(false)} />}
-      <main>
-        <Hero />
+      <VortexBackdrop />
+      <main className="relative z-10">
+        <Hero intro={!loading} />
         <About />
         <WorkVortex />
         <Footer />

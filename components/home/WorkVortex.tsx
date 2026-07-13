@@ -86,11 +86,41 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
 
 export default function WorkVortex() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
   const items = useMemo(() => projects, []);
 
+  useEffect(() => {
+    const mm = gsap.matchMedia(sectionRef);
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      gsap.from(headingRef.current, {
+        opacity: 0,
+        y: 40,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
+      });
+      // heading dissolves as the dive begins
+      gsap.to(headingRef.current, {
+        opacity: 0,
+        y: -30,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=60%',
+          scrub: true,
+        },
+      });
+    });
+    return () => mm.revert();
+  }, []);
+
   return (
-    <section ref={sectionRef} className="relative h-screen w-full bg-black">
-      <div className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-white">
+    <section ref={sectionRef} className="relative h-screen w-full">
+      <div
+        ref={headingRef}
+        className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-white"
+      >
         <span className="text-xs uppercase tracking-[0.3em] text-white/40">Scroll</span>
         <h2 className="mt-2 text-4xl font-semibold">Work</h2>
       </div>
