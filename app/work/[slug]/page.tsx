@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getProject, projects } from '@/lib/projects';
 import Footer from '@/components/Footer';
+import Poster from '@/components/Poster';
 
 export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
@@ -23,9 +24,12 @@ export default async function ProjectPage({
     <>
       <article className="min-h-screen bg-black px-6 pt-32 pb-24 text-white">
         <div className="mx-auto max-w-3xl">
-          <div
+          <Poster
+            slug={project.slug}
+            accent={project.accent}
+            width={1280}
+            height={720}
             className="mb-12 aspect-[16/9] w-full rounded-lg"
-            style={{ backgroundColor: project.accent }}
           />
           <span className="text-xs uppercase tracking-[0.3em] text-white/40">{categoryLabel}</span>
           <h1 className="mt-3 text-4xl font-semibold">{project.title}</h1>

@@ -1,22 +1,47 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { projects } from '@/lib/projects';
 
 const COUNT = 1600;
+const ACCENTS = [...new Set(projects.map((p) => p.accent))];
 
 function Swirl() {
   const ref = useRef<THREE.Points>(null);
+  const matRef = useRef<THREE.PointsMaterial>(null);
   const lastScroll = useRef(0);
   const speed = useRef(0);
+  // color-beat state: a scroll-velocity spike snaps the field to a project
+  // accent (instant attack), which then decays back to the drifting tint
+  const beat = useRef({ strength: 0, idx: 0, cooldown: 0 });
+  const beatColor = useMemo(() => new THREE.Color('#ffffff'), []);
+  const tint = useMemo(() => new THREE.Color('#ffffff'), []);
   const reduceMotion = useMemo(
     () =>
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     []
   );
+  const finePointer = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    []
+  );
+  // the canvas wrapper is pointer-events-none, so r3f's state.pointer never
+  // updates here — track the cursor at the window level instead
+  const pointer = useRef({ x: 0, y: 0 });
+  useEffect(() => {
+    if (!finePointer || reduceMotion) return;
+    const onMove = (e: PointerEvent) => {
+      pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [finePointer, reduceMotion]);
 
   const { positions, colors } = useMemo(() => {
     const pos = new Float32Array(COUNT * 3);
@@ -39,7 +64,7 @@ function Swirl() {
     return { positions: pos, colors: col };
   }, []);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!ref.current || reduceMotion) return;
     // spin speeds up with scroll velocity, then eases back — the page feels pulled into the vortex
     const sc = window.scrollY;
@@ -47,6 +72,40 @@ function Swirl() {
     lastScroll.current = sc;
     speed.current += (v - speed.current) * 0.05;
     ref.current.rotation.y += delta * (0.045 + speed.current * 0.6);
+
+    // subtle pointer parallax — the whole field leans toward the cursor
+    if (finePointer) {
+      ref.current.rotation.x = THREE.MathUtils.damp(
+        ref.current.rotation.x,
+        0.12 + pointer.current.y * 0.06,
+        2,
+        delta
+      );
+      ref.current.rotation.z = THREE.MathUtils.damp(
+        ref.current.rotation.z,
+        0.05 - pointer.current.x * 0.06,
+        2,
+        delta
+      );
+    }
+
+    const mat = matRef.current;
+    if (!mat) return;
+
+    // slow hue drift on the multiplier tint — pastel, disciplined
+    tint.setHSL((state.clock.elapsedTime * 0.012) % 1, 0.28, 0.78);
+
+    // quick color-beat on a fast-scroll spike
+    const b = beat.current;
+    b.cooldown -= delta;
+    if (v > 1 && b.cooldown <= 0) {
+      beatColor.set(ACCENTS[b.idx++ % ACCENTS.length]);
+      b.strength = 1;
+      b.cooldown = 0.7;
+    }
+    b.strength = THREE.MathUtils.damp(b.strength, 0, 3, delta);
+    mat.color.copy(tint).lerp(beatColor, b.strength * 0.9);
+    mat.opacity = 0.5 + b.strength * 0.3;
   });
 
   return (
@@ -56,6 +115,7 @@ function Swirl() {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
+        ref={matRef}
         size={0.045}
         sizeAttenuation
         vertexColors

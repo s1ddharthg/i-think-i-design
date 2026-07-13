@@ -21,19 +21,19 @@ export default function About() {
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       gsap.from('.about-intro > *', {
         opacity: 0,
-        y: 48,
+        y: 44,
         rotate: -1.5,
-        duration: 1,
+        duration: 1.2,
         stagger: 0.12,
-        ease: 'power3.out',
+        ease: 'expo.out',
         scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
       });
       gsap.from('.about-row', {
         opacity: 0,
-        x: 64,
-        duration: 0.9,
-        stagger: 0.14,
-        ease: 'power3.out',
+        x: 48,
+        duration: 1.1,
+        stagger: 0.1,
+        ease: 'expo.out',
         scrollTrigger: { trigger: '.about-rows', start: 'top 75%' },
       });
       gsap.from('.about-outro', {

@@ -41,8 +41,8 @@ export default function Hero({ intro }: { intro: boolean }) {
     if (!intro || !sectionRef.current) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const words = sectionRef.current.querySelectorAll('.hero-word');
-    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-    tl.to(words, { yPercent: 0, duration: 1.1, stagger: 0.035 }).to(
+    const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+    tl.to(words, { yPercent: 0, duration: 1.25, stagger: { each: 0.04, ease: 'power2.in' } }).to(
       '.hero-cue',
       { opacity: 1, duration: 0.8, ease: 'power2.out' },
       '-=0.5'
