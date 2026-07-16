@@ -1,10 +1,10 @@
-import Gallery from '@/components/Gallery';
+import UiuxGallery from '@/components/ui-ux/UiuxGallery';
 import Footer from '@/components/Footer';
 
 export default function UiUxPage() {
   return (
     <>
-      <Gallery category="ui-ux" />
+      <UiuxGallery />
       <Footer />
     </>
   );

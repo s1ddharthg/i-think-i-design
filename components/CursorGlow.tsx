@@ -20,6 +20,11 @@ export default function CursorGlow() {
       window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!ok) return;
+    // Deferred to an effect on purpose: matchMedia is unavailable during
+    // SSR, so this stays false on the server and first client render, then
+    // resolves post-mount — a lazy useState initializer would read window
+    // during render and reintroduce a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setEnabled(true);
     const onMove = (e: PointerEvent) => {
       x.set(e.clientX);

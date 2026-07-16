@@ -1,10 +1,10 @@
-import Gallery from '@/components/Gallery';
+import GraphicGallery from '@/components/graphic-design/GraphicGallery';
 import Footer from '@/components/Footer';
 
 export default function GraphicDesignPage() {
   return (
     <>
-      <Gallery category="graphic-design" />
+      <GraphicGallery />
       <Footer />
     </>
   );

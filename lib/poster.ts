@@ -207,3 +207,157 @@ export function drawPoster(
 
   ctx.restore();
 }
+
+// CSS object-fit: cover, drawn manually since canvas has no such primitive.
+function drawCoverFit(
+  ctx: CanvasRenderingContext2D,
+  img: CanvasImageSource & { width: number; height: number },
+  x: number,
+  y: number,
+  w: number,
+  h: number
+) {
+  const scale = Math.max(w / img.width, h / img.height);
+  const sw = w / scale;
+  const sh = h / scale;
+  const sx = (img.width - sw) / 2;
+  const sy = (img.height - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+
+/**
+ * Frames the poster artwork like the surface it would actually ship on —
+ * a macOS browser chrome for UI/UX work, an Instagram post chrome for
+ * graphic design — used only by the 3D vortex planes. `drawPoster` itself
+ * (shared by Gallery/Poster/detail hero) is untouched by this.
+ *
+ * `coverImage`, when passed, replaces the generated poster in the content
+ * area for graphic-design projects — those have real cover art; UI/UX
+ * projects don't, so they always fall back to the generated poster.
+ */
+export function drawFramedArtwork(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  slug: string,
+  accent: string,
+  category: 'ui-ux' | 'graphic-design',
+  title: string,
+  coverImage?: CanvasImageSource & { width: number; height: number }
+) {
+  ctx.save();
+  ctx.fillStyle = '#111114';
+  ctx.fillRect(0, 0, w, h);
+
+  if (category === 'ui-ux') {
+    const barH = h * 0.12;
+
+    // content area first, clipped under the bar
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, barH, w, h - barH);
+    ctx.clip();
+    ctx.translate(0, barH);
+    drawPoster(ctx, w, h - barH, slug, accent);
+    ctx.restore();
+
+    // browser chrome bar
+    ctx.fillStyle = '#2b2b30';
+    ctx.fillRect(0, 0, w, barH);
+    const dotR = barH * 0.16;
+    const dotY = barH / 2;
+    ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => {
+      ctx.beginPath();
+      ctx.fillStyle = c;
+      ctx.arc(barH * 0.5 + i * dotR * 3, dotY, dotR, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // address pill
+    const pillW = w * 0.42;
+    const pillH = barH * 0.5;
+    const pillX = (w - pillW) / 2;
+    const pillY = (barH - pillH) / 2;
+    const r = pillH / 2;
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.beginPath();
+    ctx.moveTo(pillX + r, pillY);
+    ctx.arcTo(pillX + pillW, pillY, pillX + pillW, pillY + pillH, r);
+    ctx.arcTo(pillX + pillW, pillY + pillH, pillX, pillY + pillH, r);
+    ctx.arcTo(pillX, pillY + pillH, pillX, pillY, r);
+    ctx.arcTo(pillX, pillY, pillX + pillW, pillY, r);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.font = `${Math.round(pillH * 0.5)}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${title.toLowerCase().replace(/\s+/g, '')}.app`, w / 2, pillY + pillH / 2 + 1);
+  } else {
+    const headerH = h * 0.15;
+    const footerH = h * 0.13;
+
+    // content between header and footer
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, headerH, w, h - headerH - footerH);
+    ctx.clip();
+    if (coverImage) {
+      drawCoverFit(ctx, coverImage, 0, headerH, w, h - headerH - footerH);
+    } else {
+      ctx.translate(0, headerH);
+      drawPoster(ctx, w, h - headerH - footerH, slug, accent);
+    }
+    ctx.restore();
+
+    // header: avatar + handle
+    ctx.fillStyle = '#111114';
+    ctx.fillRect(0, 0, w, headerH);
+    const avatarR = headerH * 0.3;
+    const avatarX = headerH * 0.55;
+    const avatarY = headerH / 2;
+    ctx.beginPath();
+    ctx.fillStyle = accent;
+    ctx.arc(avatarX, avatarY, avatarR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `600 ${Math.round(headerH * 0.32)}px system-ui, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('sid.design', avatarX + avatarR + headerH * 0.3, avatarY);
+
+    // footer: heart / comment / share outlines
+    ctx.fillRect(0, h - footerH, w, footerH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx.lineWidth = Math.max(1.5, footerH * 0.06);
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    const iconY = h - footerH / 2;
+    const iconS = footerH * 0.34;
+    let ix = headerH * 0.55;
+
+    // heart
+    ctx.beginPath();
+    ctx.moveTo(ix, iconY + iconS * 0.28);
+    ctx.bezierCurveTo(ix - iconS, iconY - iconS * 0.5, ix - iconS * 1.6, iconY + iconS * 0.55, ix, iconY + iconS);
+    ctx.bezierCurveTo(ix + iconS * 1.6, iconY + iconS * 0.55, ix + iconS, iconY - iconS * 0.5, ix, iconY + iconS * 0.28);
+    ctx.stroke();
+    ix += iconS * 2.6;
+
+    // comment bubble
+    ctx.beginPath();
+    ctx.ellipse(ix, iconY - iconS * 0.1, iconS * 0.85, iconS * 0.7, 0, Math.PI * 0.15, Math.PI * 1.85, true);
+    ctx.stroke();
+    ix += iconS * 2.4;
+
+    // share arrow
+    ctx.beginPath();
+    ctx.moveTo(ix - iconS * 0.9, iconY + iconS * 0.6);
+    ctx.lineTo(ix + iconS * 0.9, iconY - iconS * 0.6);
+    ctx.moveTo(ix, iconY - iconS * 0.6);
+    ctx.lineTo(ix + iconS * 0.9, iconY - iconS * 0.6);
+    ctx.lineTo(ix + iconS * 0.9, iconY + iconS * 0.3);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}

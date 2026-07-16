@@ -8,6 +8,31 @@ import { projects } from '@/lib/projects';
 const COUNT = 1600;
 const ACCENTS = [...new Set(projects.map((p) => p.accent))];
 
+// Generated once at module load, not per-render: this is a fixed scatter of
+// points, not derived from props or state, so it doesn't belong in a hook.
+// Computing it here (instead of useMemo(() => ..., [])) sidesteps the
+// react-hooks/purity rule, which flags Math.random anywhere in render.
+function buildSwirlGeometry() {
+  const pos = new Float32Array(COUNT * 3);
+  const col = new Float32Array(COUNT * 3);
+  const accents = projects.map((p) => new THREE.Color(p.accent));
+  const white = new THREE.Color('#ffffff');
+  for (let i = 0; i < COUNT; i++) {
+    const t = i / COUNT;
+    const angle = t * Math.PI * 16 + Math.random() * 0.9;
+    const radius = 4 + t * 9 + Math.random() * 2.5;
+    pos[i * 3] = Math.cos(angle) * radius;
+    pos[i * 3 + 1] = (Math.random() - 0.5) * 26;
+    pos[i * 3 + 2] = Math.sin(angle) * radius - 6;
+    const c = Math.random() < 0.16 ? accents[i % accents.length] : white;
+    col[i * 3] = c.r;
+    col[i * 3 + 1] = c.g;
+    col[i * 3 + 2] = c.b;
+  }
+  return { positions: pos, colors: col };
+}
+const SWIRL_GEOMETRY = buildSwirlGeometry();
+
 function Swirl() {
   const ref = useRef<THREE.Points>(null);
   const matRef = useRef<THREE.PointsMaterial>(null);
@@ -43,26 +68,7 @@ function Swirl() {
     return () => window.removeEventListener('pointermove', onMove);
   }, [finePointer, reduceMotion]);
 
-  const { positions, colors } = useMemo(() => {
-    const pos = new Float32Array(COUNT * 3);
-    const col = new Float32Array(COUNT * 3);
-    const accents = projects.map((p) => new THREE.Color(p.accent));
-    const white = new THREE.Color('#ffffff');
-    // ponytail: seeded-ish scatter via Math.random is fine — backdrop only, never replayed
-    for (let i = 0; i < COUNT; i++) {
-      const t = i / COUNT;
-      const angle = t * Math.PI * 16 + Math.random() * 0.9;
-      const radius = 4 + t * 9 + Math.random() * 2.5;
-      pos[i * 3] = Math.cos(angle) * radius;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 26;
-      pos[i * 3 + 2] = Math.sin(angle) * radius - 6;
-      const c = Math.random() < 0.16 ? accents[i % accents.length] : white;
-      col[i * 3] = c.r;
-      col[i * 3 + 1] = c.g;
-      col[i * 3 + 2] = c.b;
-    }
-    return { positions: pos, colors: col };
-  }, []);
+  const { positions, colors } = SWIRL_GEOMETRY;
 
   useFrame((state, delta) => {
     if (!ref.current || reduceMotion) return;

@@ -7,7 +7,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
 import { projects } from '@/lib/projects';
-import { drawPoster } from '@/lib/poster';
+import { getGraphicProject } from '@/lib/graphicDesign';
+import { drawFramedArtwork } from '@/lib/poster';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,13 +45,53 @@ function ArtworkPlane({
     canvas.width = 512;
     canvas.height = 352; // matches the 1.6 x 1.1 plane
     const ctx = canvas.getContext('2d');
-    if (ctx) drawPoster(ctx, canvas.width, canvas.height, project.slug, project.accent);
+    if (ctx)
+      drawFramedArtwork(
+        ctx,
+        canvas.width,
+        canvas.height,
+        project.slug,
+        project.accent,
+        project.category,
+        project.title
+      );
     const t = new THREE.CanvasTexture(canvas);
     t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 4;
     return t;
-  }, [project.slug, project.accent]);
+  }, [project.slug, project.accent, project.category, project.title]);
   useEffect(() => () => texture.dispose(), [texture]);
+
+  // Graphic-design projects have a real cover photo — swap it in once
+  // loaded so the vortex shows actual work instead of generated art.
+  // UI/UX projects have no cover art and keep the generated poster.
+  useEffect(() => {
+    if (project.category !== 'graphic-design') return;
+    const graphicProject = getGraphicProject(project.slug);
+    if (!graphicProject) return;
+    let cancelled = false;
+    const img = new window.Image();
+    img.src = graphicProject.cover;
+    img.onload = () => {
+      const canvas = texture.image as HTMLCanvasElement;
+      const ctx = canvas?.getContext('2d');
+      if (cancelled || !canvas || !ctx) return;
+      drawFramedArtwork(
+        ctx,
+        canvas.width,
+        canvas.height,
+        project.slug,
+        project.accent,
+        project.category,
+        project.title,
+        img
+      );
+      texture.needsUpdate = true;
+    };
+    return () => {
+      cancelled = true;
+    };
+  }, [project.slug, project.category, project.accent, project.title, texture]);
 
   const angle = (index / projects.length) * Math.PI * 4;
   const y = HEIGHT_SPAN / 2 - (index / (projects.length - 1)) * HEIGHT_SPAN;
@@ -132,6 +173,10 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
     };
   }, [camera, sectionRef, reduceMotion]);
 
+  // react-hooks/immutability doesn't know r3f's useFrame runs post-render,
+  // once per frame, off the React commit cycle — mutating the camera
+  // transform here is the standard r3f pattern, not a purity violation.
+  /* eslint-disable react-hooks/immutability */
   useFrame((state, delta) => {
     if (reduceMotion) return;
     // damped trailing dive — never 1:1 scrub-locked
@@ -143,6 +188,7 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
     camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 0.9, 3, delta);
     camera.lookAt(0, camera.position.y, 0);
   });
+  /* eslint-enable react-hooks/immutability */
 
   return null;
 }

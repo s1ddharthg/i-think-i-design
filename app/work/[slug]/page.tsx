@@ -1,11 +1,15 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { getProject, projects } from '@/lib/projects';
+import { getGraphicProject } from '@/lib/graphicDesign';
+import { getUiuxProject, uiuxProjects } from '@/lib/uiux';
 import Footer from '@/components/Footer';
 import Poster from '@/components/Poster';
+import BackButton from '@/components/BackButton';
+import CaseStudy from '@/components/graphic-design/CaseStudy';
+import UiuxCaseStudy from '@/components/ui-ux/UiuxCaseStudy';
 
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return [...projects, ...uiuxProjects].map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProjectPage({
@@ -14,11 +18,31 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
+  const graphicProject = getGraphicProject(slug);
+  if (graphicProject) {
+    return (
+      <>
+        <CaseStudy project={graphicProject} />
+        <Footer />
+      </>
+    );
+  }
+
+  const uiuxProject = getUiuxProject(slug);
+  if (uiuxProject) {
+    return (
+      <>
+        <UiuxCaseStudy project={uiuxProject} />
+        <Footer />
+      </>
+    );
+  }
+
   const project = getProject(slug);
   if (!project) notFound();
 
   const categoryLabel = project.category === 'ui-ux' ? 'UI/UX' : 'Graphic Design';
-  const categoryHref = project.category === 'ui-ux' ? '/ui-ux' : '/graphic-design';
 
   return (
     <>
@@ -50,9 +74,7 @@ export default async function ProjectPage({
             </div>
           </div>
 
-          <Link href={categoryHref} className="mt-20 inline-block text-sm text-white/60 hover:text-white">
-            ← Back to {categoryLabel}
-          </Link>
+          <BackButton />
         </div>
       </article>
       <Footer />

@@ -15,6 +15,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const sy = useSpring(y, { stiffness: 220, damping: 18, mass: 0.4 });
 
   useEffect(() => {
+    // Deferred to an effect on purpose: matchMedia is unavailable during SSR,
+    // so this stays false on the server and first client render, then
+    // resolves post-mount — swapping to a lazy useState initializer would
+    // read window during render and reintroduce a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMagnetic(
       !reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches
     );
