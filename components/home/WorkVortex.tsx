@@ -6,95 +6,98 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import * as THREE from 'three';
-import { projects } from '@/lib/projects';
-import { getGraphicProject } from '@/lib/graphicDesign';
+import { graphicProjects } from '@/lib/graphicDesign';
+import { uiuxProjects } from '@/lib/uiux';
 import { drawFramedArtwork } from '@/lib/poster';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const RADIUS = 4.5;
-const HEIGHT_SPAN = 26;
+const RADIUS = 4.8;
+const HEIGHT_SPAN = 22;
+
+type VortexItem = {
+  slug: string;
+  title: string;
+  accent: string;
+  category: 'ui-ux' | 'graphic-design';
+  cover: string;
+};
+
+const UIUX_ACCENTS = ['#ffd34e', '#ff8a5c', '#8c96ff', '#57c98b', '#ff6f91'];
+
+// Every real cover — graphic + UI/UX — interleaved so the dive alternates
+// disciplines instead of showing one block then the other.
+function buildItems(): VortexItem[] {
+  const g: VortexItem[] = graphicProjects.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    accent: '#ffffff',
+    category: 'graphic-design',
+    cover: p.cover,
+  }));
+  const u: VortexItem[] = uiuxProjects.map((p, i) => ({
+    slug: p.slug,
+    title: p.title,
+    accent: UIUX_ACCENTS[i % UIUX_ACCENTS.length],
+    category: 'ui-ux',
+    cover: p.cover,
+  }));
+  const out: VortexItem[] = [];
+  const max = Math.max(g.length, u.length);
+  for (let i = 0; i < max; i++) {
+    if (u[i]) out.push(u[i]);
+    if (g[i]) out.push(g[i]);
+  }
+  return out;
+}
 
 function usePrefersReducedMotion() {
   return useMemo(
-    () =>
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     []
   );
 }
 
-function ArtworkPlane({
-  project,
-  index,
-}: {
-  project: (typeof projects)[number];
-  index: number;
-}) {
+function ArtworkPlane({ item, index, count }: { item: VortexItem; index: number; count: number }) {
   const ref = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
   const router = useRouter();
   const reduceMotion = usePrefersReducedMotion();
-  const boost = useRef(0); // smoothed camera-proximity + cursor reactivity
+  const boost = useRef(0);
   const ndc = useMemo(() => new THREE.Vector3(), []);
 
-  // Generated poster texture — deterministic per slug, shared drawPoster
-  // with the 2D Gallery/detail pages. Only runs in-browser (inside Canvas).
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 352; // matches the 1.6 x 1.1 plane
+    canvas.width = 640;
+    canvas.height = 430; // ~ the 2.4 x 1.6 plane
     const ctx = canvas.getContext('2d');
-    if (ctx)
-      drawFramedArtwork(
-        ctx,
-        canvas.width,
-        canvas.height,
-        project.slug,
-        project.accent,
-        project.category,
-        project.title
-      );
+    if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
     const t = new THREE.CanvasTexture(canvas);
     t.colorSpace = THREE.SRGBColorSpace;
     t.anisotropy = 4;
     return t;
-  }, [project.slug, project.accent, project.category, project.title]);
+  }, [item.slug, item.accent, item.category, item.title]);
   useEffect(() => () => texture.dispose(), [texture]);
 
-  // Graphic-design projects have a real cover photo — swap it in once
-  // loaded so the vortex shows actual work instead of generated art.
-  // UI/UX projects have no cover art and keep the generated poster.
+  // Swap in the real cover photo once it loads.
   useEffect(() => {
-    if (project.category !== 'graphic-design') return;
-    const graphicProject = getGraphicProject(project.slug);
-    if (!graphicProject) return;
     let cancelled = false;
     const img = new window.Image();
-    img.src = graphicProject.cover;
+    img.src = item.cover;
     img.onload = () => {
       const canvas = texture.image as HTMLCanvasElement;
       const ctx = canvas?.getContext('2d');
       if (cancelled || !canvas || !ctx) return;
-      drawFramedArtwork(
-        ctx,
-        canvas.width,
-        canvas.height,
-        project.slug,
-        project.accent,
-        project.category,
-        project.title,
-        img
-      );
+      drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title, img);
       texture.needsUpdate = true;
     };
     return () => {
       cancelled = true;
     };
-  }, [project.slug, project.category, project.accent, project.title, texture]);
+  }, [item.slug, item.accent, item.category, item.title, item.cover, texture]);
 
-  const angle = (index / projects.length) * Math.PI * 4;
-  const y = HEIGHT_SPAN / 2 - (index / (projects.length - 1)) * HEIGHT_SPAN;
+  const angle = (index / count) * Math.PI * 6;
+  const y = HEIGHT_SPAN / 2 - (index / (count - 1)) * HEIGHT_SPAN;
 
   useFrame((state, delta) => {
     if (!ref.current) return;
@@ -103,11 +106,9 @@ function ArtworkPlane({
     ref.current.lookAt(0, y, 0);
     if (reduceMotion) return;
 
-    // near-camera: scale up + brighten as the dive approaches this plane
     const dist = ref.current.position.distanceTo(state.camera.position);
-    const near = THREE.MathUtils.clamp(1 - (dist - 2.2) / 5.5, 0, 1);
+    const near = THREE.MathUtils.clamp(1 - (dist - 2.4) / 6, 0, 1);
 
-    // cursor proximity: nearest plane to the pointer lifts and glows
     ndc.copy(ref.current.position).project(state.camera);
     let hover = 0;
     if (Math.abs(ndc.z) <= 1) {
@@ -118,8 +119,7 @@ function ArtworkPlane({
     const target = Math.min(near * 0.7 + hover * 0.6, 1);
     boost.current = THREE.MathUtils.damp(boost.current, target, 6, delta);
 
-    ref.current.scale.setScalar(1 + boost.current * 0.28);
-    // tilt toward the viewer as it reacts (applied after lookAt, so no drift)
+    ref.current.scale.setScalar(1 + boost.current * 0.3);
     ref.current.rotateX(-0.16 * boost.current);
     ref.current.rotateZ(0.05 * Math.sin(state.clock.elapsedTime * 0.8 + index) * boost.current);
     matRef.current?.color.setScalar(0.82 + boost.current * 0.42);
@@ -130,12 +130,12 @@ function ArtworkPlane({
       ref={ref}
       onClick={(e) => {
         e.stopPropagation();
-        router.push(`/work/${project.slug}`);
+        router.push(`/work/${item.slug}`);
       }}
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = 'auto')}
     >
-      <planeGeometry args={[1.6, 1.1]} />
+      <planeGeometry args={[2.4, 1.6]} />
       <meshBasicMaterial ref={matRef} map={texture} toneMapped={false} />
     </mesh>
   );
@@ -150,42 +150,34 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
   useEffect(() => {
     if (!sectionRef.current) return;
     if (reduceMotion) {
-      camera.position.set(0, 0, 8);
+      camera.position.set(0, 0, 9);
       camera.lookAt(0, 0, 0);
       return;
     }
-
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
-      end: '+=200%',
+      end: '+=260%',
       scrub: true,
       pin: true,
       pinType: 'transform',
       onUpdate: (self) => {
-        // only record progress — the dive itself is damped in useFrame
         progress.current = self.progress;
       },
     });
-
     return () => {
       st.kill();
     };
   }, [camera, sectionRef, reduceMotion]);
 
-  // react-hooks/immutability doesn't know r3f's useFrame runs post-render,
-  // once per frame, off the React commit cycle — mutating the camera
-  // transform here is the standard r3f pattern, not a purity violation.
   /* eslint-disable react-hooks/immutability */
   useFrame((state, delta) => {
     if (reduceMotion) return;
-    // damped trailing dive — never 1:1 scrub-locked
     smoothed.current = THREE.MathUtils.damp(smoothed.current, progress.current, 4, delta);
     const p = smoothed.current;
-    camera.position.z = 12 - p * 10;
+    camera.position.z = 13 - p * 11;
     camera.position.y = HEIGHT_SPAN / 2 - p * HEIGHT_SPAN;
-    // gentle pointer sway for depth
-    camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 0.9, 3, delta);
+    camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 1.1, 3, delta);
     camera.lookAt(0, camera.position.y, 0);
   });
   /* eslint-enable react-hooks/immutability */
@@ -196,7 +188,7 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
 export default function WorkVortex() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
-  const items = useMemo(() => projects, []);
+  const items = useMemo(() => buildItems(), []);
 
   useEffect(() => {
     const mm = gsap.matchMedia(sectionRef);
@@ -208,17 +200,11 @@ export default function WorkVortex() {
         ease: 'power3.out',
         scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
       });
-      // heading dissolves as the dive begins
       gsap.to(headingRef.current, {
         opacity: 0,
         y: -30,
         ease: 'none',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=60%',
-          scrub: true,
-        },
+        scrollTrigger: { trigger: sectionRef.current, start: 'top top', end: '+=60%', scrub: true },
       });
     });
     return () => mm.revert();
@@ -228,15 +214,17 @@ export default function WorkVortex() {
     <section ref={sectionRef} className="relative h-screen w-full">
       <div
         ref={headingRef}
-        className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-white"
+        className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-center text-white"
       >
-        <span className="text-xs uppercase tracking-[0.3em] text-white/40">Scroll</span>
-        <h2 className="mt-2 text-4xl font-semibold">Work</h2>
+        <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Selected work</span>
+        <h2 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+          Dive <span style={{ color: 'var(--accent)' }}>in.</span>
+        </h2>
       </div>
-      <Canvas camera={{ position: [0, HEIGHT_SPAN / 2, 12], fov: 50 }}>
+      <Canvas camera={{ position: [0, HEIGHT_SPAN / 2, 13], fov: 50 }} dpr={[1, 1.75]}>
         <CameraRig sectionRef={sectionRef} />
-        {items.map((project, i) => (
-          <ArtworkPlane key={project.id} project={project} index={i} />
+        {items.map((item, i) => (
+          <ArtworkPlane key={item.slug} item={item} index={i} count={items.length} />
         ))}
       </Canvas>
     </section>

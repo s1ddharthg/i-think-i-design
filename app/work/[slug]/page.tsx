@@ -24,7 +24,7 @@ export default async function ProjectPage({
     return (
       <>
         <CaseStudy project={graphicProject} />
-        <Footer />
+        <Footer hideCta />
       </>
     );
   }
@@ -34,7 +34,7 @@ export default async function ProjectPage({
     return (
       <>
         <UiuxCaseStudy project={uiuxProject} />
-        <Footer />
+        <Footer hideCta />
       </>
     );
   }
@@ -77,7 +77,7 @@ export default async function ProjectPage({
           <BackButton />
         </div>
       </article>
-      <Footer />
+      <Footer hideCta />
     </>
   );
 }

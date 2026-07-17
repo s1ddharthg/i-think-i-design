@@ -8,23 +8,18 @@ import About from '@/components/home/About';
 import WorkVortex from '@/components/home/WorkVortex';
 import Footer from '@/components/Footer';
 
-const LOADER_KEY = 'sg-loader-shown';
+// Module-scoped, NOT sessionStorage: this flag persists across client-side
+// navigations (clicking "SG" to come home never replays the loader) but resets
+// on a full page load — so the loader shows only on first entry or a refresh,
+// which is exactly the desired behaviour. SSR has no window and renders with
+// the flag false → loading true, matching the first client render.
+let hasShownLoader = false;
 
 export default function Home() {
-  // sessionStorage, not module state: Next.js can remount this page's module
-  // on client-side route transitions, which would silently reset an
-  // in-memory flag. sessionStorage survives that. SSR always returns true
-  // (deterministic, no window) so the first hydration always matches.
-  // The read here is pure (React 18 Strict Mode double-invokes lazy
-  // initializers in dev — a setItem side effect here would make the second
-  // invocation see the first one's write and return a different answer).
-  // The actual write happens once in the effect below.
-  const [loading, setLoading] = useState(() =>
-    typeof window === 'undefined' ? true : !sessionStorage.getItem(LOADER_KEY)
-  );
+  const [loading, setLoading] = useState(!hasShownLoader);
 
   useEffect(() => {
-    sessionStorage.setItem(LOADER_KEY, '1');
+    hasShownLoader = true;
   }, []);
 
   return (

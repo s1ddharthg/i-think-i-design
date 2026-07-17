@@ -3,13 +3,27 @@
 :root {
   --background: #000000;
   --foreground: #ededed;
+  /* Site accent — a warm signal yellow used for the primary CTA, hierarchy
+     highlights, and interactive-state color. */
+  --accent: #ffd34e;
+  --accent-ink: #1a1400;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+/* A custom cursor takes over on fine-pointer devices — hide the native one. */
+@media (hover: hover) and (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none !important;
+  }
 }
 
 html, body {
@@ -18,14 +32,8 @@ html, body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   /* Full-bleed sections break out via 100vw, which on desktop overshoots
      the visible area by the scrollbar gutter width. Nothing on this site
-     relies on horizontal scroll, so clipping it here is the safe fix. */
-  overflow-x: hidden;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .marquee-track { animation: marquee 26s linear infinite; }
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+     relies on horizontal scroll, so clipping it here is the safe fix.
+     `clip` (not `hidden`) clips overflow WITHOUT establishing a scroll
+     container — `hidden` would silently break `position: sticky` inside. */
+  overflow-x: clip;
 }

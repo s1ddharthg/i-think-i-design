@@ -2,12 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { UiuxProject } from '@/lib/uiux';
 import { uiuxProjects } from '@/lib/uiux';
-import DeviceMockup from '@/components/ui-ux/DeviceMockup';
-import AutoScrollFilmstrip from '@/components/ui-ux/AutoScrollFilmstrip';
+import SectionFlow from '@/components/ui-ux/SectionFlow';
 import BackButton from '@/components/BackButton';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -15,21 +14,10 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
   const reduce = useReducedMotion();
   const [active, setActive] = useState(project.sections[0]?.id);
-  const refs = useRef<Record<string, HTMLElement | null>>({});
+  const activeSection = project.sections.find((s) => s.id === active) ?? project.sections[0];
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: '-40% 0px -40% 0px', threshold: [0.1, 0.5, 1] }
-    );
-    Object.values(refs.current).forEach((el) => el && obs.observe(el));
-    return () => obs.disconnect();
-  }, [project.slug]);
+  const boards = (project.extras ?? []).filter((e) => e.kind === 'board');
+  const compares = (project.extras ?? []).filter((e) => e.kind === 'compare');
 
   const fadeUp = {
     hidden: { opacity: 0, y: 24 },
@@ -50,10 +38,11 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
         </nav>
       </div>
 
-      {/* Hero cover */}
-      <div className="relative aspect-[21/9] max-h-[62vh] w-full overflow-hidden bg-white/5">
-        <Image src={project.cover} alt={project.coverAlt} fill priority sizes="100vw" className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+      {/* Hero cover — contained, no dramatic crop */}
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+          <Image src={project.cover} alt={project.coverAlt} fill priority sizes="100vw" unoptimized className="object-cover" />
+        </div>
       </div>
 
       {/* Overview */}
@@ -68,13 +57,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           <p className="mt-5 max-w-xl text-lg text-white/60">{project.tagline}</p>
         </motion.div>
 
-        <motion.div
-          initial={reduce ? false : 'hidden'}
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={fadeUp}
-          className="mt-10 border-t border-white/10 pt-10"
-        >
+        <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={fadeUp} className="mt-10 border-t border-white/10 pt-10">
           <p className="text-pretty max-w-[62ch] text-lg leading-relaxed text-white/80">{project.brief}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
             <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">My Role</span>
@@ -92,14 +75,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           <h2 className="text-2xl font-semibold tracking-tight text-white/95">Key decisions</h2>
           <ol className="mt-8 flex flex-col gap-7">
             {project.keyDecisions.map((d, i) => (
-              <motion.li
-                key={i}
-                className="flex gap-5"
-                initial={reduce ? false : { opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.6 }}
-                transition={{ duration: 0.6, ease: EASE, delay: i * 0.06 }}
-              >
+              <motion.li key={i} className="flex gap-5" initial={reduce ? false : { opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.6, ease: EASE, delay: i * 0.06 }}>
                 <span className="mt-1 shrink-0 font-mono text-sm text-white/30">{String(i + 1).padStart(2, '0')}</span>
                 <span className="text-pretty text-white/75">{d}</span>
               </motion.li>
@@ -107,15 +83,8 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           </ol>
         </motion.div>
 
-        {/* Honest note */}
         {project.honestNote && (
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="mt-16 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6 sm:p-7"
-          >
+          <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, ease: EASE }} className="mt-16 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6 sm:p-7">
             <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300/80">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> Before it ships
             </span>
@@ -124,138 +93,109 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
         )}
       </div>
 
-      {/* Walkthrough — sticky section nav + auto-scrolling mockups */}
-      <div className="mx-auto max-w-6xl px-6 pb-24 pt-10">
-        <div className="grid gap-10 lg:grid-cols-[210px_1fr]">
-          {/* Sticky nav */}
+      {/* Mockup showcase — the boards, before you interact with the flow */}
+      {boards.length > 0 && (
+        <div className="mx-auto max-w-6xl px-6 pt-16 pb-8">
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">The mockups</span>
+          <div className="mt-6 flex flex-col gap-10">
+            {boards.map((b, i) => (
+              <motion.figure key={i} initial={reduce ? false : { opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.25 }} transition={{ duration: 0.8, ease: EASE }}>
+                <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                  <Image src={b.src} alt={b.alt} width={1600} height={1000} sizes="(max-width:768px) 92vw, 1100px" unoptimized className="h-auto w-full" />
+                </div>
+                <figcaption className="mt-3 text-sm text-white/40">{b.caption}</figcaption>
+              </motion.figure>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Walkthrough — pinned left menu, screens flow up the device on the right */}
+      <div className="mx-auto max-w-6xl px-6 pb-8 pt-8">
+        <div className="grid gap-10 lg:grid-cols-[240px_1fr]">
           <aside className="hidden lg:block">
-            <div className="sticky top-28">
+            <div className="sticky top-28 pr-4">
               <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">The flow</span>
               <ul className="mt-5 flex flex-col gap-1">
                 {project.sections.map((s) => {
                   const on = active === s.id;
                   return (
                     <li key={s.id}>
-                      <button
-                        onClick={() => refs.current[s.id]?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                        className="group flex w-full items-center gap-3 py-1.5 text-left"
+                      <a
+                        href={`#${s.id}`}
+                        className="group flex items-center gap-3 py-1.5"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setActive(s.id);
+                          const el = document.getElementById(s.id);
+                          const lenis = (window as unknown as { lenis?: { scrollTo: (t: Element, o?: object) => void } }).lenis;
+                          if (el && lenis) lenis.scrollTo(el, { offset: -80 });
+                          else el?.scrollIntoView({ behavior: 'smooth' });
+                        }}
                       >
                         <span className={`h-px transition-all duration-300 ${on ? 'w-8 bg-white' : 'w-4 bg-white/20 group-hover:w-6 group-hover:bg-white/50'}`} />
                         <span className={`text-sm transition-colors ${on ? 'text-white' : 'text-white/40 group-hover:text-white/70'}`}>{s.label}</span>
-                      </button>
+                      </a>
                     </li>
                   );
                 })}
               </ul>
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={activeSection?.id}
+                  initial={reduce ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduce ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: EASE }}
+                  className="mt-8 max-w-[13rem] text-pretty text-sm leading-relaxed text-white/55"
+                >
+                  {activeSection?.blurb}
+                </motion.p>
+              </AnimatePresence>
             </div>
           </aside>
 
-          {/* Section blocks */}
-          <div className="flex flex-col gap-20 sm:gap-28">
+          <div>
             {project.sections.map((s) => (
-              <section
-                key={s.id}
-                id={s.id}
-                ref={(el) => { refs.current[s.id] = el; }}
-                className="scroll-mt-28"
-              >
-                <div className="mb-6">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/35">{s.label}</span>
-                  <p className="mt-2 max-w-md text-pretty text-white/70">{s.blurb}</p>
-                </div>
-                <motion.div
-                  initial={reduce ? false : { opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={{ duration: 0.8, ease: EASE }}
-                >
-                  <DeviceMockup device={s.device} url={s.url}>
-                    <AutoScrollFilmstrip screens={s.screens} />
-                  </DeviceMockup>
-                  <p className="mt-3 text-center text-xs text-white/30">
-                    {s.screens.length} screen{s.screens.length > 1 ? 's' : ''} · hover to pause · scroll to explore
-                  </p>
-                </motion.div>
-              </section>
+              <SectionFlow key={s.id} section={s} onActive={setActive} />
             ))}
           </div>
         </div>
       </div>
 
-      {/* Extras — boards + before/after */}
-      {project.extras && project.extras.length > 0 && (
-        <div className="mx-auto max-w-5xl px-6 pb-24">
-          <div className="flex flex-col gap-20">
-            {project.extras.map((ex, i) =>
-              ex.kind === 'board' ? (
-                <motion.figure
-                  key={i}
-                  initial={reduce ? false : { opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={{ duration: 0.8, ease: EASE }}
-                >
-                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                    <Image src={ex.src} alt={ex.alt} width={1500} height={1125} sizes="(max-width:768px) 90vw, 1000px" className="h-auto w-full" />
-                  </div>
-                  <figcaption className="mt-3 text-sm text-white/40">{ex.caption}</figcaption>
-                </motion.figure>
-              ) : (
-                <motion.figure
-                  key={i}
-                  initial={reduce ? false : { opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.2 }}
-                  transition={{ duration: 0.8, ease: EASE }}
-                >
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {'placeholder' in ex.before ? (
-                      <div className="flex aspect-[4/3] flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-6 text-center">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/30">{ex.before.label}</span>
-                        <p className="mt-2 text-sm text-white/40">{ex.before.placeholder}</p>
-                        <p className="mt-4 text-[11px] text-white/25">Screenshot slot</p>
-                      </div>
-                    ) : (
-                      <figure>
-                        <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                          <Image src={ex.before.src} alt={ex.before.alt} width={1500} height={1125} sizes="45vw" className="h-auto w-full" />
-                        </div>
-                        <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{ex.before.label}</figcaption>
-                      </figure>
-                    )}
-                    <figure>
-                      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                        <Image src={ex.after.src} alt={ex.after.alt} width={1500} height={1125} sizes="45vw" className="h-auto w-full" />
-                      </div>
-                      <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{ex.after.label}</figcaption>
-                    </figure>
-                  </div>
-                  <figcaption className="mt-3 text-sm text-white/40">{ex.caption}</figcaption>
-                </motion.figure>
-              )
-            )}
+      {/* Before / after against the live site */}
+      {compares.length > 0 && (
+        <div className="mx-auto max-w-5xl px-6 py-16">
+          <div className="flex flex-col gap-16">
+            {compares.map((ex, i) => (
+              <motion.figure key={i} initial={reduce ? false : { opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.8, ease: EASE }}>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <figure>
+                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                      <Image src={ex.before.src} alt={ex.before.alt} width={1500} height={1125} sizes="45vw" unoptimized className="h-auto w-full" />
+                    </div>
+                    <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{ex.before.label}</figcaption>
+                  </figure>
+                  <figure>
+                    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                      <Image src={ex.after.src} alt={ex.after.alt} width={1500} height={1125} sizes="45vw" unoptimized className="h-auto w-full" />
+                    </div>
+                    <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{ex.after.label}</figcaption>
+                  </figure>
+                </div>
+                <figcaption className="mt-3 text-sm text-white/40">{ex.caption}</figcaption>
+              </motion.figure>
+            ))}
           </div>
         </div>
       )}
 
       {/* Caption + reflection */}
-      <div className="mx-auto max-w-4xl px-6 pb-28">
-        <motion.p
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.5 }}
-          transition={{ duration: 0.8, ease: EASE }}
-          className="text-balance text-2xl font-medium leading-snug text-white/90 sm:text-3xl"
-        >
+      <div className="mx-auto max-w-4xl px-6 py-20">
+        <motion.p initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: EASE }} className="text-balance text-2xl font-medium leading-snug text-white/90 sm:text-3xl">
           “{project.caption}”
         </motion.p>
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          className="mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10"
-        >
+        <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, ease: EASE }} className="mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10">
           <span className="text-xs uppercase tracking-[0.2em] text-white/40">{project.reflectionHeading}</span>
           <p className="text-pretty mt-4 text-lg leading-relaxed text-white/70">{project.reflection}</p>
         </motion.div>
@@ -266,7 +206,6 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
   );
 }
 
-// Next three UI/UX studies, wrapping around.
 function ViewSimilar({ slug }: { slug: string }) {
   const reduce = useReducedMotion();
   const i = uiuxProjects.findIndex((p) => p.slug === slug);
@@ -277,22 +216,15 @@ function ViewSimilar({ slug }: { slug: string }) {
     <section className="border-t border-white/10 bg-black px-6 py-24 text-white md:px-10">
       <div className="mx-auto max-w-5xl">
         <span className="text-xs uppercase tracking-[0.3em] text-white/40">View similar</span>
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
           {similar.map((p, k) => (
-            <motion.div
-              key={p.slug}
-              initial={reduce ? false : { opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.7, ease: EASE, delay: k * 0.08 }}
-            >
-              <Link href={`/work/${p.slug}`} className="group relative flex aspect-[4/5] w-full flex-col justify-end overflow-hidden rounded-xl">
-                <Image src={p.cover} alt={p.coverAlt} fill sizes="33vw" className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="relative p-5">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">{p.index}</span>
-                  <h3 className="mt-1.5 text-lg font-semibold text-white">{p.title}</h3>
+            <motion.div key={p.slug} initial={reduce ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, ease: EASE, delay: k * 0.08 }}>
+              <Link href={`/work/${p.slug}`} className="group block">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                  <Image src={p.cover} alt={p.coverAlt} fill sizes="33vw" unoptimized className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none" />
                 </div>
+                <span className="mt-3 block font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">{p.index} · {p.discipline}</span>
+                <h3 className="mt-1 text-lg font-semibold text-white">{p.title}</h3>
               </Link>
             </motion.div>
           ))}

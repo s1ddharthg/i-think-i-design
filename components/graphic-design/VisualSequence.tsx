@@ -57,9 +57,8 @@ function FeatureRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'image
 // Two photos side by side, or a bento mosaic once there are three or four —
 // replaces the old image-plus-caption row. `fill` + a fixed aspect box means
 // no intrinsic dimensions are needed per tile.
-function GalleryRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'gallery' }>; reduce: boolean | null }) {
-  const { images, caption } = visual;
-  const Tile = ({ src, alt, className = '' }: { src: string; alt: string; className?: string }) => (
+function GalleryTile({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
+  return (
     <div className={`group relative overflow-hidden rounded-sm bg-white/5 ${className}`}>
       <Image
         src={src}
@@ -70,6 +69,11 @@ function GalleryRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'galle
       />
     </div>
   );
+}
+
+function GalleryRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'gallery' }>; reduce: boolean | null }) {
+  const { images, caption } = visual;
+  const Tile = GalleryTile;
 
   return (
     <motion.div {...reveal(reduce)} className="w-full">

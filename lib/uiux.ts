@@ -1,8 +1,7 @@
 // Content + asset map for the real UI/UX product case studies.
-// Screens live in /public/images/ui-ux/<slug>/. Each study segments a product's
-// screens into labelled sections (Onboarding, Home, Cart, Payments…) that render
-// inside an auto-scrolling device mockup — an iPhone for mobile, a Mac browser
-// for web.
+// Screens live in /public/images/ui-ux/<slug>/. Each study opens with its
+// polished mockup boards, then a section-by-section walkthrough: the left menu
+// pins while the screens flow up through a device frame on the right.
 
 export type Device = 'iphone' | 'mac';
 
@@ -13,19 +12,18 @@ export type Section = {
   label: string;
   blurb: string;
   device: Device;
-  // Mac-browser URL pill. Ignored for iPhone sections.
-  url?: string;
+  url?: string; // Mac-browser URL pill
   screens: Screen[];
 };
 
-// Non-filmstrip visuals shown after the walkthrough — hero boards, and the
-// before/after comparisons against a real live site.
+// Non-walkthrough visuals. `board`s render up top as the mockup showcase;
+// `compare`s render after the walkthrough as before/after against a live site.
 export type Extra =
-  | { kind: 'board'; src: string; alt: string; caption: string; device?: Device }
+  | { kind: 'board'; src: string; alt: string; caption: string }
   | {
       kind: 'compare';
       caption: string;
-      before: { src: string; alt: string; label: string } | { placeholder: string; label: string };
+      before: { src: string; alt: string; label: string };
       after: { src: string; alt: string; label: string };
     };
 
@@ -63,25 +61,25 @@ export const uiuxProjects: UiuxProject[] = [
     cover: img('velo', 'cover.png'),
     coverAlt: 'Three phones on a night sky showing the Vélo onboarding, home, and cart screens',
     brief:
-      'Food, laundry, and groceries usually mean three apps, three logins, three couriers circling the same block. Vélo folds them into one courier brand on one bike — a single home screen where the errand, not the category, is the thing you choose. The design brief I set myself: prove a multi-service courier can feel like one calm product, not three bolted together.',
+      'Food, laundry, groceries — three errands that usually mean three apps, three logins, three couriers circling the same block. Vélo folds them into one courier brand on one bike, on a single home screen where you pick the errand, not the category. The brief I set myself: prove a multi-service courier can feel like one calm product instead of three bolted together.',
     role: 'Solo — product concept, UI design, and the brand identity across the full flow.',
     roles: ['Product concept', 'UI design', 'Brand identity'],
     keyDecisions: [
-      'One accent colour (coral/peach) against an oxblood backdrop — the same restraint instinct from my graphic work, now applied to a full product instead of one poster.',
-      'Three services, three cards, one home screen. No fourth option competing for attention.',
-      'The onboarding carousel narrates a specific person — someone who doesn’t want to leave the couch — instead of a generic “fast and convenient” pitch.',
-      'The wordmark had to survive from a splash screen to a cart badge to a courier bag, so it was drawn tight and legible at every size before a single screen was laid out.',
+      'One accent colour — coral against an oxblood backdrop. The same restraint instinct from my graphic work, now stretched across a whole product instead of a single poster.',
+      'Three services, three cards, one home screen. No fourth option competing for the tap.',
+      'The onboarding carousel narrates one specific person — someone who does not want to get off the couch — rather than a generic “fast and convenient” pitch.',
+      'The wordmark was drawn to survive a splash screen, a cart badge, and a courier bag before a single screen was laid out, so it never breaks as it shrinks.',
     ],
     honestNote:
-      'Every list in this flow still repeats itself — six identical vendor cards, three identical cart items, two identical delivery slots. And the login screen still says “Welcome back Sid.” Both get fixed before this goes anywhere near a real user.',
+      'Every list in this flow still repeats itself — six identical vendor cards, three identical cart items, two identical delivery slots. And the login still greets “Welcome back Sid.” Both get fixed before this goes anywhere near a real user.',
     reflectionHeading: 'What I’d tell you if you asked',
     reflection:
-      'Vélo is where I learned that restraint scales. Cutting the fourth service card was harder — and better — than designing a fourth one. The night-sky hero is the piece I’d put first in any review.',
+      'Vélo taught me restraint scales. Cutting the fourth service card was harder — and better — than designing one. The night-sky hero is the piece I’d lead any review with.',
     sections: [
       {
         id: 'onboarding',
         label: 'Onboarding',
-        blurb: 'A splash, a three-card carousel, and a sign-up that gets out of the way.',
+        blurb: 'A splash, a three-card carousel that narrates one couch-bound person, and a sign-up that gets out of the way.',
         device: 'iphone',
         screens: [
           { src: img('velo', 'loading.svg'), alt: 'Vélo splash screen' },
@@ -96,18 +94,18 @@ export const uiuxProjects: UiuxProject[] = [
       {
         id: 'home',
         label: 'Home',
-        blurb: 'One home screen. Three services. The errand is the choice, not the category.',
+        blurb: 'One home screen, three services. The errand is the choice — food, laundry, or groceries — not a category tree.',
         device: 'iphone',
         screens: [
           { src: img('velo', 'home.svg'), alt: 'Vélo home screen with three service cards' },
-          { src: img('velo', 'mez.svg'), alt: 'Vélo menu / services screen' },
+          { src: img('velo', 'mez.svg'), alt: 'Vélo services screen' },
           { src: img('velo', 'profile.svg'), alt: 'Vélo profile screen' },
         ],
       },
       {
         id: 'categories',
         label: 'Categories',
-        blurb: 'Food, groceries, and laundry each get their own browse view, same skeleton.',
+        blurb: 'Food, groceries, and laundry each get their own browse view built on the same skeleton, so nothing feels bolted on.',
         device: 'iphone',
         screens: [
           { src: img('velo', 'food-category.svg'), alt: 'Food category screen' },
@@ -119,7 +117,7 @@ export const uiuxProjects: UiuxProject[] = [
       {
         id: 'cart',
         label: 'Cart & Checkout',
-        blurb: 'The cart got a second pass — a revamp that trimmed the checkout to what matters.',
+        blurb: 'The cart got a second pass — a revamp that trimmed checkout down to the fields that actually decide the order.',
         device: 'iphone',
         screens: [
           { src: img('velo', 'cart.svg'), alt: 'Cart for snacks and food' },
@@ -128,41 +126,42 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('velo', 'main-board.png'), alt: 'Vélo home screen presentation board', caption: 'The wordmark surviving from splash to home screen.' },
-      { kind: 'board', src: img('velo', 'food-board.png'), alt: 'Vélo food ordering presentation board', caption: 'Food, the busiest of the three services, in context.' },
+      { kind: 'board', src: img('velo', 'cover.png'), alt: 'Three Vélo phones on a night sky', caption: 'The hero — the wordmark surviving across three screens at once.' },
+      { kind: 'board', src: img('velo', 'main-board.png'), alt: 'Vélo home screen presentation board', caption: 'Home, where three services share one calm surface.' },
+      { kind: 'board', src: img('velo', 'food-board.png'), alt: 'Vélo food ordering presentation board', caption: 'Food — the busiest of the three services — in context.' },
     ],
   },
 
-  // ─────────────────────────────────────────────────────── Festember
+  // ─────────────────────────────────────────────────── Festember (app)
   {
     slug: 'festember',
     index: '02',
-    title: 'Festember',
-    tagline: '18,000 students, 500 colleges, one festival — held together across two products.',
-    caption: '18,000 students, 500 colleges, one festival — and the app has to work every single one of those days.',
-    discipline: 'Product + Web Design',
-    cover: img('festember', 'web/cover.png'),
-    coverAlt: 'Festember “Saga of Secrets” noir marketing hero',
+    title: 'Festember — App',
+    tagline: 'The ticketing app 18,000 students actually use to attend the fest.',
+    caption: '18,000 students, 500 colleges — and the app has to work on every single one of those four days.',
+    discipline: 'Product Design',
+    cover: img('festember', 'app/board-cover.svg'),
+    coverAlt: 'Festember ticketing app presentation board',
     brief:
-      'Festember is NIT Trichy’s flagship cultural fest — 18,000 students, 500 colleges, 12 event clusters. I designed both layers: the ticketing app people actually use to attend — discover events, buy tickets, manage payments — and the marketing website that gets them excited to show up, re-skinned this year for the theme “Saga of Secrets.”',
-    role: 'Solo — app UI (onboarding, discovery, tickets, payments) and website (hero, About, navigation).',
-    roles: ['App UI', 'Ticketing flow', 'Marketing website'],
+      'Festember is NIT Trichy’s flagship cultural fest — 18,000 students, 500 colleges, 11 event clusters, four days in September. This is the functional layer: the app people use to discover events, buy tickets, and manage payments. It stays visually neutral on purpose — thin red line-art and a simple cursive “F” — because unlike the website, the app is reused every year no matter what the theme is.',
+    role: 'Solo — app UI across onboarding, event discovery, tickets, and payments.',
+    roles: ['App UI', 'Discovery', 'Ticketing', 'Payments'],
     keyDecisions: [
-      'The app stays visually neutral — thin red line-art, a simple cursive “F” — because it’s the layer reused every year regardless of theme.',
-      'The website gets re-skinned for this year’s theme, “Saga of Secrets,” with a noir/silhouette aesthetic built for one year, not built to last.',
-      'Real event content on the ticketing flow — an actual “Fashionistas Gala” listing with a real date, venue, and description — instead of lorem dressed up for a screenshot.',
-      'The neutral app and the themed website are deliberately different visual languages: one is infrastructure, one is a poster. Stating that on purpose beats pretending they match.',
+      'A neutral, theme-proof visual language — thin red line-art on white — because the app gets reused every year while the website gets rebuilt for each theme.',
+      'Discovery is organised around the fest’s real structure: 11 event clusters, not an arbitrary grid of tiles.',
+      'Real event content on the ticketing flow — an actual Fashionistas Gala listing with a real date, venue, and description — instead of lorem dressed up for a screenshot.',
+      'Payments were designed as the screen that absolutely cannot break: one clear amount, one confirmation, a transaction record you can point to later.',
     ],
     honestNote:
-      'Urgent: the About page headline still reads “…AND SMTH SMTH FOR YOU ONLY” — placeholder shorthand left in a live headline, fix immediately. The profile screen shows a placeholder phone number (“+1234567890”). And decide on purpose: the poster (vintage collage), website (noir), and app (line art) are three visual languages for one brand — the app staying neutral is defensible; the poster and website disagreeing this year is not.',
-    reflectionHeading: 'What I learned holding two products together',
+      'The profile screen still shows a placeholder phone number (“+1234567890”) — swap it before this goes into any case study. And the vendor/event lists still repeat a few identical cards; real event data fills those, but the repetition has to go first.',
+    reflectionHeading: 'Designing the layer nobody photographs',
     reflection:
-      'A festival isn’t one design problem, it’s two with a shared name. The interesting work was deciding which layer gets to chase a theme and which one has to survive a decade of them.',
+      'The website gets the applause; the app gets the traffic on fest day. The interesting constraint was making something neutral enough to survive a decade of themes and still not feel generic.',
     sections: [
       {
-        id: 'app-onboarding',
-        label: 'App · Onboarding',
-        blurb: 'Start screen, a themed carousel, sign-in and sign-up — the neutral, reusable layer.',
+        id: 'onboarding',
+        label: 'Onboarding',
+        blurb: 'Start, a themed carousel, sign-in and sign-up — the neutral, reusable entry that every year’s attendees pass through.',
         device: 'iphone',
         screens: [
           { src: img('festember', 'app/start.svg'), alt: 'Festember app start screen' },
@@ -176,9 +175,9 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
       {
-        id: 'app-discover',
-        label: 'App · Discover',
-        blurb: 'Home, search, and the 12 event clusters — the map of everything happening.',
+        id: 'discover',
+        label: 'Discover',
+        blurb: 'Home, search, and the 11 event clusters — the whole fest laid out the way it is actually organised.',
         device: 'iphone',
         screens: [
           { src: img('festember', 'app/main.svg'), alt: 'App home screen' },
@@ -188,9 +187,9 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
       {
-        id: 'app-event',
-        label: 'App · Event',
-        blurb: 'A real listing — Fashionistas Gala, real date and venue — not lorem in a frame.',
+        id: 'event',
+        label: 'Event',
+        blurb: 'A real listing — Fashionistas Gala, real date and venue — because the app had to work with real event data from day one.',
         device: 'iphone',
         screens: [
           { src: img('festember', 'app/ticket-desc.svg'), alt: 'Event ticket detail — Fashionistas Gala' },
@@ -198,9 +197,9 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
       {
-        id: 'app-payments',
-        label: 'App · Payments',
-        blurb: 'Buy the ticket, confirm the transaction — the part that actually has to work.',
+        id: 'payments',
+        label: 'Payments',
+        blurb: 'Buy the ticket, confirm the transaction, keep the record — the part that simply has to work on fest morning.',
         device: 'iphone',
         screens: [
           { src: img('festember', 'app/payments.svg'), alt: 'Payment screen' },
@@ -208,10 +207,45 @@ export const uiuxProjects: UiuxProject[] = [
           { src: img('festember', 'app/profile.svg'), alt: 'Profile screen' },
         ],
       },
+    ],
+    extras: [
+      { kind: 'board', src: img('festember', 'app/board-cover.svg'), alt: 'Festember app presentation board', caption: 'The neutral app, presented on its own terms.' },
+      { kind: 'board', src: img('festember', 'app/board-onboarding.svg'), alt: 'Festember app onboarding board', caption: 'Onboarding — the reusable front door.' },
+      { kind: 'board', src: img('festember', 'app/board-event.svg'), alt: 'Festember app event board', caption: 'Fashionistas Gala — the real event that anchored the ticketing flow.' },
+      { kind: 'board', src: img('festember', 'app/board-ticketing.svg'), alt: 'Festember app ticketing board', caption: 'Ticketing, from listing to confirmation.' },
+      { kind: 'board', src: img('festember', 'app/board-payments.svg'), alt: 'Festember app payments board', caption: 'Payments — one amount, one confirmation.' },
+    ],
+  },
+
+  // ───────────────────────────────────────────── Festember (website)
+  {
+    slug: 'festember-website',
+    index: '03',
+    title: 'Festember — Website',
+    tagline: 'The “Saga of Secrets” marketing site — a noir re-skin built for exactly one year.',
+    caption: 'One theme, one year, one noir silhouette — the website that had to feel like a secret worth showing up for.',
+    discipline: 'Web Design',
+    cover: img('festember', 'web/cover.png'),
+    coverAlt: 'Festember Saga of Secrets noir marketing hero',
+    brief:
+      'The same festival, the other half. Where the app is neutral infrastructure, the website is this year’s poster — re-skinned for the 2025 theme, “Saga of Secrets,” with a noir/silhouette aesthetic built to last one edition, not a decade. Its only job is to make 18,000 students from 500 colleges want to show up.',
+    role: 'Solo — marketing website: hero, About, navigation, and the mobile-web treatment.',
+    roles: ['Web design', 'Art direction', 'Responsive'],
+    keyDecisions: [
+      'A noir, silhouette-led hero for “Saga of Secrets” — deliberately disposable art direction, because next year’s theme gets its own.',
+      'The desktop hero was designed to survive folding down to a phone-width marketing page without losing the mood.',
+      'The site and the app are intentionally different visual languages: one is a one-year poster, the other is a decade of infrastructure. Stating that on purpose beats pretending they match.',
+    ],
+    honestNote:
+      'Urgent: the About headline still reads “…AND SMTH SMTH FOR YOU ONLY,” and the mobile pages still carry “THEME NAME” and “Lorem ipsum” placeholders. These are shorthand left in a nearly-live layout — fix them before anyone sees the page, portfolio or not.',
+    reflectionHeading: 'The half that gets to chase a theme',
+    reflection:
+      'Deciding which layer is allowed to be trendy — the site — and which has to stay quiet for ten years — the app — was the actual design decision here. The noir treatment is the fun part; the discipline was not letting it leak into the app.',
+    sections: [
       {
-        id: 'web-desktop',
-        label: 'Website · Desktop',
-        blurb: 'The “Saga of Secrets” re-skin — noir hero, silhouettes, an About built for one year.',
+        id: 'desktop',
+        label: 'Desktop',
+        blurb: 'The full-size noir hero and the About section — the silhouette treatment given the real estate it was built for.',
         device: 'mac',
         url: 'festember.com',
         screens: [
@@ -220,9 +254,9 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
       {
-        id: 'web-mobile',
-        label: 'Website · Mobile',
-        blurb: 'The same noir treatment folded down to a phone-width marketing page.',
+        id: 'mobile',
+        label: 'Mobile',
+        blurb: 'The same theme folded down to a phone — where most students actually open a fest site from.',
         device: 'iphone',
         screens: [
           { src: img('festember', 'web/landing-1.svg'), alt: 'Mobile website landing — top' },
@@ -232,13 +266,12 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('festember', 'app/board-cover.svg'), alt: 'Festember app presentation board', caption: 'The neutral app, presented on its own terms.' },
-      { kind: 'board', src: img('festember', 'app/board-event.svg'), alt: 'Festember app event board', caption: 'Fashionistas Gala — the real event that anchored the flow.' },
+      { kind: 'board', src: img('festember', 'web/cover.png'), alt: 'Festember website cover', caption: 'Saga of Secrets — the year’s marketing face.' },
       {
         kind: 'compare',
-        caption: 'The real live festember.com next to my marketing hero — the “Saga of Secrets” theme, held to the same noir treatment.',
+        caption: 'The real live festember.com next to my hero — same theme, held to the same noir treatment.',
         before: { src: img('festember', 'web/live-site.jpg'), alt: 'Live festember.com Saga of Secrets homepage', label: 'festember.com — live' },
-        after: { src: img('festember', 'web/highlights.svg'), alt: 'Redesigned Festember hero', label: 'Saga of Secrets re-skin' },
+        after: { src: img('festember', 'web/highlights.svg'), alt: 'Redesigned Festember hero', label: 'My re-skin' },
       },
     ],
   },
@@ -246,7 +279,7 @@ export const uiuxProjects: UiuxProject[] = [
   // ──────────────────────────────────────────────────────── TuteDude
   {
     slug: 'tutedude',
-    index: '03',
+    index: '04',
     title: 'TuteDude',
     tagline: 'A real course page, rebuilt uninvited to answer the one question keeping people from enrolling.',
     caption: 'TuteDude’s real course page, rebuilt to answer the one question keeping people from clicking enroll.',
@@ -254,27 +287,27 @@ export const uiuxProjects: UiuxProject[] = [
     cover: img('tutedude', 'cover.svg'),
     coverAlt: 'TuteDude Python course landing page redesign cover',
     brief:
-      'TuteDude is real — an IIT Delhi alumni-founded ed-tech company. I didn’t wait for a brief. Their live Python course page buries its strongest selling point — a 100% fee refund on completion — under generic course details. I rebuilt the page so the strongest trust signal is the first thing anyone sees.',
-    role: 'Solo — full redesign of the landing page, the “Why TuteDude” value section, and the case study presentation.',
+      'TuteDude is real — an IIT Delhi alumni initiative, 250k+ learners, a 4.5-star Google rating. Its whole pitch is a 90-day refund challenge: pay ₹699, finish the course in 90 days, get 100% of your fees back, and keep lifetime access anyway. Their live Python page buries that offer under generic course details. I didn’t wait for a brief — I rebuilt the page so the strongest trust signal is the first thing anyone sees.',
+    role: 'Solo — full redesign of the landing page, the “Why TuteDude” value section, and the case study.',
     roles: ['Redesign', 'Landing page', 'Value section'],
     keyDecisions: [
-      'Pulled the refund offer up into the hero as a headline claim instead of leaving it in the fine print — it’s the single strongest objection-killer on the page, so it earns the best real estate.',
-      'Framed urgency honestly (“only a few seats left”) instead of manufacturing false scarcity.',
-      'Broke the value proposition into four scannable promises — free learning, 1:1 mentor support, doubts solved in 10 minutes, lifetime access — instead of one dense paragraph nobody reads past line two.',
-      'Kept TuteDude’s real brand colour and course facts so the redesign reads as their page improved, not a different company’s.',
+      'Pulled the ₹699 → 100% refund offer into the hero as the headline claim — it is the single strongest objection-killer on the page, so it earns the best real estate.',
+      'Framed urgency honestly (“only a few seats left”) rather than manufacturing a fake countdown.',
+      'Broke the value prop into four scannable promises — free-on-completion learning, 1-on-1 mentor support, doubts solved fast, lifetime access — instead of one paragraph nobody reads past line two.',
+      'Kept TuteDude’s real brand colour, price, and course facts, so it reads as their page improved — not a different company’s.',
     ],
     honestNote:
-      'The “trusted by 4000+ organizations” logo strip currently repeats just Google and Meta over and over. Next to a real company’s name, that reads as an implied partnership, not a placeholder. Swap in a real, varied set of logos, or cut the claim entirely.',
+      'The “trusted by 4000+ organizations” logo strip currently repeats just Google and Meta, over and over. Next to a real company’s name that reads as an implied partnership, not a placeholder — swap in a real, varied set of logos, or cut the claim entirely.',
     reflectionHeading: 'Why I rebuilt a page nobody asked me to',
     reflection:
-      'The best redesign brief is a real page with a real problem. TuteDude’s refund offer was a gift buried three scrolls down — moving it up was less “design” and more “stop hiding the good part.”',
+      'The best brief is a real page with a real problem. TuteDude’s refund offer was a gift buried three scrolls down — moving it up was less “design” and more “stop hiding the good part.”',
     sections: [
       {
         id: 'landing',
         label: 'Redesigned Landing',
-        blurb: 'The full page, top to bottom — refund claim in the hero, four promises, honest urgency.',
+        blurb: 'The full page, top to bottom — refund offer in the hero, four promises, honest urgency, real course facts.',
         device: 'mac',
-        url: 'tutedude.com/courses/python',
+        url: 'tutedude.com/category/python',
         screens: [
           { src: img('tutedude', 'screen-0.svg'), alt: 'Redesigned landing — hero with refund claim' },
           { src: img('tutedude', 'screen-1.svg'), alt: 'Redesigned landing — course value' },
@@ -286,12 +319,13 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('tutedude', 'why.svg'), alt: 'Why TuteDude four-promise value grid', caption: 'The value prop, broken into four scannable promises.' },
+      { kind: 'board', src: img('tutedude', 'cover.svg'), alt: 'TuteDude redesign cover', caption: 'The redesign, refund offer leading.' },
+      { kind: 'board', src: img('tutedude', 'why.svg'), alt: 'Why TuteDude four-promise value grid', caption: 'The value prop broken into four scannable promises.' },
       {
         kind: 'compare',
-        caption: 'The real live tutedude.com next to my course-page redesign — same brand and refund offer, restructured so the strongest signal leads.',
+        caption: 'The real live tutedude.com next to my redesign — same brand and refund offer, restructured so the strongest signal leads.',
         before: { src: img('tutedude', 'live-homepage.jpg'), alt: 'Live tutedude.com homepage', label: 'tutedude.com — live' },
-        after: { src: img('tutedude', 'screen-0.svg'), alt: 'Redesigned TuteDude hero', label: 'Redesign' },
+        after: { src: img('tutedude', 'screen-0.svg'), alt: 'Redesigned TuteDude hero', label: 'My redesign' },
       },
     ],
   },
@@ -299,38 +333,36 @@ export const uiuxProjects: UiuxProject[] = [
   // ─────────────────────────────────────────────────────── TradeView
   {
     slug: 'tradeview',
-    index: '04',
+    index: '05',
     title: 'TradeView',
     tagline: 'A prediction market, not just another trading app.',
     caption: 'Not “will the stock go up.” “Will this exact thing happen.”',
     discipline: 'Web Design',
-    cover: img('tradeview', 'event.svg'),
-    coverAlt: 'TradeView Tesla Stocks Drop prediction event screen',
+    cover: img('tradeview', 'cover.svg'),
+    coverAlt: 'TradeView landing page — a single green radial glow on black',
     brief:
-      '“Trading app” is one of the most crowded categories on Behance. TradeView’s actual differentiator is the “Tesla Stocks Drop” screen — a stock-move prediction market with Buy/Sell odds pricing, not a generic buy/sell ticket. The brief I set myself: design a platform where people bet on whether a stock event happens, not just on the stock price itself.',
+      '“Trading app” is one of the most crowded categories on Behance. TradeView’s actual differentiator is the Tesla Stocks Drop screen — a stock-move prediction market with Buy/Sell odds pricing, not a generic buy/sell ticket. The brief I set myself: design a platform where people bet on whether a stock event happens, not just on where the price goes.',
     role: 'Solo — landing page, dashboard, and event/prediction flow.',
     roles: ['Landing page', 'Dashboard', 'Prediction flow'],
     keyDecisions: [
-      'A single green radial glow on black for the landing page, doing all the “this is serious fintech” work before a single chart appears.',
+      'A single green radial glow on black for the landing — doing all the “serious fintech” work before a single chart appears.',
       'Odds framed as a plain Win/Loss price ($1 / $0.5) instead of percentages, so the mechanic reads at a glance.',
-      'A visible Rules Summary on the event page — a small trust signal that this is a real market with real rules.',
-      'The prediction event, not the dashboard, leads the whole story — it’s the one screen this app has that the other thousand trading apps don’t.',
+      'A visible Rules Summary on the event page — a small signal that this is a real market with real rules.',
+      'The prediction event, not the dashboard, leads the story — it is the one screen this app has that a thousand other trading apps don’t.',
     ],
     honestNote:
-      'The Home dashboard has two identical chart cards showing the same balance, and cards that literally say “Placeholder Text.” The case study leads with the Tesla Stocks Drop screen on purpose — the unfinished dashboard is not the first thing anyone should see.',
+      'The Home dashboard still has two identical chart cards showing the same balance, and cards that literally read “Placeholder Text.” It’s shown last, honestly labelled — the Tesla Stocks Drop screen is what should lead, and does.',
     reflectionHeading: 'The one screen that justified the whole app',
     reflection:
-      'Most of TradeView looks like every other trading app because most trading apps do the same things. The prediction-market screen is the exception — and it’s the only screen I’d lead a portfolio review with.',
+      'Most of TradeView looks like every other trading app because most trading apps do the same things. The prediction-market screen is the exception — and the only screen I’d open a portfolio review with.',
     sections: [
       {
         id: 'event',
         label: 'Prediction Event',
-        blurb: 'Tesla Stocks Drop — Buy/Sell odds as a plain price, a visible Rules Summary. The differentiator.',
+        blurb: 'Tesla Stocks Drop — Buy/Sell odds as a plain price, a visible Rules Summary. The whole reason the app exists.',
         device: 'mac',
         url: 'tradeview.app/event/tesla-drop',
-        screens: [
-          { src: img('tradeview', 'event.svg'), alt: 'Tesla Stocks Drop prediction event page' },
-        ],
+        screens: [{ src: img('tradeview', 'event.svg'), alt: 'Tesla Stocks Drop prediction event page' }],
       },
       {
         id: 'landing',
@@ -338,44 +370,100 @@ export const uiuxProjects: UiuxProject[] = [
         blurb: 'A single green radial glow on black — serious fintech before a chart ever loads.',
         device: 'mac',
         url: 'tradeview.app',
-        screens: [
-          { src: img('tradeview', 'cover.svg'), alt: 'TradeView landing page' },
-        ],
+        screens: [{ src: img('tradeview', 'cover.svg'), alt: 'TradeView landing page' }],
       },
       {
         id: 'dashboard',
         label: 'Dashboard',
-        blurb: 'Shown honestly last — the home dashboard is still unfinished, and the copy says so.',
+        blurb: 'Shown last, on purpose — the home dashboard is still unfinished, and the copy says so plainly.',
         device: 'mac',
         url: 'tradeview.app/home',
-        screens: [
-          { src: img('tradeview', 'dashboard.svg'), alt: 'TradeView home dashboard (work in progress)' },
-        ],
+        screens: [{ src: img('tradeview', 'dashboard.svg'), alt: 'TradeView home dashboard (work in progress)' }],
       },
+    ],
+    extras: [
+      { kind: 'board', src: img('tradeview', 'cover.svg'), alt: 'TradeView landing board', caption: 'The landing — the whole “serious fintech” pitch in one glow.' },
+      { kind: 'board', src: img('tradeview', 'event.svg'), alt: 'TradeView Tesla Stocks Drop board', caption: 'Tesla Stocks Drop — the differentiator, full size.' },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────── Cyberscape
+  {
+    slug: 'cyberscape',
+    index: '06',
+    title: 'Cyberscape',
+    tagline: 'The web face of Pragyan — NIT Trichy’s techno-managerial fest, in full sci-fi.',
+    caption: 'A student-run fest that reaches the whole world — the site had to look the part.',
+    discipline: 'Web Design',
+    cover: img('cyberscape', 'cover.svg'),
+    coverAlt: 'Cyberscape — Pragyan techno-fest landing page',
+    brief:
+      'Pragyan is NIT Trichy’s international techno-managerial fest — one of India’s largest student-run events. “Cyberscape” was its theme: a realm of cutting-edge tech built to signal that this is where tomorrow’s builders show up. I designed the marketing site — a dark, futuristic landing that had to carry event clusters and a full event catalogue without losing the cinematic mood.',
+    role: 'Solo — landing, event clusters, and the event catalogue.',
+    roles: ['Web design', 'Art direction', 'Event catalogue'],
+    keyDecisions: [
+      'A dark, high-contrast sci-fi landing — the fest’s ambition stated visually before a single event is listed.',
+      'Event clusters as the organising spine, so a huge catalogue stays navigable instead of a wall of tiles.',
+      'A catalogue view that keeps individual events scannable at a glance — dates, tracks, and prizes without a click.',
+    ],
+    honestNote:
+      'A concept web design rather than a shipped build — the landing and cluster views are the strongest pieces; the event catalogue still leans on placeholder listings that need real Pragyan event data before it reads as finished.',
+    reflectionHeading: 'Designing for a fest that reaches everyone',
+    reflection:
+      'A student-run fest that runs events open to the entire world sets a high bar for how serious the site has to look. The fun was letting the theme go fully cinematic while keeping the catalogue usable underneath.',
+    sections: [
+      {
+        id: 'landing',
+        label: 'Landing',
+        blurb: 'The sci-fi hero — the fest’s ambition stated before a single event is named.',
+        device: 'mac',
+        url: 'pragyan.org',
+        screens: [{ src: img('cyberscape', 'cover.svg'), alt: 'Cyberscape landing hero' }],
+      },
+      {
+        id: 'clusters',
+        label: 'Clusters',
+        blurb: 'Event clusters as the organising spine, keeping a huge catalogue navigable.',
+        device: 'mac',
+        url: 'pragyan.org/clusters',
+        screens: [{ src: img('cyberscape', 'cluster.svg'), alt: 'Cyberscape event clusters' }],
+      },
+      {
+        id: 'events',
+        label: 'Events',
+        blurb: 'The catalogue — individual events scannable at a glance, dates and tracks without a click.',
+        device: 'mac',
+        url: 'pragyan.org/events',
+        screens: [{ src: img('cyberscape', 'events.svg'), alt: 'Cyberscape event catalogue' }],
+      },
+    ],
+    extras: [
+      { kind: 'board', src: img('cyberscape', 'cover.svg'), alt: 'Cyberscape landing board', caption: 'The landing — full cinematic mood.' },
+      { kind: 'board', src: img('cyberscape', 'events.svg'), alt: 'Cyberscape events board', caption: 'The catalogue, kept scannable under the theme.' },
     ],
   },
 
   // ───────────────────────────────────────────────────────────── Apex
   {
     slug: 'apex',
-    index: '05',
+    index: '07',
     title: 'Apex',
     tagline: 'Investment advisory, capital markets, wealth management — the institutional counterweight.',
     caption: 'One landing screen, positioned for the boardroom instead of the phone.',
     discipline: 'Web Design',
-    cover: img('apex', 'main.svg'),
+    cover: img('apex', 'cover.png'),
     coverAlt: 'Apex investment advisory landing page hero',
     brief:
       'Apex is a fintech landing-page concept with a deliberately institutional, B2B tone — investment advisory, capital markets, wealth management. Where TradeView chases a consumer prediction-market thrill, Apex is the counterweight: quieter, heavier, built to be trusted with real money by people who wear suits to talk about it.',
     role: 'Solo — landing page concept and B2B/advisory positioning.',
     roles: ['Landing page', 'Positioning'],
     keyDecisions: [
-      'An institutional tone — restrained type, generous whitespace, no consumer-app playfulness — so the page reads as advisory, not app-store.',
+      'An institutional tone — restrained type, generous whitespace, no consumer-app playfulness — so it reads as advisory, not app-store.',
       'Copy that leads with capability (advisory, capital markets, wealth management) rather than a single feature hook.',
       'A hero that sells credibility before it sells a product — the opposite move from a consumer landing page.',
     ],
     honestNote:
-      'This is one landing screen, and I’ll say so plainly: it’s a strong hero, not yet a full case study. Before it’s written up properly it needs the rest of the flow. It also has to earn its place next to TradeView — Apex proves an institutional, B2B register that TradeView’s consumer prediction-market angle never tries for. That’s the one-sentence reason both exist.',
+      'This is one landing screen, and I’ll say so plainly: a strong hero, not yet a full case study. It also has to earn its place next to TradeView — Apex proves an institutional, B2B register that TradeView’s consumer angle never tries for. That’s the one-sentence reason both exist.',
     reflectionHeading: 'What one screen can and can’t prove',
     reflection:
       'Apex exists to show range — that I can drop the consumer polish and design something that behaves like it manages a pension fund. It’s the tone I’m proudest of and the flow I most need to finish.',
@@ -383,7 +471,7 @@ export const uiuxProjects: UiuxProject[] = [
       {
         id: 'landing',
         label: 'Landing',
-        blurb: 'The single hero — institutional tone, credibility first, product second.',
+        blurb: 'The single hero and the sections beneath it — institutional tone, credibility first, product second.',
         device: 'mac',
         url: 'apex.capital',
         screens: [
@@ -392,6 +480,9 @@ export const uiuxProjects: UiuxProject[] = [
           { src: img('apex', 'footer.svg'), alt: 'Apex footer' },
         ],
       },
+    ],
+    extras: [
+      { kind: 'board', src: img('apex', 'main.svg'), alt: 'Apex landing board', caption: 'The hero — credibility before product.' },
     ],
   },
 ];

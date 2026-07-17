@@ -7,9 +7,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const experience = [
-  { year: '2024 — Now', role: 'Product Designer', place: 'Freelance / Independent' },
-  { year: '2022 — 2024', role: 'UI/UX Designer', place: 'Product Studio' },
-  { year: '2020 — 2022', role: 'Graphic Designer', place: 'Design Agency' },
+  { year: '2025 — 2026', role: 'Creative Director', place: 'Festember' },
+  { year: '2025', role: 'Software Intern', place: 'Oracle' },
+  { year: '2024', role: 'Product Management Intern', place: 'Perfios' },
 ];
 
 export default function About() {
@@ -57,18 +57,20 @@ export default function About() {
             small details that make an interface feel considered, not just built.
           </p>
         </div>
-        <div className="about-rows flex flex-1 flex-col gap-6">
-          <span className="text-xs uppercase tracking-[0.3em] text-white/40">Experience</span>
+        <div className="about-rows flex flex-1 flex-col gap-2">
+          <span className="mb-4 text-xs uppercase tracking-[0.3em] text-white/40">Experience</span>
           {experience.map((item) => (
             <div
               key={item.role}
-              className="about-row flex items-baseline justify-between border-b border-white/10 pb-4"
+              className="about-row group flex items-baseline justify-between border-b border-white/10 py-4 transition-colors hover:border-white/30"
             >
               <div>
-                <p className="text-lg text-white">{item.role}</p>
+                <p className="text-lg text-white transition-colors group-hover:[color:var(--accent)]">
+                  {item.role}
+                </p>
                 <p className="text-sm text-white/50">{item.place}</p>
               </div>
-              <span className="text-sm text-white/40">{item.year}</span>
+              <span className="font-mono text-sm text-white/40 tabular-nums">{item.year}</span>
             </div>
           ))}
         </div>

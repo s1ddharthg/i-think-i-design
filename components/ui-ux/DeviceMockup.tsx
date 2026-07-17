@@ -22,7 +22,7 @@ export default function DeviceMockup({
 
 function IphoneFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="relative mx-auto w-[clamp(220px,80vw,300px)]">
+    <div className="relative mx-auto w-[clamp(200px,64vw,264px)]">
       {/* Bezel */}
       <div className="relative rounded-[2.8rem] bg-neutral-900 p-[10px] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8),inset_0_0_0_1px_rgba(255,255,255,0.08)] ring-1 ring-white/10">
         {/* Side buttons */}

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
-import CursorGlow from "@/components/CursorGlow";
+import CustomCursor from "@/components/CustomCursor";
+import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,8 +31,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-black" suppressHydrationWarning>
+        <SmoothScroll />
         <Nav />
-        <CursorGlow />
+        <CustomCursor />
         {children}
       </body>
     </html>
