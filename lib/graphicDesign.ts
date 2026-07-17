@@ -107,13 +107,13 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'moxie',
     index: '02',
     title: 'Moxie',
-    tagline: 'A haircare brand that doesn’t exist yet — six pieces of it do.',
+    tagline: 'A real Indian haircare brand — six pieces I made for them, uninvited.',
     cover: img('moxie', '00-cover.svg'),
     coverAlt: 'Moxie brand cover artwork — the wordmark and packaging system on a yellow field',
     coverWidth: 1440,
     coverHeight: 1080,
     brief:
-      'Moxie isn’t a real company. Six pieces of it are, and by the fourth one I’d basically invented a real brand’s problems for myself to solve. The brief I gave myself: build a haircare brand from a shelf’s-eye view — packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension — and make all six look like they came out of the same studio, not six separate weekends.',
+      'Moxie is a real haircare brand in the Indian market. I’m not their designer — this is a case study and a learning exercise, six posters I made for them without being asked, to see if I could hold one studio’s worth of decisions across a whole set instead of one. The brief I gave myself: build from a shelf’s-eye view — packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension — and make all six look like they came out of the same studio, not six separate weekends.',
     role: 'Solo, brand to backend — naming direction, packaging design, campaign art direction, and the copy on every piece.',
     roles: ['Naming Direction', 'Packaging Design', 'Campaign Art Direction', 'Copywriting'],
     keyDecisions: [
@@ -126,12 +126,14 @@ export const graphicProjects: GraphicProject[] = [
     reflectionHeading: 'What I’d tell you if you asked',
     reflection:
       'Six connected pieces taught me something one poster never could — a brand isn’t a logo, it’s a set of decisions you keep making the same way on purpose.',
+    honestNote:
+      'This is unsolicited work — Moxie hasn’t seen or approved any of it. It’s presented here as a case study and a learning exercise in holding one brand system across six pieces, not as client work.',
     visuals: [
       { kind: 'ig-post', src: img('moxie', '01-cover-cart.png'), alt: 'Moxie product lineup in a shopping cart', postCaption: 'Beauty with attitude, built to earn a spot in the cart. 🛒', caption: 'The full lineup, staged the way it’d actually get discovered — mid-scroll, mid-cart.' },
       { kind: 'ig-post', src: img('moxie', '04-hero-bubbles.png'), alt: 'Moxie conditioner bottle with water droplets and a soap bubble', postCaption: 'Beyond beauty, built to last. 🧴', caption: 'The product-in-hand hero shot — the one piece that has to look real, not designed.' },
       {
         kind: 'text',
-        body: 'By the third piece I stopped designing individual assets and started designing a studio: one lighting setup, one sticker shape, one way of cropping a bottle, reused on purpose instead of reinvented per post. That’s the actual skill this project was testing — not whether I could make one good shot, but whether I could make six that all look like the same person made them on the same afternoon, for a brand that has never made a single real decision.',
+        body: 'By the third piece I stopped designing individual assets and started designing a studio: one lighting setup, one sticker shape, one way of cropping a bottle, reused on purpose instead of reinvented per post. That’s the actual skill this project was testing — not whether I could make one good shot, but whether I could make six that all look like the same person made them on the same afternoon, for a brand I don’t work for and was never asked to design for.',
       },
       { kind: 'ig-post', src: img('moxie', '03-review-post.png'), alt: 'Moxie Instagram post with five-star review callouts', postCaption: 'Voices that matter. Real reviews, no filter. 🧡', caption: 'The review post that makes the shelf story feel lived-in, not launched.' },
       { kind: 'ig-post', src: img('moxie', '05-ingredient-callout.png'), alt: 'Moxie shampoo bottle with ingredient callouts for yacón root, tomato, and almond', postCaption: 'Science meets beauty — every ingredient gets credited, not just claimed.', caption: 'The ingredient callout — the one post that has to work as hard as a label.' },
@@ -300,14 +302,14 @@ export const graphicProjects: GraphicProject[] = [
   {
     slug: 'festy-highlights',
     index: '07',
-    title: 'Festy Highlights',
+    title: 'Festember Highlights',
     tagline: 'One poster, a dozen different phones.',
     cover: img('festy-highlights', '01-cover-flat.png'),
-    coverAlt: 'Festy Highlights poster: a halftone duotone photo composite in a film-strip frame',
+    coverAlt: 'Festember Highlights poster: a halftone duotone photo composite in a film-strip frame',
     coverWidth: 3110,
     coverHeight: 4050,
     brief:
-      'Recap a season of Festy in one shareable image, built from real event photos that had nothing in common except the event.',
+      'Recap a season of Festember in one shareable image, built from real event photos that had nothing in common except the event.',
     role: 'Solo — sourced and selected the photos, built the composite.',
     roles: ['Photo Curation', 'Composite Design'],
     keyDecisions: [
@@ -319,12 +321,12 @@ export const graphicProjects: GraphicProject[] = [
     reflection:
       'Most of this section is illustration built from scratch. This one’s different. The skill on display is curation, taking messy reality and color-matching it into one system, and that’s a muscle worth showing separately.',
     visuals: [
-      { kind: 'image', src: img('festy-highlights', '02-framed-print.png'), alt: 'Festy Highlights poster in a floating acrylic frame', caption: 'Framed print / physical poster.', width: 1500, height: 1125, size: 'lg' },
+      { kind: 'image', src: img('festy-highlights', '02-framed-print.png'), alt: 'Festember Highlights poster in a floating acrylic frame', caption: 'Framed print / physical poster.', width: 1500, height: 1125, size: 'lg' },
       {
         kind: 'text',
         body: 'None of the source photos were shot for this. They were phone snaps from a dozen different people, in a dozen different lighting conditions, and the actual design problem was making them agree with each other — one halftone duotone treatment, one film-strip frame, one grid. The skill here isn’t generating imagery, it’s editorial: knowing which twelve photos out of two hundred tell one story, and what treatment makes them look like they always belonged together.',
       },
-      { kind: 'image', src: img('festy-highlights', '03-poster-wall.png'), alt: 'Festy Highlights poster taped to an outdoor wall', caption: 'Instagram story / out in the world.', width: 1500, height: 1125 },
+      { kind: 'image', src: img('festy-highlights', '03-poster-wall.png'), alt: 'Festember Highlights poster taped to an outdoor wall', caption: 'Instagram story / out in the world.', width: 1500, height: 1125 },
     ],
   },
   {

@@ -27,6 +27,19 @@ export type Extra =
       after: { src: string; alt: string; label: string };
     };
 
+// The product-manager layer behind a project: the problem on both sides of
+// the table, who else was already solving it, how the work actually got
+// done, and what would prove it worked. Optional — only projects with a
+// real research trail carry one.
+export type ProcessNarrative = {
+  userPain: string;
+  businessPain: string;
+  competitors: string;
+  approach: string;
+  kpis: string[];
+  outcome: string;
+};
+
 export type UiuxProject = {
   slug: string;
   index: string;
@@ -39,6 +52,7 @@ export type UiuxProject = {
   brief: string;
   role: string;
   roles: string[];
+  process?: ProcessNarrative;
   keyDecisions: string[];
   honestNote?: string;
   reflectionHeading: string;
@@ -64,6 +78,24 @@ export const uiuxProjects: UiuxProject[] = [
       'Food, laundry, groceries — three errands that usually mean three apps, three logins, three couriers circling the same block. Vélo folds them into one courier brand on one bike, on a single home screen where you pick the errand, not the category. The brief I set myself: prove a multi-service courier can feel like one calm product instead of three bolted together.',
     role: 'Solo — product concept, UI design, and the brand identity across the full flow.',
     roles: ['Product concept', 'UI design', 'Brand identity'],
+    process: {
+      userPain:
+        'Campus students don’t have one problem to solve — they have three: hungry, out of clean clothes, out of milk. Solving that meant three different apps, three logins, three delivery windows to plan around, for errands that are really the same ask: someone bring me something, on a campus small enough that the wait shouldn’t be the bottleneck.',
+      businessPain:
+        'A single-category courier can’t survive on a campus alone — the order volume in any one vertical is too thin to keep a rider fleet busy. The only version of this business that works is one brand running one fleet across food, groceries, and laundry at once, which meant the product had to feel like one service, not three services sharing a logo.',
+      competitors:
+        'I ran a teardown of Swiggy, Zomato, and Blinkit — the category leaders for food delivery and quick-commerce — plus a broader look at the q-commerce market. Swiggy and Zomato have spent years optimizing a single-category home screen; Blinkit has spent years optimizing 10-minute delivery logistics. None of them had solved for one brand credibly running three categories on one fleet — which is exactly the gap a campus courier has to fill, and exactly why copying either playbook wholesale wouldn’t work.',
+      approach:
+        'As lead designer, I mapped every one of those apps’ onboarding, home, and cart flows before opening Figma — not to copy the patterns, but to find the one decision each of them had made that Vélo couldn’t afford to inherit: a home screen built around a single category. From there the brief got specific — one home screen, three service cards, one cart — and the coral-on-oxblood identity from the graphic design side carried straight through, so the app never reads like it’s borrowing someone else’s visual language.',
+      kpis: [
+        'Cross-category repeat usage — did a food order lead to a laundry order',
+        'Cart-to-checkout completion rate',
+        'Time from app open to order placed',
+        'Delivery time against the promised window',
+      ],
+      outcome:
+        'The result is the flow already in this case study — onboarding, home, categories, cart — built around the bet that one fast, focused app beats three slow, generic ones on a campus small enough that speed is the entire pitch.',
+    },
     keyDecisions: [
       'One accent colour — coral against an oxblood backdrop. The same restraint instinct from my graphic work, now stretched across a whole product instead of a single poster.',
       'Three services, three cards, one home screen. No fourth option competing for the tap.',
@@ -146,6 +178,24 @@ export const uiuxProjects: UiuxProject[] = [
       'Festember is NIT Trichy’s flagship cultural fest — 18,000 students, 500 colleges, 11 event clusters, four days in September. This is the functional layer: the app people use to discover events, buy tickets, and manage payments. It stays visually neutral on purpose — thin red line-art and a simple cursive “F” — because unlike the website, the app is reused every year no matter what the theme is.',
     role: 'Solo — app UI across onboarding, event discovery, tickets, and payments.',
     roles: ['App UI', 'Discovery', 'Ticketing', 'Payments'],
+    process: {
+      userPain:
+        'Getting into Festember used to mean juggling people, not screens — one person to ask about registration, another for tickets, a different WhatsApp group for accommodation, and a queue at a physical desk if any of that broke down. For 18,000 students arriving from 500 colleges over four days, that isn’t an edge case, it’s the default experience.',
+      businessPain:
+        'The organizing team was answering the same handful of questions hundreds of times a day, with no single source of truth for who had registered, who had paid, or who still needed a ticket. That doesn’t scale past a few thousand attendees, and Festember is an order of magnitude bigger than that.',
+      competitors:
+        'There isn’t a direct competitor for a single-college fest app, so I looked sideways — at general event-ticketing platforms and how they collapse registration, discovery, and payment into one flow without making any single step feel like a form. The pattern that mattered most: the fastest platforms treat payment confirmation as the product’s actual finish line, not an afterthought bolted onto a ticket page.',
+      approach:
+        'I sat with the organizing committee to map the actual manual process end to end — registration, event discovery across the fest’s eleven clusters, ticketing, payment — before designing a single screen for each step. The app deliberately stays visually neutral, because unlike the website it has to survive being reused year after year regardless of the theme, so the effort went into the flow being obviously correct rather than into a visual identity that would need rebuilding every September.',
+      kpis: [
+        'App adoption relative to total registered attendees',
+        'Support-query volume before vs. after launch',
+        'Ticket-purchase completion rate',
+        'Time from opening the app to a completed booking',
+      ],
+      outcome:
+        'What shipped replaces the scattered manual process with one flow — onboarding, discovery across real event clusters, a real ticket listing, and payment — with the honest gaps called out rather than hidden, because that’s the actual state of a fest-week build.',
+    },
     keyDecisions: [
       'A neutral, theme-proof visual language — thin red line-art on white — because the app gets reused every year while the website gets rebuilt for each theme.',
       'Discovery is organised around the fest’s real structure: 11 event clusters, not an arbitrary grid of tiles.',
@@ -231,6 +281,24 @@ export const uiuxProjects: UiuxProject[] = [
       'The same festival, the other half. Where the app is neutral infrastructure, the website is this year’s poster — re-skinned for the 2025 theme, “Saga of Secrets,” with a noir/silhouette aesthetic built to last one edition, not a decade. Its only job is to make 18,000 students from 500 colleges want to show up.',
     role: 'Solo — marketing website: hero, About, navigation, and the mobile-web treatment.',
     roles: ['Web design', 'Art direction', 'Responsive'],
+    process: {
+      userPain:
+        'A fest website has one job — make someone want to show up — and a generic “events happening” page doesn’t do that. It has to earn attention against everything else competing for a student’s September.',
+      businessPain:
+        'The organizing team needed a site built around one specific, unifying idea — this year’s theme, “Saga of Secrets” — executed consistently by a team of contributors, not a grab-bag of sections each person interpreted differently. Inconsistent execution across a large contributor team is the real risk on a project like this, more than any single design decision.',
+      competitors:
+        'I looked at how other large student-run fests build hype on their marketing sites, and pulled reference from the noir and mystery-toned shows and films I kept coming across while researching the theme. The throughline in both: restraint — a small number of strong visual moves (a silhouette, a colour, a font) repeated consistently, rather than a page trying to say everything at once.',
+      approach:
+        'I worked with the team to lock the shared visual language — the noir/silhouette treatment — early enough that every contributor was building from the same reference instead of reconciling styles after the fact. My part was the hero, the About section, and making sure the navigation held the theme together as people moved through the site.',
+      kpis: [
+        'Time on site and scroll depth on the hero',
+        'Click-through from the marketing site into the ticketing app',
+        'Social shares of the hero visual',
+        'Visual consistency across every contributor’s section',
+      ],
+      outcome:
+        'The noir hero and About section that resulted are deliberately built for one year, not built to last — next year’s theme gets its own visual language, and that’s a feature of the approach, not a gap in it.',
+    },
     keyDecisions: [
       'A noir, silhouette-led hero for “Saga of Secrets” — deliberately disposable art direction, because next year’s theme gets its own.',
       'The desktop hero was designed to survive folding down to a phone-width marketing page without losing the mood.',
@@ -290,6 +358,24 @@ export const uiuxProjects: UiuxProject[] = [
       'TuteDude is real — an IIT Delhi alumni initiative, 250k+ learners, a 4.5-star Google rating. Its whole pitch is a 90-day refund challenge: pay ₹699, finish the course in 90 days, get 100% of your fees back, and keep lifetime access anyway. Their live Python page buries that offer under generic course details. I didn’t wait for a brief — I rebuilt the page so the strongest trust signal is the first thing anyone sees.',
     role: 'Solo — full redesign of the landing page, the “Why TuteDude” value section, and the case study.',
     roles: ['Redesign', 'Landing page', 'Value section'],
+    process: {
+      userPain:
+        'A prospective student landing on an ed-tech course page is trying to answer one question fast — is this worth my money and my time — and most course pages make them read six sections before they can even guess.',
+      businessPain:
+        'TuteDude’s real page had the strongest answer to that question — a 100% fee refund on completion — buried below generic course details, which means the page’s own best argument for enrolling almost never gets seen.',
+      competitors:
+        'I ran a competitor pass on Coursera, Udemy, BYJU’S, and Aakash. Coursera and Udemy lead with credibility and social proof — university branding, review counts, star ratings. BYJU’S and Aakash lean harder into urgency and mentor access. None of the four had TuteDude’s actual differentiator — a real, no-strings refund — so the redesign’s job wasn’t to copy any of them, it was to work out which of their tactics TuteDude could legitimately claim, and then rank the refund above all of them.',
+      approach:
+        'I thought about it in two passes — first as a student, what I’d actually want to see before trusting an unfamiliar platform with money; then as the business, which piece of information converts the highest number of those students. The refund won both questions, so it moved from a footnote to the hero headline, and the rest of the page got restructured into four scannable promises instead of one dense paragraph.',
+      kpis: [
+        'Enrol-CTA click-through rate',
+        'Scroll depth to the CTA — lower is better once the CTA moved up',
+        'Bounce rate on the landing page',
+        'Time-to-decision — how fast a visitor reaches the enrol click',
+      ],
+      outcome:
+        'The redesigned hero leads with the refund claim, backed by four scannable promises — the case study’s honest note (an unfinished logo strip) is the one piece I didn’t get to before calling this done.',
+    },
     keyDecisions: [
       'Pulled the ₹699 → 100% refund offer into the hero as the headline claim — it is the single strongest objection-killer on the page, so it earns the best real estate.',
       'Framed urgency honestly (“only a few seats left”) rather than manufacturing a fake countdown.',
@@ -313,8 +399,9 @@ export const uiuxProjects: UiuxProject[] = [
           { src: img('tutedude', 'screen-1.svg'), alt: 'Redesigned landing — course value' },
           { src: img('tutedude', 'screen-2.svg'), alt: 'Redesigned landing — curriculum' },
           { src: img('tutedude', 'screen-3.svg'), alt: 'Redesigned landing — mentor support' },
-          { src: img('tutedude', 'screen-4.svg'), alt: 'Redesigned landing — testimonials' },
-          { src: img('tutedude', 'screen-5.svg'), alt: 'Redesigned landing — enrolment CTA' },
+          { src: img('tutedude', 'screen-4.webp'), alt: 'Redesigned landing — testimonials' },
+          { src: img('tutedude', 'screen-5a.webp'), alt: 'Redesigned landing — blog and resources' },
+          { src: img('tutedude', 'screen-5b.webp'), alt: 'Redesigned landing — FAQs and footer' },
         ],
       },
     ],
@@ -395,7 +482,7 @@ export const uiuxProjects: UiuxProject[] = [
     tagline: 'The web face of Pragyan — NIT Trichy’s techno-managerial fest, in full sci-fi.',
     caption: 'A student-run fest that reaches the whole world — the site had to look the part.',
     discipline: 'Web Design',
-    cover: img('cyberscape', 'cover.svg'),
+    cover: img('cyberscape', 'cover.webp'),
     coverAlt: 'Cyberscape — Pragyan techno-fest landing page',
     brief:
       'Pragyan is NIT Trichy’s international techno-managerial fest — one of India’s largest student-run events. “Cyberscape” was its theme: a realm of cutting-edge tech built to signal that this is where tomorrow’s builders show up. I designed the marketing site — a dark, futuristic landing that had to carry event clusters and a full event catalogue without losing the cinematic mood.',
@@ -451,7 +538,7 @@ export const uiuxProjects: UiuxProject[] = [
     tagline: 'Investment advisory, capital markets, wealth management — the institutional counterweight.',
     caption: 'One landing screen, positioned for the boardroom instead of the phone.',
     discipline: 'Web Design',
-    cover: img('apex', 'cover.png'),
+    cover: img('apex', 'cover.webp'),
     coverAlt: 'Apex investment advisory landing page hero',
     brief:
       'Apex is a fintech landing-page concept with a deliberately institutional, B2B tone — investment advisory, capital markets, wealth management. Where TradeView chases a consumer prediction-market thrill, Apex is the counterweight: quieter, heavier, built to be trusted with real money by people who wear suits to talk about it.',

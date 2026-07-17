@@ -120,6 +120,33 @@ function IgPostRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-pos
   );
 }
 
+// Two or more regular-size Instagram mockups in a row read as a set, not a
+// stack — three per row, wrapping to a second row at four or more, same
+// rule for every case study rather than a per-project layout choice.
+function IgPostGroup({
+  visuals,
+  reduce,
+}: {
+  visuals: Extract<Visual, { kind: 'ig-post' }>[];
+  reduce: boolean | null;
+}) {
+  const cols = Math.min(visuals.length, 3);
+  return (
+    <motion.div
+      {...reveal(reduce)}
+      className="mx-auto grid w-full max-w-5xl gap-x-6 gap-y-12"
+      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+    >
+      {visuals.map((v, i) => (
+        <div key={i} className="flex flex-col items-center">
+          <InstagramPost src={v.src} alt={v.alt} postCaption={v.postCaption} />
+          <p className="mt-4 text-center text-sm text-white/45">{v.caption}</p>
+        </div>
+      ))}
+    </motion.div>
+  );
+}
+
 function IgGridRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-grid' }>; reduce: boolean | null }) {
   if (visual.fullBleed) {
     return (
@@ -141,12 +168,45 @@ function IgGridRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-gri
   );
 }
 
+type RenderItem =
+  | { type: 'single'; visual: Visual }
+  | { type: 'ig-group'; visuals: Extract<Visual, { kind: 'ig-post' }>[] };
+
+// Consecutive regular-size ig-post entries (no run-breaking text/gallery/etc.
+// between them) become one grouped grid instead of individually stacked rows.
+// A run of exactly one stays a normal single row.
+function groupVisuals(visuals: Visual[]): RenderItem[] {
+  const items: RenderItem[] = [];
+  let run: Extract<Visual, { kind: 'ig-post' }>[] = [];
+
+  const flushRun = () => {
+    if (run.length === 0) return;
+    if (run.length === 1) items.push({ type: 'single', visual: run[0] });
+    else items.push({ type: 'ig-group', visuals: run });
+    run = [];
+  };
+
+  for (const v of visuals) {
+    if (v.kind === 'ig-post' && v.size !== 'lg') {
+      run.push(v);
+    } else {
+      flushRun();
+      items.push({ type: 'single', visual: v });
+    }
+  }
+  flushRun();
+  return items;
+}
+
 export default function VisualSequence({ visuals }: { visuals: Visual[] }) {
   const reduce = useReducedMotion();
+  const items = groupVisuals(visuals);
 
   return (
     <div className="flex flex-col gap-20 sm:gap-28">
-      {visuals.map((v, i) => {
+      {items.map((item, i) => {
+        if (item.type === 'ig-group') return <IgPostGroup key={i} visuals={item.visuals} reduce={reduce} />;
+        const v = item.visual;
         if (v.kind === 'ig-post') return <IgPostRow key={i} visual={v} reduce={reduce} />;
         if (v.kind === 'ig-grid') return <IgGridRow key={i} visual={v} reduce={reduce} />;
         if (v.kind === 'gallery') return <GalleryRow key={i} visual={v} reduce={reduce} />;

@@ -52,7 +52,7 @@ function MacFrame({ url, children }: { url?: string; children: ReactNode }) {
             <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
             <span className="h-3 w-3 rounded-full bg-[#28c840]" />
           </div>
-          <div className="mx-auto flex min-w-0 max-w-[70%] items-center gap-2 rounded-md bg-neutral-900/80 px-3 py-1 text-[11px] text-white/40">
+          <div className="mx-auto flex min-w-0 max-w-[70%] items-center gap-2 rounded-md bg-neutral-900/80 px-3 py-1 text-[11px] text-white/50">
             <svg viewBox="0 0 24 24" className="h-3 w-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="5" y="11" width="14" height="10" rx="2" />
               <path d="M8 11V7a4 4 0 0 1 8 0v4" />

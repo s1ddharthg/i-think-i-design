@@ -5,8 +5,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Footer from '@/components/Footer';
 import { CONTACT_EMAIL } from '@/components/RollingEmail';
 
-const ACCENT_GLOW = '#6C5CE7';
-const ACCENT_TEXT = '#A79BFF';
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const SERVICES = [
@@ -67,7 +65,7 @@ export default function ContactPage() {
         <div
           aria-hidden
           className="pointer-events-none absolute -top-[30vh] left-1/2 h-[60vh] w-[90vw] -translate-x-1/2 rounded-full blur-[140px]"
-          style={{ background: ACCENT_GLOW, opacity: 0.13 }}
+          style={{ background: 'var(--accent)', opacity: 0.13 }}
         />
 
         <motion.div
@@ -76,16 +74,7 @@ export default function ContactPage() {
           initial={reduce ? false : 'hidden'}
           animate="show"
         >
-          <span className="block overflow-hidden">
-            <motion.span
-              variants={reduce ? undefined : maskedLine}
-              className="block font-mono text-xs uppercase tracking-[0.3em] text-white/40"
-            >
-              Work with me
-            </motion.span>
-          </span>
-
-          <h1 className="mt-8 text-[clamp(2.4rem,6vw,5.5rem)] font-semibold leading-[0.98] tracking-tighter">
+          <h1 className="text-[clamp(2.4rem,6vw,5.5rem)] font-semibold leading-[0.98] tracking-tighter">
             <span className="block overflow-hidden pb-[0.08em]">
               <motion.span variants={reduce ? undefined : maskedLine} className="block">
                 Start the conversation
@@ -109,7 +98,7 @@ export default function ContactPage() {
               className="mt-16 max-w-md text-lg text-white/70"
             >
               Your email client should be open with everything filled in —{' '}
-              <span style={{ color: ACCENT_TEXT }}>just hit send.</span>
+              <span style={{ color: 'var(--accent)' }}>just hit send.</span>
             </motion.p>
           ) : (
             <motion.form
@@ -190,7 +179,7 @@ export default function ContactPage() {
               <div className="flex flex-col gap-6">
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm text-white/50">What&apos;s your budget?</span>
-                  <span className="text-2xl font-semibold" style={{ color: ACCENT_TEXT }}>
+                  <span className="text-2xl font-semibold" style={{ color: 'var(--accent)' }}>
                     {BUDGETS[budget]}
                   </span>
                 </div>
@@ -203,7 +192,7 @@ export default function ContactPage() {
                   onChange={(e) => setBudget(Number(e.target.value))}
                   className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-white"
                 />
-                <div className="flex justify-between text-xs text-white/40">
+                <div className="flex justify-between text-xs text-white/50">
                   {BUDGETS.map((b) => (
                     <span key={b}>{b}</span>
                   ))}

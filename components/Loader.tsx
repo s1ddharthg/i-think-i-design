@@ -106,7 +106,7 @@ export default function Loader({ onDone }: { onDone: () => void }) {
         <div className="h-px w-40 overflow-hidden bg-white/15">
           <div ref={barRef} className="h-full w-full origin-left scale-x-0 bg-white/70" />
         </div>
-        <span className="text-xs tabular-nums text-white/40">{progress}%</span>
+        <span className="text-xs tabular-nums text-white/50">{progress}%</span>
       </div>
     </div>
   );

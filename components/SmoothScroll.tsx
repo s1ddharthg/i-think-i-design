@@ -23,6 +23,30 @@ export default function SmoothScroll() {
 
     lenis.on('scroll', ScrollTrigger.update);
 
+    // Lenis caches its scroll limit (max scrollable distance) at creation
+    // time. Sections that mount later — e.g. WorkVortex, which is code-split
+    // via next/dynamic and adds its own pinned scroll range once it loads —
+    // change the document's real scrollable height after that cache is set,
+    // and nothing tells Lenis to recompute it. Left unfixed, Lenis silently
+    // clamps scrolling at the stale (shorter) limit: the page looks like it
+    // stops scrolling partway through, exactly where the late-mounting
+    // section begins. Every GSAP ScrollTrigger refresh (which fires once
+    // WorkVortex's pin registers, and on window resize) must also resize
+    // Lenis so the two stay in sync.
+    const onRefresh = () => lenis.resize();
+    ScrollTrigger.addEventListener('refresh', onRefresh);
+
+    // Same class of bug, a different trigger: case-study pages render their
+    // screen filmstrips with intrinsic (width=0/height=0, CSS auto-height)
+    // images — the real layout height only settles once each image finishes
+    // decoding, well after Lenis's first measurement. That has nothing to do
+    // with GSAP, so the ScrollTrigger refresh hook above never fires for it;
+    // scrolling would silently cap partway down the page exactly like the
+    // vortex bug did. Watching document height directly catches this and any
+    // future late layout shift, regardless of what causes it.
+    const ro = new ResizeObserver(() => lenis.resize());
+    ro.observe(document.documentElement);
+
     const onTick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(onTick);
     gsap.ticker.lagSmoothing(0);
@@ -32,6 +56,8 @@ export default function SmoothScroll() {
 
     return () => {
       gsap.ticker.remove(onTick);
+      ScrollTrigger.removeEventListener('refresh', onRefresh);
+      ro.disconnect();
       lenis.destroy();
       delete (window as unknown as { lenis?: Lenis }).lenis;
     };

@@ -23,7 +23,7 @@ export default function Hero({ intro }: { intro: boolean }) {
     const mm = gsap.matchMedia(sectionRef);
     mm.add('(prefers-reduced-motion: no-preference)', () => {
       gsap.set('.hero-word', { yPercent: 115 });
-      gsap.set(['.hero-eyebrow', '.hero-bio', '.hero-cue'], { opacity: 0, y: 16 });
+      gsap.set(['.hero-bio', '.hero-cue'], { opacity: 0, y: 16 });
       gsap.to(contentRef.current, {
         yPercent: -30,
         opacity: 0,
@@ -40,8 +40,7 @@ export default function Hero({ intro }: { intro: boolean }) {
     if (!intro || !sectionRef.current) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-    tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.9 })
-      .to('.hero-word', { yPercent: 0, duration: 1.2, stagger: { each: 0.05, ease: 'power2.in' } }, '-=0.5')
+    tl.to('.hero-word', { yPercent: 0, duration: 1.2, stagger: { each: 0.05, ease: 'power2.in' } })
       .to('.hero-bio', { opacity: 1, y: 0, duration: 0.9 }, '-=0.7')
       .to('.hero-cue', { opacity: 1, y: 0, duration: 0.8 }, '-=0.5');
     return () => {
@@ -55,11 +54,6 @@ export default function Hero({ intro }: { intro: boolean }) {
       className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
     >
       <div ref={contentRef} className="flex max-w-5xl flex-col items-center will-change-transform">
-        <span className="hero-eyebrow mb-8 inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.03] px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-white/60 backdrop-blur-sm">
-          <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: 'var(--accent)' }} />
-          Portfolio — 2026
-        </span>
-
         <h1 className="text-balance text-[clamp(2.6rem,7.5vw,6rem)] font-semibold leading-[0.95] tracking-tight text-white">
           {HEADLINE.map((w, i) => (
             <span key={i} className="inline-block overflow-hidden pb-[0.06em] align-bottom">
@@ -79,7 +73,7 @@ export default function Hero({ intro }: { intro: boolean }) {
         </p>
       </div>
 
-      <div className="hero-cue absolute bottom-10 flex flex-col items-center gap-2 text-white/40">
+      <div className="hero-cue absolute bottom-10 flex flex-col items-center gap-2 text-white/50">
         <span className="font-mono text-[10px] uppercase tracking-[0.3em]">Scroll to enter</span>
         <div className="h-10 w-px animate-pulse bg-gradient-to-b from-white/40 to-transparent" />
       </div>

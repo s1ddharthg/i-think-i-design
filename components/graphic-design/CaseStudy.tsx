@@ -22,9 +22,10 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
     <article className="bg-black text-white">
       <ScrollVortex />
 
-      <div className="mx-auto flex max-w-4xl items-center justify-between px-6 pt-20 pb-4">
-        <BackButton className="text-sm text-white/60 hover:text-white" />
-        <nav aria-label="Breadcrumb" className="hidden items-center gap-2 text-xs text-white/40 sm:flex">
+      <BackButton />
+
+      <div className="mx-auto flex max-w-6xl items-center justify-end px-6 pt-20 pb-4">
+        <nav aria-label="Breadcrumb" className="hidden items-center gap-2 text-xs text-white/50 sm:flex">
           <Link href="/" className="hover:text-white">
             Sid
           </Link>
@@ -37,31 +38,29 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
         </nav>
       </div>
 
-      {/* Fixed aspect ratio, standardised across every case study, so the
-          cover plus the overview below it fits one desktop viewport
-          regardless of the source image's native dimensions. */}
-      <div className="relative aspect-[21/9] max-h-[58vh] w-full overflow-hidden bg-white/5">
-        <Image
-          src={project.cover}
-          alt={project.coverAlt}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+      {/* Hero cover — contained, same format as the UI/UX case studies. */}
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+          <Image
+            src={project.cover}
+            alt={project.coverAlt}
+            fill
+            priority
+            loading="eager"
+            sizes="(max-width: 1152px) 100vw, 1152px"
+            className="object-cover"
+          />
+        </div>
       </div>
 
-      <div className="mx-auto max-w-4xl px-6 pt-10 pb-24">
+      <div className="mx-auto max-w-4xl px-6 pt-12 pb-24">
         <motion.div
           initial={reduce ? false : 'hidden'}
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
           variants={fadeUp}
         >
-          <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/40">
-            {project.index} — Graphic Design
-          </span>
-          <h1 className="mt-5 text-balance text-[clamp(2.5rem,6.5vw,4.75rem)] font-semibold leading-[0.98] tracking-tight">
+          <h1 className="text-balance text-[clamp(2.5rem,6.5vw,4.75rem)] font-semibold leading-[0.98] tracking-tight">
             {project.title}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-white/60">{project.tagline}</p>
@@ -79,7 +78,7 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
               My Role
             </span>
             <div className="flex flex-wrap gap-2">
@@ -93,7 +92,7 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
               ))}
             </div>
           </div>
-          <p className="mt-3 text-sm text-white/40">{project.role}</p>
+          <p className="mt-3 text-sm text-white/50">{project.role}</p>
         </motion.div>
 
         <motion.div
@@ -114,7 +113,7 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
                 viewport={{ once: true, amount: 0.6 }}
                 transition={{ duration: 0.6, ease: EASE, delay: i * 0.06 }}
               >
-                <span className="mt-1 shrink-0 font-mono text-sm text-white/30">
+                <span className="mt-1 shrink-0 font-mono text-sm text-white/50">
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span className="text-pretty text-white/75">{d}</span>
@@ -122,6 +121,21 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
             ))}
           </ol>
         </motion.div>
+
+        {project.honestNote && (
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, ease: EASE }}
+            className="mt-16 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6 sm:p-7"
+          >
+            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> Before it ships
+            </span>
+            <p className="text-pretty mt-3 leading-relaxed text-white/70">{project.honestNote}</p>
+          </motion.div>
+        )}
       </div>
 
       <div className="mx-auto max-w-6xl px-6 pb-28">
@@ -136,7 +150,7 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
           transition={{ duration: 0.7, ease: EASE }}
           className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10"
         >
-          <span className="text-xs uppercase tracking-[0.2em] text-white/40">
+          <span className="text-xs uppercase tracking-[0.2em] text-white/50">
             {project.reflectionHeading}
           </span>
           <p className="text-pretty mt-4 text-lg leading-relaxed text-white/70">

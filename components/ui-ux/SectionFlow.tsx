@@ -39,7 +39,7 @@ export default function SectionFlow({
 function Label({ section }: { section: Section }) {
   return (
     <div className="max-w-xs text-center lg:hidden">
-      <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">{section.label}</span>
+      <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">{section.label}</span>
       <p className="mt-1.5 text-pretty text-sm text-white/60">{section.blurb}</p>
     </div>
   );
@@ -66,7 +66,7 @@ function Controls({
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
       </button>
       <div className="flex items-center gap-3">
-        <span className="font-mono text-[11px] tabular-nums text-white/40">
+        <span className="font-mono text-[11px] tabular-nums text-white/50">
           {String(idx + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
         </span>
         <div className="flex items-center gap-1.5">
@@ -136,7 +136,7 @@ function PhoneFlow({ section, onActive }: { section: Section; onActive: (id: str
               transition={{ duration: 0.5, ease: EASE }}
               className="absolute inset-0"
             >
-              <Image src={section.screens[idx].src} alt={section.screens[idx].alt} fill unoptimized sizes="360px" draggable={false} className="select-none object-cover" />
+              <Image src={section.screens[idx].src} alt={section.screens[idx].alt} fill sizes="360px" draggable={false} className="select-none object-cover" />
             </motion.div>
           </AnimatePresence>
         </DeviceMockup>
@@ -202,7 +202,6 @@ function MacFlow({ section, onActive }: { section: Section; onActive: (id: strin
                 width={0}
                 height={0}
                 sizes="900px"
-                unoptimized
                 draggable={false}
                 loading="eager"
                 className="block h-auto w-full select-none"
@@ -230,7 +229,6 @@ function StaticFlow({ section }: { section: Section }) {
             width={0}
             height={0}
             sizes={section.device === 'iphone' ? '320px' : '768px'}
-            unoptimized
             className="h-auto w-full rounded-xl"
             style={{ width: '100%', height: 'auto' }}
           />

@@ -232,8 +232,8 @@ function drawCoverFit(
  * (shared by Gallery/Poster/detail hero) is untouched by this.
  *
  * `coverImage`, when passed, replaces the generated poster in the content
- * area for graphic-design projects — those have real cover art; UI/UX
- * projects don't, so they always fall back to the generated poster.
+ * area for either category. Falls back to the generated poster only when no
+ * cover image is available yet (e.g. before it has finished loading).
  */
 export function drawFramedArtwork(
   ctx: CanvasRenderingContext2D,
@@ -257,13 +257,18 @@ export function drawFramedArtwork(
     ctx.beginPath();
     ctx.rect(0, barH, w, h - barH);
     ctx.clip();
-    ctx.translate(0, barH);
-    drawPoster(ctx, w, h - barH, slug, accent);
+    if (coverImage) {
+      drawCoverFit(ctx, coverImage, 0, barH, w, h - barH);
+    } else {
+      ctx.translate(0, barH);
+      drawPoster(ctx, w, h - barH, slug, accent);
+    }
     ctx.restore();
 
-    // browser chrome bar
+    // browser chrome bar — 1.5px overdraw into the content zone, same
+    // mipmap-seam reasoning as the Instagram chrome below.
     ctx.fillStyle = '#2b2b30';
-    ctx.fillRect(0, 0, w, barH);
+    ctx.fillRect(0, 0, w, barH + 1.5);
     const dotR = barH * 0.16;
     const dotY = barH / 2;
     ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => {
@@ -309,9 +314,14 @@ export function drawFramedArtwork(
     }
     ctx.restore();
 
-    // header: avatar + handle
+    // header: avatar + handle. Overdrawn 1.5px into the content zone below —
+    // at small on-screen sizes (the vortex planes especially) the texture's
+    // mipmap chain softens the hard chrome/content edge, letting a hairline
+    // of the content show through the nominal chrome boundary. Painting the
+    // bar slightly past its own edge keeps that softening inside solid
+    // color instead of at a visible seam.
     ctx.fillStyle = '#111114';
-    ctx.fillRect(0, 0, w, headerH);
+    ctx.fillRect(0, 0, w, headerH + 1.5);
     const avatarR = headerH * 0.3;
     const avatarX = headerH * 0.55;
     const avatarY = headerH / 2;
@@ -325,8 +335,9 @@ export function drawFramedArtwork(
     ctx.textBaseline = 'middle';
     ctx.fillText('sid.design', avatarX + avatarR + headerH * 0.3, avatarY);
 
-    // footer: heart / comment / share outlines
-    ctx.fillRect(0, h - footerH, w, footerH);
+    // footer: heart / comment / share outlines. Same 1.5px overdraw upward
+    // into the content zone as the header, for the same reason.
+    ctx.fillRect(0, h - footerH - 1.5, w, footerH + 1.5);
     ctx.strokeStyle = 'rgba(255,255,255,0.55)';
     ctx.lineWidth = Math.max(1.5, footerH * 0.06);
     ctx.lineJoin = 'round';

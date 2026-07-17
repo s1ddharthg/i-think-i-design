@@ -6,7 +6,6 @@ import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-moti
 import RollingEmail from '@/components/RollingEmail';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const ACCENT_GLOW = '#ffd34e';
 
 const SOCIALS = [
   { label: 'Behance', href: '#' },
@@ -80,7 +79,7 @@ export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
         <div
           aria-hidden
           className="pointer-events-none absolute -bottom-[40vh] left-1/2 h-[60vh] w-[90vw] -translate-x-1/2 rounded-full blur-[150px]"
-          style={{ background: ACCENT_GLOW, opacity: 0.1 }}
+          style={{ background: 'var(--accent)', opacity: 0.1 }}
         />
       )}
 
@@ -99,7 +98,7 @@ export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75 motion-reduce:animate-none" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                 </span>
-                <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/40">
+                <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/50">
                   Open to work · 2026
                 </span>
               </div>
@@ -146,7 +145,7 @@ export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
                   </p>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <span className="text-xs uppercase tracking-[0.2em] text-white/30">Site</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-white/50">Site</span>
                   {QUICK_LINKS.map(({ label, href }) => (
                     <Link key={href} href={href} className="w-fit text-sm text-white/60 transition-colors hover:text-white">
                       {label}
@@ -154,7 +153,7 @@ export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
                   ))}
                 </div>
                 <div className="flex flex-col gap-3">
-                  <span className="text-xs uppercase tracking-[0.2em] text-white/30">Elsewhere</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-white/50">Elsewhere</span>
                   {SOCIALS.map(({ label, href }) => (
                     <a key={label} href={href} className="w-fit text-sm text-white/60 transition-colors hover:text-white">
                       {label}
@@ -170,7 +169,7 @@ export default function Footer({ hideCta = false }: { hideCta?: boolean }) {
               hideCta ? '' : 'mt-16'
             }`}
           >
-            <span className="text-sm text-white/40">© {new Date().getFullYear()} Sid</span>
+            <span className="text-sm text-white/50">© {new Date().getFullYear()} Sid</span>
             {hideCta && (
               <div className="flex gap-6">
                 {SOCIALS.map(({ label, href }) => (

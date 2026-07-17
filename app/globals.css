@@ -3,10 +3,10 @@
 :root {
   --background: #000000;
   --foreground: #ededed;
-  /* Site accent — a warm signal yellow used for the primary CTA, hierarchy
+  /* Site accent — a neon yellow used for the primary CTA, hierarchy
      highlights, and interactive-state color. */
-  --accent: #ffd34e;
-  --accent-ink: #1a1400;
+  --accent: #eeff00;
+  --accent-ink: #141200;
 }
 
 @theme inline {

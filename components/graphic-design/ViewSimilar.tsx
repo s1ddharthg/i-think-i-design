@@ -27,7 +27,7 @@ export default function ViewSimilar({ slug }: { slug: string }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.6, ease: EASE }}
-          className="text-xs uppercase tracking-[0.3em] text-white/40"
+          className="text-xs uppercase tracking-[0.3em] text-white/50"
         >
           View similar
         </motion.span>
@@ -54,10 +54,7 @@ export default function ViewSimilar({ slug }: { slug: string }) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                 <div className="relative p-5">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
-                    {project.index}
-                  </span>
-                  <h3 className="mt-1.5 text-lg font-semibold text-white">{project.title}</h3>
+                  <h3 className="text-lg font-semibold text-white">{project.title}</h3>
                 </div>
               </Link>
             </motion.div>

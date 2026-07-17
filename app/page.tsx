@@ -1,12 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Loader from '@/components/Loader';
-import VortexBackdrop from '@/components/home/VortexBackdrop';
 import Hero from '@/components/home/Hero';
 import About from '@/components/home/About';
-import WorkVortex from '@/components/home/WorkVortex';
 import Footer from '@/components/Footer';
+
+// Both pull in three.js + @react-three/fiber — split out of the initial
+// bundle so the WebGL dependency only loads once a visitor actually reaches
+// these sections, not on every page load.
+const VortexBackdrop = dynamic(() => import('@/components/home/VortexBackdrop'), { ssr: false });
+const WorkVortex = dynamic(() => import('@/components/home/WorkVortex'), { ssr: false });
 
 // Module-scoped, NOT sessionStorage: this flag persists across client-side
 // navigations (clicking "SG" to come home never replays the loader) but resets

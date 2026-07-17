@@ -26,10 +26,11 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
 
   return (
     <article className="bg-black text-white">
+      <BackButton />
+
       {/* Breadcrumb */}
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-20 pb-4">
-        <BackButton className="text-sm text-white/60 hover:text-white" />
-        <nav aria-label="Breadcrumb" className="hidden items-center gap-2 text-xs text-white/40 sm:flex">
+      <div className="mx-auto flex max-w-6xl items-center justify-end px-6 pt-20 pb-4">
+        <nav aria-label="Breadcrumb" className="hidden items-center gap-2 text-xs text-white/50 sm:flex">
           <Link href="/" className="hover:text-white">Sid</Link>
           <span>/</span>
           <Link href="/ui-ux" className="hover:text-white">UI/UX</Link>
@@ -41,34 +42,85 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
       {/* Hero cover — contained, no dramatic crop */}
       <div className="mx-auto max-w-6xl px-6">
         <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-          <Image src={project.cover} alt={project.coverAlt} fill priority sizes="100vw" unoptimized className="object-cover" />
+          <Image
+            src={project.cover}
+            alt={project.coverAlt}
+            fill
+            priority
+            loading="eager"
+            sizes="(max-width: 1152px) 100vw, 1152px"
+            className="object-cover"
+          />
         </div>
       </div>
 
       {/* Overview */}
       <div className="mx-auto max-w-4xl px-6 pt-12 pb-6">
         <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={fadeUp}>
-          <span className="font-mono text-xs uppercase tracking-[0.3em] text-white/40">
-            {project.index} — {project.discipline}
-          </span>
-          <h1 className="mt-5 text-balance text-[clamp(2.5rem,6.5vw,4.75rem)] font-semibold leading-[0.98] tracking-tight">
+          <h1 className="text-balance text-[clamp(2.5rem,6.5vw,4.75rem)] font-semibold leading-[0.98] tracking-tight">
             {project.title}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-white/60">{project.tagline}</p>
+          <span className="mt-4 inline-block rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">
+            {project.discipline}
+          </span>
         </motion.div>
 
         <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={fadeUp} className="mt-10 border-t border-white/10 pt-10">
           <p className="text-pretty max-w-[62ch] text-lg leading-relaxed text-white/80">{project.brief}</p>
           <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/35">My Role</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">My Role</span>
             <div className="flex flex-wrap gap-2">
               {project.roles.map((r) => (
                 <span key={r} className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">{r}</span>
               ))}
             </div>
           </div>
-          <p className="mt-3 text-sm text-white/40">{project.role}</p>
+          <p className="mt-3 text-sm text-white/50">{project.role}</p>
         </motion.div>
+
+        {/* The thinking — the PM layer: pain points, competitive landscape,
+            approach, and how success would’ve been measured. */}
+        {project.process && (
+          <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={fadeUp} className="mt-20">
+            <h2 className="text-2xl font-semibold tracking-tight text-white/95">The thinking</h2>
+
+            <div className="mt-8 grid gap-8 border-t border-white/10 pt-8 sm:grid-cols-2">
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The user’s problem</span>
+                <p className="text-pretty mt-3 leading-relaxed text-white/75">{project.process.userPain}</p>
+              </div>
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The business problem</span>
+                <p className="text-pretty mt-3 leading-relaxed text-white/75">{project.process.businessPain}</p>
+              </div>
+            </div>
+
+            <div className="mt-8 border-t border-white/10 pt-8">
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">What I studied</span>
+              <p className="text-pretty mt-3 max-w-[68ch] leading-relaxed text-white/75">{project.process.competitors}</p>
+            </div>
+
+            <div className="mt-8 border-t border-white/10 pt-8">
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The approach</span>
+              <p className="text-pretty mt-3 max-w-[68ch] leading-relaxed text-white/75">{project.process.approach}</p>
+            </div>
+
+            <div className="mt-8 border-t border-white/10 pt-8">
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">What I’d call success</span>
+              <ul className="mt-3 flex flex-wrap gap-2">
+                {project.process.kpis.map((k) => (
+                  <li key={k} className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70">{k}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-8 border-t border-white/10 pt-8">
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">Where it landed</span>
+              <p className="text-pretty mt-3 max-w-[68ch] leading-relaxed text-white/85">{project.process.outcome}</p>
+            </div>
+          </motion.div>
+        )}
 
         {/* Key decisions */}
         <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={fadeUp} className="mt-20">
@@ -76,7 +128,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           <ol className="mt-8 flex flex-col gap-7">
             {project.keyDecisions.map((d, i) => (
               <motion.li key={i} className="flex gap-5" initial={reduce ? false : { opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.6 }} transition={{ duration: 0.6, ease: EASE, delay: i * 0.06 }}>
-                <span className="mt-1 shrink-0 font-mono text-sm text-white/30">{String(i + 1).padStart(2, '0')}</span>
+                <span className="mt-1 shrink-0 font-mono text-sm text-white/50">{String(i + 1).padStart(2, '0')}</span>
                 <span className="text-pretty text-white/75">{d}</span>
               </motion.li>
             ))}
@@ -96,14 +148,14 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
       {/* Mockup showcase — the boards, before you interact with the flow */}
       {boards.length > 0 && (
         <div className="mx-auto max-w-6xl px-6 pt-16 pb-8">
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">The mockups</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The mockups</span>
           <div className="mt-6 flex flex-col gap-10">
             {boards.map((b, i) => (
               <motion.figure key={i} initial={reduce ? false : { opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.25 }} transition={{ duration: 0.8, ease: EASE }}>
                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                  <Image src={b.src} alt={b.alt} width={1600} height={1000} sizes="(max-width:768px) 92vw, 1100px" unoptimized className="h-auto w-full" />
+                  <Image src={b.src} alt={b.alt} width={1600} height={1000} sizes="(max-width:768px) 92vw, 1100px" className="h-auto w-full" />
                 </div>
-                <figcaption className="mt-3 text-sm text-white/40">{b.caption}</figcaption>
+                <figcaption className="mt-3 text-sm text-white/50">{b.caption}</figcaption>
               </motion.figure>
             ))}
           </div>
@@ -115,7 +167,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
         <div className="grid gap-10 lg:grid-cols-[240px_1fr]">
           <aside className="hidden lg:block">
             <div className="sticky top-28 pr-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/30">The flow</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The flow</span>
               <ul className="mt-5 flex flex-col gap-1">
                 {project.sections.map((s) => {
                   const on = active === s.id;
@@ -134,7 +186,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
                         }}
                       >
                         <span className={`h-px transition-all duration-300 ${on ? 'w-8 bg-white' : 'w-4 bg-white/20 group-hover:w-6 group-hover:bg-white/50'}`} />
-                        <span className={`text-sm transition-colors ${on ? 'text-white' : 'text-white/40 group-hover:text-white/70'}`}>{s.label}</span>
+                        <span className={`text-sm transition-colors ${on ? 'text-white' : 'text-white/50 group-hover:text-white/70'}`}>{s.label}</span>
                       </a>
                     </li>
                   );
@@ -172,18 +224,18 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <figure>
                     <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                      <Image src={ex.before.src} alt={ex.before.alt} width={1500} height={1125} sizes="45vw" unoptimized className="h-auto w-full" />
+                      <Image src={ex.before.src} alt={ex.before.alt} width={1500} height={1125} sizes="45vw" className="h-auto w-full" />
                     </div>
-                    <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{ex.before.label}</figcaption>
+                    <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">{ex.before.label}</figcaption>
                   </figure>
                   <figure>
                     <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                      <Image src={ex.after.src} alt={ex.after.alt} width={1500} height={1125} sizes="45vw" unoptimized className="h-auto w-full" />
+                      <Image src={ex.after.src} alt={ex.after.alt} width={1500} height={1125} sizes="45vw" className="h-auto w-full" />
                     </div>
-                    <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/35">{ex.after.label}</figcaption>
+                    <figcaption className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">{ex.after.label}</figcaption>
                   </figure>
                 </div>
-                <figcaption className="mt-3 text-sm text-white/40">{ex.caption}</figcaption>
+                <figcaption className="mt-3 text-sm text-white/50">{ex.caption}</figcaption>
               </motion.figure>
             ))}
           </div>
@@ -196,7 +248,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           “{project.caption}”
         </motion.p>
         <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, ease: EASE }} className="mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10">
-          <span className="text-xs uppercase tracking-[0.2em] text-white/40">{project.reflectionHeading}</span>
+          <span className="text-xs uppercase tracking-[0.2em] text-white/50">{project.reflectionHeading}</span>
           <p className="text-pretty mt-4 text-lg leading-relaxed text-white/70">{project.reflection}</p>
         </motion.div>
       </div>
@@ -215,15 +267,15 @@ function ViewSimilar({ slug }: { slug: string }) {
   return (
     <section className="border-t border-white/10 bg-black px-6 py-24 text-white md:px-10">
       <div className="mx-auto max-w-5xl">
-        <span className="text-xs uppercase tracking-[0.3em] text-white/40">View similar</span>
+        <span className="text-xs uppercase tracking-[0.3em] text-white/50">View similar</span>
         <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
           {similar.map((p, k) => (
             <motion.div key={p.slug} initial={reduce ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, ease: EASE, delay: k * 0.08 }}>
               <Link href={`/work/${p.slug}`} className="group block">
                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-white/10 bg-white/5">
-                  <Image src={p.cover} alt={p.coverAlt} fill sizes="33vw" unoptimized className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none" />
+                  <Image src={p.cover} alt={p.coverAlt} fill sizes="33vw" className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none" />
                 </div>
-                <span className="mt-3 block font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">{p.index} · {p.discipline}</span>
+                <span className="mt-3 block font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">{p.discipline}</span>
                 <h3 className="mt-1 text-lg font-semibold text-white">{p.title}</h3>
               </Link>
             </motion.div>

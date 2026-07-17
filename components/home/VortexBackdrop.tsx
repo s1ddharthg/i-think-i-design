@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { projects } from '@/lib/projects';
@@ -135,9 +135,32 @@ function Swirl() {
 }
 
 export default function VortexBackdrop() {
+  // The Work vortex further down the page renders its own full-screen,
+  // pinned WebGL canvas — while it's active this backdrop is fully covered
+  // and would otherwise keep rendering behind it for nothing, doubling GPU
+  // cost during the heaviest part of the scroll and causing stutter. Pause
+  // this canvas's frameloop entirely for that stretch instead of merely
+  // hiding it, since a hidden-but-still-rendering canvas is where the cost
+  // actually comes from.
+  const [active, setActive] = useState(true);
+  useEffect(() => {
+    const target = document.getElementById('work-vortex');
+    if (!target) return;
+    const io = new IntersectionObserver(([entry]) => setActive(!entry.isIntersecting), {
+      threshold: 0.05,
+    });
+    io.observe(target);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-      <Canvas camera={{ position: [0, 0, 10], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
+      <Canvas
+        frameloop={active ? 'always' : 'never'}
+        camera={{ position: [0, 0, 10], fov: 55 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: false }}
+      >
         <Swirl />
       </Canvas>
       {/* soft vignette so center text stays readable */}

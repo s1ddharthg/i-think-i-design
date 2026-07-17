@@ -12,8 +12,14 @@ import { drawFramedArtwork } from '@/lib/poster';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const RADIUS = 4.8;
-const HEIGHT_SPAN = 22;
+const RADIUS = 7.6;
+const HEIGHT_SPAN = 30;
+const PLANE_W = 4.4;
+const PLANE_H = 2.93;
+// Progress-driven radial pull: the ring contracts toward the camera's dolly
+// path as you scroll deeper, so items visibly move toward the screen on top
+// of the camera's own forward dolly.
+const CONTRACTION = 0.4;
 
 type VortexItem = {
   slug: string;
@@ -23,10 +29,12 @@ type VortexItem = {
   cover: string;
 };
 
-const UIUX_ACCENTS = ['#ffd34e', '#ff8a5c', '#8c96ff', '#57c98b', '#ff6f91'];
+type SharedProgress = { smoothed: number };
 
-// Every real cover — graphic + UI/UX — interleaved so the dive alternates
-// disciplines instead of showing one block then the other.
+const UIUX_ACCENTS = ['#eeff00', '#fff35c', '#d4ff3d', '#f5ff8a', '#e8ff00'];
+
+// Every real project — graphic + UI/UX — one plane each, interleaved so the
+// dive alternates disciplines instead of showing one block then the other.
 function buildItems(): VortexItem[] {
   const g: VortexItem[] = graphicProjects.map((p) => ({
     slug: p.slug,
@@ -58,7 +66,82 @@ function usePrefersReducedMotion() {
   );
 }
 
-function ArtworkPlane({ item, index, count }: { item: VortexItem; index: number; count: number }) {
+// One canvas texture per project, at a high enough resolution that the
+// larger planes stay sharp instead of blurring up.
+function useCoverTextures(items: VortexItem[]) {
+  const map = useMemo(() => {
+    const m = new Map<string, THREE.CanvasTexture>();
+    // Canvas/texture creation needs a DOM — r3f's <Canvas> never renders its
+    // children during SSR, but this hook runs one level above it in
+    // WorkVortex, so it executes on the server too and must no-op there.
+    if (typeof document === 'undefined') return m;
+    items.forEach((item) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1536;
+      canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
+      if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
+      const t = new THREE.CanvasTexture(canvas);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 16;
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.generateMipmaps = true;
+      m.set(item.slug, t);
+    });
+    return m;
+  }, [items]);
+
+  useEffect(() => {
+    let cancelled = false;
+    items.forEach((item) => {
+      const texture = map.get(item.slug);
+      if (!texture) return;
+      const img = new window.Image();
+      img.src = item.cover;
+      img.onload = () => {
+        if (cancelled) return;
+        const canvas = texture.image as HTMLCanvasElement;
+        const ctx = canvas?.getContext('2d');
+        if (!canvas || !ctx) return;
+        try {
+          drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title, img);
+          texture.needsUpdate = true;
+        } catch (err) {
+          // Some source SVGs (e.g. ones exported with <foreignObject>) taint
+          // any canvas they're drawn into per spec, even same-origin — WebGL
+          // then refuses to upload that canvas as a texture and throws.
+          // One bad asset must never crash the whole scene: leave this plane
+          // on its generated-poster fallback (already drawn, pre-cover-load)
+          // and keep going.
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(`WorkVortex: couldn't draw cover for "${item.slug}" into canvas`, err);
+          }
+        }
+      };
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [items, map]);
+
+  useEffect(() => () => map.forEach((t) => t.dispose()), [map]);
+
+  return map;
+}
+
+function ArtworkPlane({
+  item,
+  texture,
+  index,
+  count,
+  progressRef,
+}: {
+  item: VortexItem;
+  texture: THREE.CanvasTexture | undefined;
+  index: number;
+  count: number;
+  progressRef: React.RefObject<SharedProgress>;
+}) {
   const ref = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
   const router = useRouter();
@@ -66,48 +149,20 @@ function ArtworkPlane({ item, index, count }: { item: VortexItem; index: number;
   const boost = useRef(0);
   const ndc = useMemo(() => new THREE.Vector3(), []);
 
-  const texture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 430; // ~ the 2.4 x 1.6 plane
-    const ctx = canvas.getContext('2d');
-    if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
-    const t = new THREE.CanvasTexture(canvas);
-    t.colorSpace = THREE.SRGBColorSpace;
-    t.anisotropy = 4;
-    return t;
-  }, [item.slug, item.accent, item.category, item.title]);
-  useEffect(() => () => texture.dispose(), [texture]);
-
-  // Swap in the real cover photo once it loads.
-  useEffect(() => {
-    let cancelled = false;
-    const img = new window.Image();
-    img.src = item.cover;
-    img.onload = () => {
-      const canvas = texture.image as HTMLCanvasElement;
-      const ctx = canvas?.getContext('2d');
-      if (cancelled || !canvas || !ctx) return;
-      drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title, img);
-      texture.needsUpdate = true;
-    };
-    return () => {
-      cancelled = true;
-    };
-  }, [item.slug, item.accent, item.category, item.title, item.cover, texture]);
-
   const angle = (index / count) * Math.PI * 6;
   const y = HEIGHT_SPAN / 2 - (index / (count - 1)) * HEIGHT_SPAN;
 
   useFrame((state, delta) => {
     if (!ref.current) return;
+    const p = reduceMotion ? 0 : progressRef.current.smoothed;
+    const radius = RADIUS * (1 - p * CONTRACTION);
     const t = (reduceMotion ? 0 : state.clock.elapsedTime * 0.1) + angle;
-    ref.current.position.set(Math.cos(t) * RADIUS, y, Math.sin(t) * RADIUS);
+    ref.current.position.set(Math.cos(t) * radius, y, Math.sin(t) * radius);
     ref.current.lookAt(0, y, 0);
     if (reduceMotion) return;
 
     const dist = ref.current.position.distanceTo(state.camera.position);
-    const near = THREE.MathUtils.clamp(1 - (dist - 2.4) / 6, 0, 1);
+    const near = THREE.MathUtils.clamp(1 - (dist - 2.8) / 6.5, 0, 1);
 
     ndc.copy(ref.current.position).project(state.camera);
     let hover = 0;
@@ -125,6 +180,8 @@ function ArtworkPlane({ item, index, count }: { item: VortexItem; index: number;
     matRef.current?.color.setScalar(0.82 + boost.current * 0.42);
   });
 
+  if (!texture) return null;
+
   return (
     <mesh
       ref={ref}
@@ -135,22 +192,27 @@ function ArtworkPlane({ item, index, count }: { item: VortexItem; index: number;
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = 'auto')}
     >
-      <planeGeometry args={[2.4, 1.6]} />
+      <planeGeometry args={[PLANE_W, PLANE_H]} />
       <meshBasicMaterial ref={matRef} map={texture} toneMapped={false} />
     </mesh>
   );
 }
 
-function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement | null> }) {
+function CameraRig({
+  sectionRef,
+  progressRef,
+}: {
+  sectionRef: React.RefObject<HTMLDivElement | null>;
+  progressRef: React.RefObject<SharedProgress>;
+}) {
   const { camera } = useThree();
   const reduceMotion = usePrefersReducedMotion();
-  const progress = useRef(0);
-  const smoothed = useRef(0);
+  const raw = useRef(0);
 
   useEffect(() => {
     if (!sectionRef.current) return;
     if (reduceMotion) {
-      camera.position.set(0, 0, 9);
+      camera.position.set(0, 0, 11);
       camera.lookAt(0, 0, 0);
       return;
     }
@@ -162,9 +224,14 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
       pin: true,
       pinType: 'transform',
       onUpdate: (self) => {
-        progress.current = self.progress;
+        raw.current = self.progress;
       },
     });
+    // This canvas is code-split (next/dynamic) and mounts well after Lenis
+    // has already cached the document's scroll limit — refresh immediately
+    // so Lenis picks up the pinned range this trigger just added, instead of
+    // waiting for some other, unrelated refresh to happen to notice.
+    ScrollTrigger.refresh();
     return () => {
       st.kill();
     };
@@ -173,9 +240,9 @@ function CameraRig({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement 
   /* eslint-disable react-hooks/immutability */
   useFrame((state, delta) => {
     if (reduceMotion) return;
-    smoothed.current = THREE.MathUtils.damp(smoothed.current, progress.current, 4, delta);
-    const p = smoothed.current;
-    camera.position.z = 13 - p * 11;
+    progressRef.current.smoothed = THREE.MathUtils.damp(progressRef.current.smoothed, raw.current, 4, delta);
+    const p = progressRef.current.smoothed;
+    camera.position.z = 15 - p * 13;
     camera.position.y = HEIGHT_SPAN / 2 - p * HEIGHT_SPAN;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 1.1, 3, delta);
     camera.lookAt(0, camera.position.y, 0);
@@ -189,6 +256,8 @@ export default function WorkVortex() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const items = useMemo(() => buildItems(), []);
+  const textures = useCoverTextures(items);
+  const progressRef = useRef<SharedProgress>({ smoothed: 0 });
 
   useEffect(() => {
     const mm = gsap.matchMedia(sectionRef);
@@ -211,20 +280,26 @@ export default function WorkVortex() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative h-screen w-full">
+    <section ref={sectionRef} id="work-vortex" className="relative h-screen w-full">
       <div
         ref={headingRef}
         className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-center text-white"
       >
-        <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Selected work</span>
-        <h2 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+        <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           Dive <span style={{ color: 'var(--accent)' }}>in.</span>
         </h2>
       </div>
-      <Canvas camera={{ position: [0, HEIGHT_SPAN / 2, 13], fov: 50 }} dpr={[1, 1.75]}>
-        <CameraRig sectionRef={sectionRef} />
+      <Canvas camera={{ position: [0, HEIGHT_SPAN / 2, 15], fov: 50 }} dpr={[1, 1.75]}>
+        <CameraRig sectionRef={sectionRef} progressRef={progressRef} />
         {items.map((item, i) => (
-          <ArtworkPlane key={item.slug} item={item} index={i} count={items.length} />
+          <ArtworkPlane
+            key={item.slug}
+            item={item}
+            texture={textures.get(item.slug)}
+            index={i}
+            count={items.length}
+            progressRef={progressRef}
+          />
         ))}
       </Canvas>
     </section>

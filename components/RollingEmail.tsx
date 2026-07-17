@@ -1,5 +1,4 @@
 export const CONTACT_EMAIL = 'siddharthgundavarapu@gmail.com';
-const ACCENT_TEXT = '#A79BFF';
 
 /** Oversized email CTA: each letter rolls up to a duplicate accent-colored copy on hover.
  *  Pure CSS transitions (transform only), staggered per letter via transition-delay.
@@ -19,7 +18,7 @@ export default function RollingEmail({ className = '' }: { className?: string })
               style={{ transitionDelay: `${i * 18}ms` }}
             >
               <span className="flex h-[1.18em] items-center">{ch}</span>
-              <span className="flex h-[1.18em] items-center" style={{ color: ACCENT_TEXT }}>
+              <span className="flex h-[1.18em] items-center" style={{ color: 'var(--accent)' }}>
                 {ch}
               </span>
             </span>

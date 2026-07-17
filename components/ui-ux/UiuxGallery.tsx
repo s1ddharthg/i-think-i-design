@@ -20,8 +20,7 @@ export default function UiuxGallery() {
           transition={{ duration: 0.8, ease: EASE }}
           className="max-w-3xl"
         >
-          <span className="text-xs uppercase tracking-[0.3em] text-white/40">UI/UX</span>
-          <h1 className="mt-5 text-balance text-[clamp(2.5rem,6vw,4.25rem)] font-semibold leading-[0.98] tracking-tight">
+          <h1 className="text-balance text-[clamp(2.5rem,6vw,4.25rem)] font-semibold leading-[0.98] tracking-tight">
             Whole products, not pretty screens.
           </h1>
           <p className="mt-6 max-w-[62ch] text-pretty text-lg leading-relaxed text-white/60">
@@ -48,13 +47,12 @@ export default function UiuxGallery() {
                     alt={project.coverAlt}
                     fill
                     sizes="(max-width:640px) 90vw, (max-width:1024px) 45vw, 30vw"
-                    unoptimized
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
                   />
                 </div>
                 <div className="mt-4">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">
-                    {project.index} · {project.discipline}
+                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
+                    {project.discipline}
                   </span>
                   <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-white transition-colors group-hover:text-white">
                     {project.title}
