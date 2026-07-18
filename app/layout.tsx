@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sid — UI/UX & Graphic Design",
+  title: "Sid: UI/UX & Graphic Design",
   description: "I'm sid, a UI/UX designer and graphic designer.",
 };
 
