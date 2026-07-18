@@ -45,17 +45,18 @@ export default function SmoothScroll() {
     // vortex bug did. Watching document height directly catches this and any
     // future late layout shift, regardless of what causes it.
     //
-    // Must observe document.body, not document.documentElement: <html> is
-    // the page's scrolling element, so its own box (offsetHeight/clientHeight,
-    // which is what ResizeObserver reports) is permanently pinned to the
-    // viewport height and never resizes as content grows — only its
-    // scrollHeight changes, which ResizeObserver cannot see. <body> is a
-    // normal block box that really does grow to fit its content, so it's
-    // the one that actually fires when a late image lands. Observing
-    // documentElement here silently never fired, leaving the exact dead
-    // zone this comment describes unfixed on any page with late layout
-    // growth (e.g. case-study filmstrips) that outpaced Lenis's initial
-    // measurement or a GSAP refresh.
+    // Must observe document.body, not document.documentElement: this
+    // codebase sets h-full (height: 100%) on <html> in app/layout.tsx, so
+    // documentElement's own box (offsetHeight/clientHeight, what
+    // ResizeObserver reports) is capped at the viewport height and never
+    // resizes as content grows — only its scrollHeight changes, which
+    // ResizeObserver cannot see. <body> only carries min-h-full, so it's a
+    // normal block box that really does grow to fit its content, and fires
+    // when a late image lands. Observing documentElement here silently
+    // never fired, leaving the exact dead zone this comment describes
+    // unfixed on any page with late layout growth (e.g. case-study
+    // filmstrips) that outpaced Lenis's initial measurement or a GSAP
+    // refresh.
     const ro = new ResizeObserver(() => lenis.resize());
     ro.observe(document.body);
 
