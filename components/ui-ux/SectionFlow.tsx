@@ -126,7 +126,7 @@ function PhoneFlow({ section, onActive }: { section: Section; onActive: (id: str
       <div className="sticky top-0 flex h-[100svh] flex-col items-center justify-center gap-5">
         <Label section={section} />
         <DeviceMockup device="iphone">
-          <AnimatePresence initial={false} custom={dir} mode="popLayout">
+          <AnimatePresence initial={false} custom={dir}>
             <motion.div
               key={idx}
               custom={dir}

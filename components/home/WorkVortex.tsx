@@ -12,14 +12,19 @@ import { drawFramedArtwork } from '@/lib/poster';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const RADIUS = 7.6;
-const HEIGHT_SPAN = 30;
-const PLANE_W = 4.4;
-const PLANE_H = 2.93;
-// Progress-driven radial pull: the ring contracts toward the camera's dolly
-// path as you scroll deeper, so items visibly move toward the screen on top
-// of the camera's own forward dolly.
-const CONTRACTION = 0.4;
+// A scroll-driven image tube — projects ring a cylinder in rows, each row
+// spinning at its own speed for a parallax read, adapted from
+// github.com/matdn/helmet's tube technique. Fewer, larger planes per row
+// (4, not a dozen) instead of a dense wall, and the dive is vertical through
+// the tube's rows rather than a rotating drum viewed from outside — that
+// half stays true to this site's existing "Dive in." pinned-scroll feel.
+const COLS = 4;
+const RADIUS = 9.5;
+const PLANE_W = 6.2;
+const PLANE_H = 4.13;
+const ROW_GAP = 7.4;
+// Per-row spin multiplier — cycles if there are ever more rows than speeds.
+const ROW_SPEEDS = [0.55, 0.95, 1.35, 0.75];
 
 type VortexItem = {
   slug: string;
@@ -33,8 +38,8 @@ type SharedProgress = { smoothed: number };
 
 const UIUX_ACCENTS = ['#eeff00', '#fff35c', '#d4ff3d', '#f5ff8a', '#e8ff00'];
 
-// Every real project — graphic + UI/UX — one plane each, interleaved so the
-// dive alternates disciplines instead of showing one block then the other.
+// Every real project — graphic + UI/UX, no repeats, no placeholders —
+// interleaved so the dive alternates disciplines row to row.
 function buildItems(): VortexItem[] {
   const g: VortexItem[] = graphicProjects.map((p) => ({
     slug: p.slug,
@@ -59,6 +64,12 @@ function buildItems(): VortexItem[] {
   return out;
 }
 
+function chunkIntoRows(items: VortexItem[], cols: number): VortexItem[][] {
+  const rows: VortexItem[][] = [];
+  for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols));
+  return rows;
+}
+
 function usePrefersReducedMotion() {
   return useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -66,19 +77,16 @@ function usePrefersReducedMotion() {
   );
 }
 
-// One canvas texture per project, at a high enough resolution that the
-// larger planes stay sharp instead of blurring up.
+// One canvas texture per project, high enough resolution that the larger
+// planes stay sharp instead of blurring up.
 function useCoverTextures(items: VortexItem[]) {
   const map = useMemo(() => {
     const m = new Map<string, THREE.CanvasTexture>();
-    // Canvas/texture creation needs a DOM — r3f's <Canvas> never renders its
-    // children during SSR, but this hook runs one level above it in
-    // WorkVortex, so it executes on the server too and must no-op there.
     if (typeof document === 'undefined') return m;
     items.forEach((item) => {
       const canvas = document.createElement('canvas');
-      canvas.width = 1536;
-      canvas.height = 1024;
+      canvas.width = 2048;
+      canvas.height = 1365;
       const ctx = canvas.getContext('2d');
       if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
       const t = new THREE.CanvasTexture(canvas);
@@ -107,12 +115,6 @@ function useCoverTextures(items: VortexItem[]) {
           drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title, img);
           texture.needsUpdate = true;
         } catch (err) {
-          // Some source SVGs (e.g. ones exported with <foreignObject>) taint
-          // any canvas they're drawn into per spec, even same-origin — WebGL
-          // then refuses to upload that canvas as a texture and throws.
-          // One bad asset must never crash the whole scene: leave this plane
-          // on its generated-poster fallback (already drawn, pre-cover-load)
-          // and keep going.
           if (process.env.NODE_ENV !== 'production') {
             console.warn(`WorkVortex: couldn't draw cover for "${item.slug}" into canvas`, err);
           }
@@ -129,17 +131,19 @@ function useCoverTextures(items: VortexItem[]) {
   return map;
 }
 
-function ArtworkPlane({
+function TubePlane({
   item,
   texture,
-  index,
-  count,
+  col,
+  rowIndex,
+  y,
   progressRef,
 }: {
   item: VortexItem;
   texture: THREE.CanvasTexture | undefined;
-  index: number;
-  count: number;
+  col: number;
+  rowIndex: number;
+  y: number;
   progressRef: React.RefObject<SharedProgress>;
 }) {
   const ref = useRef<THREE.Mesh>(null);
@@ -149,35 +153,35 @@ function ArtworkPlane({
   const boost = useRef(0);
   const ndc = useMemo(() => new THREE.Vector3(), []);
 
-  const angle = (index / count) * Math.PI * 6;
-  const y = HEIGHT_SPAN / 2 - (index / (count - 1)) * HEIGHT_SPAN;
+  // Alternate rows offset by half a step so the tube reads as a brick
+  // pattern rather than a stack of identical rings.
+  const baseAngle = (col / COLS) * Math.PI * 2 + (rowIndex % 2) * (Math.PI / COLS);
+  const speed = ROW_SPEEDS[rowIndex % ROW_SPEEDS.length];
 
   useFrame((state, delta) => {
     if (!ref.current) return;
     const p = reduceMotion ? 0 : progressRef.current.smoothed;
-    const radius = RADIUS * (1 - p * CONTRACTION);
-    const t = (reduceMotion ? 0 : state.clock.elapsedTime * 0.1) + angle;
-    ref.current.position.set(Math.cos(t) * radius, y, Math.sin(t) * radius);
+    const spin = (reduceMotion ? 0 : state.clock.elapsedTime * 0.05 + p * Math.PI * 1.4) * speed;
+    const angle = baseAngle + spin;
+    ref.current.position.set(Math.cos(angle) * RADIUS, y, Math.sin(angle) * RADIUS);
     ref.current.lookAt(0, y, 0);
     if (reduceMotion) return;
 
     const dist = ref.current.position.distanceTo(state.camera.position);
-    const near = THREE.MathUtils.clamp(1 - (dist - 2.8) / 6.5, 0, 1);
+    const near = THREE.MathUtils.clamp(1 - (dist - 3.2) / 8, 0, 1);
 
     ndc.copy(ref.current.position).project(state.camera);
     let hover = 0;
     if (Math.abs(ndc.z) <= 1) {
       const d = Math.hypot(ndc.x - state.pointer.x, ndc.y - state.pointer.y);
-      hover = THREE.MathUtils.clamp(1 - d / 0.4, 0, 1);
+      hover = THREE.MathUtils.clamp(1 - d / 0.35, 0, 1);
     }
 
-    const target = Math.min(near * 0.7 + hover * 0.6, 1);
+    const target = Math.min(near * 0.6 + hover * 0.6, 1);
     boost.current = THREE.MathUtils.damp(boost.current, target, 6, delta);
 
-    ref.current.scale.setScalar(1 + boost.current * 0.3);
-    ref.current.rotateX(-0.16 * boost.current);
-    ref.current.rotateZ(0.05 * Math.sin(state.clock.elapsedTime * 0.8 + index) * boost.current);
-    matRef.current?.color.setScalar(0.82 + boost.current * 0.42);
+    ref.current.scale.setScalar(1 + boost.current * 0.22);
+    matRef.current?.color.setScalar(0.85 + boost.current * 0.35);
   });
 
   if (!texture) return null;
@@ -198,12 +202,120 @@ function ArtworkPlane({
   );
 }
 
+// The tube's centrepiece — a pair of sunglasses instead of a helmet, built
+// from primitives (this project has no 3D-model asset pipeline, and every
+// other visual on the site is already procedural). They track the cursor
+// rather than the scroll, so the one thing at the centre of the dive is the
+// one thing responding directly to the visitor instead of to the page.
+//
+// ponytail: pulled from the scene below (kept here, commented, for a
+// replacement centrepiece) — not deleted outright since the geometry/tracking
+// logic is reusable for whatever replaces it.
+/*
+function Sunglasses() {
+  const group = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+  const reduceMotion = usePrefersReducedMotion();
+  const finePointer = useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    []
+  );
+  const pointer = useRef({ x: 0, y: 0 });
+  const yaw = useRef(0);
+  const pitch = useRef(0);
+
+  useEffect(() => {
+    if (!finePointer || reduceMotion) return;
+    const onMove = (e: PointerEvent) => {
+      pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.current.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener('pointermove', onMove, { passive: true });
+    return () => window.removeEventListener('pointermove', onMove);
+  }, [finePointer, reduceMotion]);
+
+  const lensMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: '#1c2430',
+        emissive: '#eeff00',
+        emissiveIntensity: 0.06,
+        metalness: 0.4,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.78,
+      }),
+    []
+  );
+  const frameMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: '#d8dae0',
+        emissive: '#3a3d44',
+        emissiveIntensity: 0.25,
+        metalness: 0.9,
+        roughness: 0.2,
+      }),
+    []
+  );
+  useEffect(() => () => {
+    lensMat.dispose();
+    frameMat.dispose();
+  }, [lensMat, frameMat]);
+
+  useFrame((state, delta) => {
+    if (!group.current) return;
+    // Always the literal focal point of the dive — parked exactly where the
+    // camera is already looking, so it never has to compete with the tube.
+    const targetY = reduceMotion ? 0 : camera.position.y;
+    group.current.position.set(0, targetY, 0);
+
+    if (reduceMotion) return;
+
+    yaw.current = THREE.MathUtils.damp(yaw.current, pointer.current.x * 0.4, 4, delta);
+    pitch.current = THREE.MathUtils.damp(pitch.current, -pointer.current.y * 0.22, 4, delta);
+    group.current.rotation.y = yaw.current;
+    group.current.rotation.x = pitch.current;
+    group.current.position.y += Math.sin(state.clock.elapsedTime * 0.6) * 0.05;
+  });
+
+  const lensR = 0.62;
+
+  return (
+    <group ref={group} scale={1.15}>
+      {([-1, 1] as const).map((side) => (
+        <group key={side} position={[side * (lensR + 0.06), 0, 0]}>
+          <mesh material={lensMat} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[lensR, lensR, 0.06, 32]} />
+          </mesh>
+          <mesh material={frameMat} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[lensR, 0.055, 12, 32]} />
+          </mesh>
+          <mesh
+            material={frameMat}
+            position={[side * 0.95, 0, -0.55]}
+            rotation={[0, side * 0.42, 0]}
+          >
+            <boxGeometry args={[1.1, 0.06, 0.06]} />
+          </mesh>
+        </group>
+      ))}
+      <mesh material={frameMat}>
+        <boxGeometry args={[0.34, 0.07, 0.07]} />
+      </mesh>
+    </group>
+  );
+}
+*/
+
 function CameraRig({
   sectionRef,
   progressRef,
+  heightSpan,
 }: {
   sectionRef: React.RefObject<HTMLDivElement | null>;
   progressRef: React.RefObject<SharedProgress>;
+  heightSpan: number;
 }) {
   const { camera } = useThree();
   const reduceMotion = usePrefersReducedMotion();
@@ -212,7 +324,7 @@ function CameraRig({
   useEffect(() => {
     if (!sectionRef.current) return;
     if (reduceMotion) {
-      camera.position.set(0, 0, 11);
+      camera.position.set(0, 0, 13);
       camera.lookAt(0, 0, 0);
       return;
     }
@@ -227,10 +339,6 @@ function CameraRig({
         raw.current = self.progress;
       },
     });
-    // This canvas is code-split (next/dynamic) and mounts well after Lenis
-    // has already cached the document's scroll limit — refresh immediately
-    // so Lenis picks up the pinned range this trigger just added, instead of
-    // waiting for some other, unrelated refresh to happen to notice.
     ScrollTrigger.refresh();
     return () => {
       st.kill();
@@ -242,8 +350,8 @@ function CameraRig({
     if (reduceMotion) return;
     progressRef.current.smoothed = THREE.MathUtils.damp(progressRef.current.smoothed, raw.current, 4, delta);
     const p = progressRef.current.smoothed;
-    camera.position.z = 15 - p * 13;
-    camera.position.y = HEIGHT_SPAN / 2 - p * HEIGHT_SPAN;
+    camera.position.z = 15;
+    camera.position.y = heightSpan / 2 - p * heightSpan;
     camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 1.1, 3, delta);
     camera.lookAt(0, camera.position.y, 0);
   });
@@ -256,6 +364,8 @@ export default function WorkVortex() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const items = useMemo(() => buildItems(), []);
+  const rows = useMemo(() => chunkIntoRows(items, COLS), [items]);
+  const heightSpan = (rows.length - 1) * ROW_GAP + ROW_GAP;
   const textures = useCoverTextures(items);
   const progressRef = useRef<SharedProgress>({ smoothed: 0 });
 
@@ -289,18 +399,26 @@ export default function WorkVortex() {
           Dive <span style={{ color: 'var(--accent)' }}>in.</span>
         </h2>
       </div>
-      <Canvas camera={{ position: [0, HEIGHT_SPAN / 2, 15], fov: 50 }} dpr={[1, 1.75]}>
-        <CameraRig sectionRef={sectionRef} progressRef={progressRef} />
-        {items.map((item, i) => (
-          <ArtworkPlane
-            key={item.slug}
-            item={item}
-            texture={textures.get(item.slug)}
-            index={i}
-            count={items.length}
-            progressRef={progressRef}
-          />
-        ))}
+      <Canvas camera={{ position: [0, heightSpan / 2, 15], fov: 50 }} dpr={[1, 1.75]}>
+        <ambientLight intensity={0.65} />
+        <directionalLight position={[4, 6, 8]} intensity={1.4} />
+        <pointLight position={[-4, -2, 6]} intensity={0.6} color="#88ccff" />
+        <CameraRig sectionRef={sectionRef} progressRef={progressRef} heightSpan={heightSpan} />
+        {/* <Sunglasses /> — pulled out, see commented-out definition above */}
+        {rows.map((row, rowIndex) => {
+          const y = heightSpan / 2 - rowIndex * ROW_GAP;
+          return row.map((item, col) => (
+            <TubePlane
+              key={item.slug}
+              item={item}
+              texture={textures.get(item.slug)}
+              col={col}
+              rowIndex={rowIndex}
+              y={y}
+              progressRef={progressRef}
+            />
+          ));
+        })}
       </Canvas>
     </section>
   );

@@ -226,10 +226,10 @@ function drawCoverFit(
 }
 
 /**
- * Frames the poster artwork like the surface it would actually ship on —
- * a macOS browser chrome for UI/UX work, an Instagram post chrome for
- * graphic design — used only by the 3D vortex planes. `drawPoster` itself
- * (shared by Gallery/Poster/detail hero) is untouched by this.
+ * Frames the poster artwork like the surface it would actually ship on for
+ * UI/UX work (a macOS browser chrome) and full-bleed for graphic design —
+ * used only by the 3D vortex planes. `drawPoster` itself (shared by
+ * Gallery/Poster/detail hero) is untouched by this.
  *
  * `coverImage`, when passed, replaces the generated poster in the content
  * area for either category. Falls back to the generated poster only when no
@@ -298,76 +298,16 @@ export function drawFramedArtwork(
     ctx.textBaseline = 'middle';
     ctx.fillText(`${title.toLowerCase().replace(/\s+/g, '')}.app`, w / 2, pillY + pillH / 2 + 1);
   } else {
-    const headerH = h * 0.15;
-    const footerH = h * 0.13;
-
-    // content between header and footer
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, headerH, w, h - headerH - footerH);
-    ctx.clip();
+    // Full-bleed — no Instagram chrome. A thin header/footer bar here used to
+    // eat ~28% of the texture height and, at the vortex's grazing view angles,
+    // the GPU's mipmap chain blended those bars into the bright artwork next
+    // to them, reading as a smeared white/grey band. Filling the whole canvas
+    // with the artwork removes both the band and the lost real estate.
     if (coverImage) {
-      drawCoverFit(ctx, coverImage, 0, headerH, w, h - headerH - footerH);
+      drawCoverFit(ctx, coverImage, 0, 0, w, h);
     } else {
-      ctx.translate(0, headerH);
-      drawPoster(ctx, w, h - headerH - footerH, slug, accent);
+      drawPoster(ctx, w, h, slug, accent);
     }
-    ctx.restore();
-
-    // header: avatar + handle. Overdrawn 1.5px into the content zone below —
-    // at small on-screen sizes (the vortex planes especially) the texture's
-    // mipmap chain softens the hard chrome/content edge, letting a hairline
-    // of the content show through the nominal chrome boundary. Painting the
-    // bar slightly past its own edge keeps that softening inside solid
-    // color instead of at a visible seam.
-    ctx.fillStyle = '#111114';
-    ctx.fillRect(0, 0, w, headerH + 1.5);
-    const avatarR = headerH * 0.3;
-    const avatarX = headerH * 0.55;
-    const avatarY = headerH / 2;
-    ctx.beginPath();
-    ctx.fillStyle = accent;
-    ctx.arc(avatarX, avatarY, avatarR, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = `600 ${Math.round(headerH * 0.32)}px system-ui, sans-serif`;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('sid.design', avatarX + avatarR + headerH * 0.3, avatarY);
-
-    // footer: heart / comment / share outlines. Same 1.5px overdraw upward
-    // into the content zone as the header, for the same reason.
-    ctx.fillRect(0, h - footerH - 1.5, w, footerH + 1.5);
-    ctx.strokeStyle = 'rgba(255,255,255,0.55)';
-    ctx.lineWidth = Math.max(1.5, footerH * 0.06);
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-    const iconY = h - footerH / 2;
-    const iconS = footerH * 0.34;
-    let ix = headerH * 0.55;
-
-    // heart
-    ctx.beginPath();
-    ctx.moveTo(ix, iconY + iconS * 0.28);
-    ctx.bezierCurveTo(ix - iconS, iconY - iconS * 0.5, ix - iconS * 1.6, iconY + iconS * 0.55, ix, iconY + iconS);
-    ctx.bezierCurveTo(ix + iconS * 1.6, iconY + iconS * 0.55, ix + iconS, iconY - iconS * 0.5, ix, iconY + iconS * 0.28);
-    ctx.stroke();
-    ix += iconS * 2.6;
-
-    // comment bubble
-    ctx.beginPath();
-    ctx.ellipse(ix, iconY - iconS * 0.1, iconS * 0.85, iconS * 0.7, 0, Math.PI * 0.15, Math.PI * 1.85, true);
-    ctx.stroke();
-    ix += iconS * 2.4;
-
-    // share arrow
-    ctx.beginPath();
-    ctx.moveTo(ix - iconS * 0.9, iconY + iconS * 0.6);
-    ctx.lineTo(ix + iconS * 0.9, iconY - iconS * 0.6);
-    ctx.moveTo(ix, iconY - iconS * 0.6);
-    ctx.lineTo(ix + iconS * 0.9, iconY - iconS * 0.6);
-    ctx.lineTo(ix + iconS * 0.9, iconY + iconS * 0.3);
-    ctx.stroke();
   }
 
   ctx.restore();
