@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
+import RopeClimber from "@/components/RopeClimber";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,6 +35,7 @@ export default function RootLayout({
         <SmoothScroll />
         <Nav />
         <CustomCursor />
+        <RopeClimber />
         {children}
       </body>
     </html>
