@@ -57,7 +57,6 @@ export default function UiuxGallery() {
                   <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-white transition-colors group-hover:text-white">
                     {project.title}
                   </h2>
-                  <p className="mt-1 text-pretty text-sm leading-relaxed text-white/55">{project.tagline}</p>
                 </div>
               </Link>
             </motion.div>
