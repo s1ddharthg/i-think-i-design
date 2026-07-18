@@ -21,12 +21,9 @@ export default function RopeClimber() {
   };
 
   return (
-    <div
-      className="pointer-events-none fixed right-3 top-0 z-40 hidden h-full w-10 sm:right-5 sm:block md:right-8"
-      aria-hidden="true"
-    >
+    <div className="pointer-events-none fixed right-3 top-0 z-40 hidden h-full w-10 sm:right-5 sm:block md:right-8">
       {/* The rope itself */}
-      <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/15" />
+      <div aria-hidden="true" className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/15" />
 
       <motion.button
         type="button"
