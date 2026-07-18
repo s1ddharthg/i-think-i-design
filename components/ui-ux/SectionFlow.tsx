@@ -18,9 +18,13 @@ const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 // Lenis owns the scroll position when smooth scroll is active — native
 // window.scrollTo is ignored, so route programmatic jumps through it.
 function scrollToY(top: number) {
-  const lenis = (window as unknown as { lenis?: { scrollTo: (t: number, o?: object) => void } }).lenis;
-  if (lenis) lenis.scrollTo(top, { duration: 1.1 });
-  else window.scrollTo({ top, behavior: 'smooth' });
+  const lenis = (window as unknown as { lenis?: { resize: () => void; scrollTo: (t: number, o?: object) => void } }).lenis;
+  if (lenis) {
+    lenis.resize();
+    lenis.scrollTo(top, { duration: 1.1 });
+  } else {
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
 }
 
 export default function SectionFlow({
