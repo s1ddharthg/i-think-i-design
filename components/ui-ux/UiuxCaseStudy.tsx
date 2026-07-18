@@ -137,10 +137,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
 
         {project.honestNote && (
           <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, ease: EASE }} className="mt-16 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6 sm:p-7">
-            <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300/80">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" /> Before it ships
-            </span>
-            <p className="text-pretty mt-3 leading-relaxed text-white/70">{project.honestNote}</p>
+            <p className="text-pretty leading-relaxed text-white/70">{project.honestNote}</p>
           </motion.div>
         )}
       </div>
