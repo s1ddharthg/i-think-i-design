@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three/webgpu';
-import { WebGLRenderer } from 'three';
 import {
   hash,
   instanceIndex,
@@ -144,21 +143,19 @@ export default function InteractiveGrass() {
               console.warn('InteractiveGrass: WebGPU init failed, disabling grass', err);
             }
             setFailed(true);
-            // WebGPURenderer.init() already tries its own WebGL2 fallback
-            // internally before rejecting, so landing here means neither
-            // backend worked. Hand back a plain WebGLRenderer (always
-            // available, and R3F's setup calls real methods like
-            // setSize/setPixelRatio on whatever this resolves to) so the
-            // factory's promise never rejects; the component above unmounts
-            // on the next render regardless, so this is never actually drawn.
-            try {
-              return new WebGLRenderer({ canvas, antialias: true, alpha: true });
-            } catch {
-              // ponytail: last-resort stub for the near-impossible case where
-              // even a plain WebGL2 context can't be created on this canvas —
-              // just enough surface for R3F's setup to not throw either.
-              return { domElement: canvas, render() {}, setSize() {}, setPixelRatio() {} };
-            }
+            // The component above unmounts on the next render regardless, so
+            // whatever this resolves to is never actually drawn — it only
+            // has to survive R3F's one-time setup (setSize/setPixelRatio
+            // etc.) without throwing before that unmount lands. A real
+            // WebGLRenderer would also work for that, but GrassField's
+            // MeshBasicNodeMaterial only renders correctly through a Node
+            // builder, which a plain WebGLRenderer doesn't wire up — if a
+            // frame slipped in before the unmount (a real race against
+            // React's next render), calling .render() with a Node material
+            // on it throws inside R3F's uncaught requestAnimationFrame loop.
+            // The inert stub sidesteps that entirely: its render() is a
+            // no-op, so there's nothing left to race.
+            return { domElement: canvas, render() {}, setSize() {}, setPixelRatio() {} };
           }
         }}
       >
