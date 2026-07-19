@@ -24,7 +24,7 @@ export default function BackButton({ className }: { className?: string }) {
         type="button"
         onClick={() => router.back()}
         aria-label="Go back"
-        className="group flex items-center gap-2 rounded-2xl border border-white/10 bg-black/50 py-2.5 pr-4 pl-2.5 text-sm text-white/70 backdrop-blur-xl transition-colors hover:text-white"
+        className="group flex items-center gap-2 rounded-2xl border border-white/10 bg-black/50 py-2.5 pr-4 pl-2.5 text-sm text-white/70 backdrop-blur-xl transition-[color,transform] duration-150 hover:text-white active:scale-[0.97] motion-reduce:active:scale-100"
       >
         <span className="grid h-6 w-6 place-items-center rounded-full bg-white/10 transition-colors group-hover:bg-white/15">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">

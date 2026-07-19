@@ -85,8 +85,8 @@ function useCoverTextures(items: VortexItem[]) {
     if (typeof document === 'undefined') return m;
     items.forEach((item) => {
       const canvas = document.createElement('canvas');
-      canvas.width = 2048;
-      canvas.height = 1365;
+      canvas.width = 1200;
+      canvas.height = 800;
       const ctx = canvas.getContext('2d');
       if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
       const t = new THREE.CanvasTexture(canvas);
@@ -149,9 +149,11 @@ function TubePlane({
   const ref = useRef<THREE.Mesh>(null);
   const matRef = useRef<THREE.MeshBasicMaterial>(null);
   const router = useRouter();
+  const { camera, gl } = useThree();
   const reduceMotion = usePrefersReducedMotion();
   const boost = useRef(0);
   const ndc = useMemo(() => new THREE.Vector3(), []);
+  const corner = useMemo(() => new THREE.Vector3(), []);
 
   // Alternate rows offset by half a step so the tube reads as a brick
   // pattern rather than a stack of identical rings.
@@ -178,7 +180,7 @@ function TubePlane({
     }
 
     const target = Math.min(near * 0.6 + hover * 0.6, 1);
-    boost.current = THREE.MathUtils.damp(boost.current, target, 6, delta);
+    boost.current = THREE.MathUtils.damp(boost.current, target, 2.5, delta);
 
     ref.current.scale.setScalar(1 + boost.current * 0.22);
     matRef.current?.color.setScalar(0.85 + boost.current * 0.35);
@@ -191,7 +193,37 @@ function TubePlane({
       ref={ref}
       onClick={(e) => {
         e.stopPropagation();
-        router.push(`/work/${item.slug}`);
+        if (!ref.current) {
+          router.push(`/work/${item.slug}`);
+          return;
+        }
+        const hw = PLANE_W / 2;
+        const hh = PLANE_H / 2;
+        const localCorners: [number, number][] = [
+          [-hw, -hh],
+          [hw, -hh],
+          [hw, hh],
+          [-hw, hh],
+        ];
+        const domRect = gl.domElement.getBoundingClientRect();
+        const xs: number[] = [];
+        const ys: number[] = [];
+        for (const [lx, ly] of localCorners) {
+          corner.set(lx, ly, 0);
+          ref.current.localToWorld(corner);
+          corner.project(camera);
+          xs.push((corner.x * 0.5 + 0.5) * domRect.width + domRect.left);
+          ys.push((1 - (corner.y * 0.5 + 0.5)) * domRect.height + domRect.top);
+        }
+        const rect = {
+          x: Math.min(...xs),
+          y: Math.min(...ys),
+          width: Math.max(...xs) - Math.min(...xs),
+          height: Math.max(...ys) - Math.min(...ys),
+        };
+        window.dispatchEvent(
+          new CustomEvent('vortex:dive', { detail: { rect, src: item.cover, slug: item.slug } })
+        );
       }}
       onPointerOver={() => (document.body.style.cursor = 'pointer')}
       onPointerOut={() => (document.body.style.cursor = 'auto')}

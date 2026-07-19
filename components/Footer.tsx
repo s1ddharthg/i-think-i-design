@@ -8,9 +8,9 @@ import RollingEmail from '@/components/RollingEmail';
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const SOCIALS = [
-  { label: 'Behance', href: '#' },
-  { label: 'Dribbble', href: '#' },
-  { label: 'LinkedIn', href: '#' },
+  { label: 'Behance', href: 'https://www.behance.net/s1ddharthg' },
+  { label: 'Dribbble', href: 'https://dribbble.com/sid1087' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/siddharth-g-276158260/' },
 ];
 
 const QUICK_LINKS = [

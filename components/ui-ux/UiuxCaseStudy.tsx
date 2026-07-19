@@ -135,11 +135,6 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           </ol>
         </motion.div>
 
-        {project.honestNote && (
-          <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, ease: EASE }} className="mt-16 rounded-2xl border border-amber-400/20 bg-amber-400/[0.04] p-6 sm:p-7">
-            <p className="text-pretty leading-relaxed text-white/70">{project.honestNote}</p>
-          </motion.div>
-        )}
       </div>
 
       {/* Mockup showcase — the boards, before you interact with the flow */}

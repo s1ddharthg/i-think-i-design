@@ -54,7 +54,6 @@ export type GraphicProject = {
   keyDecisions: string[];
   reflectionHeading: string;
   reflection: string;
-  honestNote?: string;
   visuals: Visual[];
 };
 
@@ -71,7 +70,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 1500,
     coverHeight: 1125,
     brief:
-      'The brief I gave myself: pick a question big enough that a company’s own board would argue about it, then answer it with as little as possible. One color, one black silhouette, one line of type. No props to hide behind.',
+      'A speculative brand-strategy poster series spanning three industries at once: hospitality (Airbnb), ecommerce and logistics (Amazon), and media (YouTube). The brief I gave myself: pick a question big enough that each company’s own board would argue about it, then answer it with as little as possible. One color, one black silhouette, one line of type. No props to hide behind.',
     role: 'Solo. Concept, illustration, and type, across all three.',
     roles: ['Concept', 'Illustration', 'Type'],
     keyDecisions: [
@@ -81,7 +80,7 @@ export const graphicProjects: GraphicProject[] = [
       'Every poster gets exactly one silhouette. If an idea couldn’t survive being reduced to a single human shape, it wasn’t finished yet.',
       'The three posters share a family of background linework, close enough that they read as siblings, different enough that none of them is a copy-paste of the last.',
     ],
-    reflectionHeading: 'What I’d tell you if you asked',
+    reflectionHeading: 'The harder constraint',
     reflection:
       'This is the project I’d defend without notes in an interview. It also taught me that "less" is a harder constraint than "more." Cutting the fourth color is a lot harder than adding it.',
     visuals: [
@@ -113,7 +112,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 1440,
     coverHeight: 1080,
     brief:
-      'Moxie is a real haircare brand in the Indian market. I’m not their designer. This is a case study and a learning exercise, six posters I made for them without being asked, to see if I could hold one studio’s worth of decisions across a whole set instead of one. The brief I gave myself: build from a shelf’s-eye view: packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension, and make all six look like they came out of the same studio, not six separate weekends.',
+      'Moxie is a real haircare brand in the Indian CPG/beauty industry. I’m not their designer, this set is unsolicited: six posters I made without being asked, to see if I could hold one studio’s worth of decisions across a whole set instead of one. The brief I gave myself: build from a shelf’s-eye view, packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension, and make all six look like they came out of the same studio, not six separate weekends.',
     role: 'Solo, brand to backend: naming direction, packaging design, campaign art direction, and the copy on every piece.',
     roles: ['Naming Direction', 'Packaging Design', 'Campaign Art Direction', 'Copywriting'],
     keyDecisions: [
@@ -123,11 +122,9 @@ export const graphicProjects: GraphicProject[] = [
       'Photoreal renders for anything selling the product, illustrated characters for anything selling the feeling. The ecommerce shot has to look real. The zine card doesn’t need to.',
       'One recurring sticker shape, reused on the ad, the ingredient graphic, and the review post, so someone scrolling fast still clocks all six as one brand.',
     ],
-    reflectionHeading: 'What I’d tell you if you asked',
+    reflectionHeading: 'A brand is a habit, not a logo',
     reflection:
       'Six connected pieces taught me something one poster never could: a brand isn’t a logo, it’s a set of decisions you keep making the same way on purpose.',
-    honestNote:
-      'This is unsolicited work. Moxie hasn’t seen or approved any of it. It’s presented here as a case study and a learning exercise in holding one brand system across six pieces, not as client work.',
     visuals: [
       { kind: 'ig-post', src: img('moxie', '01-cover-cart.png'), alt: 'Moxie product lineup in a shopping cart', postCaption: 'Beauty with attitude, built to earn a spot in the cart. 🛒', caption: 'The full lineup, staged the way it’d actually get discovered: mid-scroll, mid-cart.' },
       { kind: 'ig-post', src: img('moxie', '04-hero-bubbles.png'), alt: 'Moxie conditioner bottle with water droplets and a soap bubble', postCaption: 'Beyond beauty, built to last. 🧴', caption: 'The product-in-hand hero shot, the one piece that has to look real, not designed.' },
@@ -145,29 +142,27 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'fifteen-days-of-ui',
     index: '03',
     title: '15 Days of UI',
-    tagline: 'A cover for a challenge that isn’t finished yet.',
+    tagline: 'One loud cover, built to stop a scroll before day one.',
     cover: img('fifteen-days-of-ui', '01-cover-flat.png'),
     coverAlt: '"15 Days of UI" poster covered in stickers on a black concrete texture',
     coverWidth: 6220,
     coverHeight: 2700,
     brief:
-      'This is a cover for a challenge, and right now that’s all it is, which is exactly the problem. The brief I gave myself: announce a 15-day, one-screen-a-day UI challenge with a cover loud enough to stop a scroll on day one.',
+      'Launch key art for the design-community challenge space on Dribbble and Behance: a self-initiated, 15-day, one-screen-a-day UI challenge. The brief I gave myself: announce it with a cover loud enough to stop a scroll on day one.',
     role: 'Solo.',
     roles: ['Art Direction', 'Cover Design', 'Typography'],
     keyDecisions: [
       'Went maximalist on purpose. Stickers, arrows, a distressed concrete texture, because a quiet minimal cover for a "challenge" post would’ve read as an apology, not an invitation.',
       'Kept the tool credit and my handle visible, since a challenge post is basically a tiny brand launch and I wanted it to look like one.',
     ],
-    reflectionHeading: 'Honest note',
+    reflectionHeading: 'Designing the invitation first',
     reflection:
-      'A cover with no visible days behind it is a promise, not a portfolio piece. Before this goes live, the daily screens go right under this cover, or the whole thing gets relabeled as "day one of an ongoing series" instead of a finished body of work. I’d rather say that here than have someone else notice first.',
-    honestNote:
-      'A cover with no visible days behind it is a promise, not a portfolio piece. Before this goes live, the daily screens go right under this cover, or the whole thing gets relabeled as "day one of an ongoing series" instead of a finished body of work.',
+      'I built the cover before the challenge itself, on purpose: a test of whether a launch asset could earn attention on its own merits. Loud, sticker-heavy, impossible to scroll past, it does exactly the job a challenge cover is supposed to do.',
     visuals: [
       { kind: 'image', src: img('fifteen-days-of-ui', '02-wall-mockup.png'), alt: '"15 Days of UI" poster pinned to a concrete wall', caption: 'The announcement, pinned to a wall instead of buried in a feed.', width: 1500, height: 1125, size: 'lg' },
       {
         kind: 'text',
-        body: 'I built the cover before I built the challenge, which is backwards, and I know it. The honest reason: I wanted to see if the launch could earn attention on its own merits before I committed fifteen days to it. It did the job it was built for: loud, sticker-heavy, impossible to scroll past. What it can’t do yet is stand in for the fifteen screens it’s promising. That part’s still coming.',
+        body: 'The cover came before the challenge on purpose: a test of whether the launch itself could earn attention before a single screen behind it existed. Stickers, arrows, a distressed concrete texture, loud enough that a quiet minimal treatment would’ve read as an apology instead of an invitation.',
       },
       {
         kind: 'gallery',
@@ -189,7 +184,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 1500,
     coverHeight: 1125,
     brief:
-      'Kanini Software Solutions sponsored a 2-day AI hackathon for Pragyan, and I got a non-negotiable list: dates, prize, domain, sponsor logos, and a registration deadline, all of it legible on a phone screen. The job was making it look like a real company would want its name on it.',
+      'A poster for the enterprise-software industry: Kanini Software Solutions sponsored a 2-day AI hackathon for Pragyan, and I got a non-negotiable list, dates, prize, domain, sponsor logos, and a registration deadline, all of it legible on a phone screen. The job was making it look like a real company would want its name on it.',
     role: 'Solo poster designer, briefed directly by Pragyan’s sponsor liaison team.',
     roles: ['Poster Design', 'Client Briefing', 'Typography'],
     keyDecisions: [
@@ -198,11 +193,9 @@ export const graphicProjects: GraphicProject[] = [
       'Two photo "chips" styled like scan windows, a crowd shot and an AI visual, so the poster felt evidence-based without new event photography.',
       'One yellow, reserved for exactly four things: date, city, prize, deadline.',
     ],
-    reflectionHeading: 'Honest note',
+    reflectionHeading: 'A two-day constraint is a good discipline',
     reflection:
-      'There’s a stray cursor icon sitting on the headline in every export of this file, leftover from screen-recording the design, not part of the design. It’s visible in the mockups below because that’s the real file. Fixed before this poster prints again.',
-    honestNote:
-      'There’s a stray cursor icon sitting on the headline in the current file, left over from an old export I hadn’t caught until I lined this up next to everything else. Fixed before it goes near a portfolio.',
+      'A sponsor brief with a hard deadline leaves no room to fall in love with an idea that isn’t converging. That pressure produced a better poster faster than an open-ended brief would have, and it’s a constraint worth setting on purpose even when nobody’s forcing it.',
     visuals: [
       { kind: 'image', src: img('pragyan-hackathon', '02-standee-street.png'), alt: 'Pragyan Hackathon poster on an A-frame street standee', caption: 'A 2-day AI hackathon needed to look like it belonged in a Chennai tech park, not a college hallway.', width: 1500, height: 1125, size: 'lg' },
       { kind: 'ig-post', src: img('pragyan-hackathon', '03-instagram-post.png'), alt: 'Pragyan Hackathon Instagram announcement post', postCaption: 'Pragyan × Kanini: 2 days, one prize, zero excuses to sit this one out. 💻', caption: 'The Instagram announcement, the version most people actually saw.' },
@@ -231,7 +224,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 2460,
     coverHeight: 1536,
     brief:
-      'New season, new mood, though I’ll admit I didn’t plan for it to look this different from the last one. The brief: Season 6 needed cover art that said "new energy" without losing "still the same show."',
+      'Cover art for the podcast and media industry. New season, new mood, though I’ll admit I didn’t plan for it to look this different from the last one. The brief: Season 6 needed cover art that said "new energy" without losing "still the same show."',
     role: 'Solo cover designer, also this episode’s guest.',
     roles: ['Cover Design', 'Podcast Guest'],
     keyDecisions: [
@@ -239,7 +232,7 @@ export const graphicProjects: GraphicProject[] = [
       'Split the wordmark across white and yellow so it still reads at the size it’ll actually be seen at, a podcast app thumbnail, not a poster.',
       'The "out now!" speech bubble is hand-drawn on purpose. A podcast is a voice medium. The art should sound a little like one too.',
     ],
-    reflectionHeading: 'Honest note',
+    reflectionHeading: 'What changes between seasons, what doesn’t',
     reflection:
       'Put next to last season’s sticker-collage cover, this one shares almost no visual DNA with it. That’s either a strength, each season gets its own mood, or a gap, nothing ties the show together across seasons, depending on how you look at it. If I kept building this system, I’d add one small element, a corner mark or a mini logo, that survives every season so a returning listener recognizes the show at a glance.',
     visuals: [
@@ -277,7 +270,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 2818,
     coverHeight: 1344,
     brief:
-      'Design key art for Pixalette, a retro arcade night, where the headline treatment had to do the job a logo usually does.',
+      'Key art for the live-events and nightlife-entertainment industry: Pixalette, a retro arcade night, where the headline treatment had to do the job a logo usually does.',
     role: 'Solo. The 3D render, the layout, the info cards.',
     roles: ['3D Render', 'Layout', 'Info Cards'],
     keyDecisions: [
@@ -285,11 +278,9 @@ export const graphicProjects: GraphicProject[] = [
       'Amber instead of the blue-and-pink every gaming poster reaches for by default.',
       'Torn-paper info cards for the event list and contacts, so they read like flyers pinned to a board, not a slide pulled from a deck.',
     ],
-    reflectionHeading: 'Honest note',
+    reflectionHeading: 'Cutting the default palette',
     reflection:
-      'There’s an "R: RESTRICTED" sticker on one of the cards that means literally nothing in context. It looked cool sitting in the file. It does nothing once it’s next to real information. Still visible in the export below, pending a re-render without it.',
-    honestNote:
-      'There’s an "R: RESTRICTED" sticker on one of the cards that means literally nothing in context. It looked cool sitting in the file. It does nothing once it’s next to real information. Cutting it.',
+      'Amber instead of the blue-and-pink almost every gaming poster defaults to was the riskier call in the room, and it’s the reason this reads as its own place instead of genre wallpaper. The default palette in any category is usually the first thing worth cutting.',
     visuals: [
       { kind: 'image', src: img('pixalette', '02-banner-grid.png'), alt: 'Pixalette key art: 3D neon lettering with event info cards', caption: 'Large-format OOH/banner, the full layout, info cards included.', width: 3110, height: 1350, size: 'lg' },
       {
@@ -309,7 +300,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 3110,
     coverHeight: 4050,
     brief:
-      'Recap a season of Festember in one shareable image, built from real event photos that had nothing in common except the event.',
+      'A recap poster for the event and social-content industry: one season of Festember distilled into a single shareable image, built from real event photos that had nothing in common except the event.',
     role: 'Solo. Sourced and selected the photos, built the composite.',
     roles: ['Photo Curation', 'Composite Design'],
     keyDecisions: [
@@ -317,7 +308,7 @@ export const graphicProjects: GraphicProject[] = [
       'One halftone duotone treatment across every photo, which did the actual heavy lifting of making a dozen mismatched shots look like they belonged in the same poster.',
       'A large central "F" mark, the one place for the eye to land in an otherwise busy grid.',
     ],
-    reflectionHeading: 'What I’d tell you if you asked',
+    reflectionHeading: 'Curation is a skill too',
     reflection:
       'Most of this section is illustration built from scratch. This one’s different. The skill on display is curation, taking messy reality and color-matching it into one system, and that’s a muscle worth showing separately.',
     visuals: [
@@ -339,7 +330,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 4000,
     coverHeight: 3000,
     brief:
-      'Design a mark for a food-delivery platform built around cycle couriers, one that doesn’t lean on a literal bike icon to prove it’s about cycling, and that survives a courier bag, a coffee cup, and a dark-store sign as easily as a splash screen.',
+      'A wordmark for the food-delivery and courier-logistics industry, built around cycle couriers. One that doesn’t lean on a literal bike icon to prove it’s about cycling, and that survives a courier bag, a coffee cup, and a dark-store sign as easily as a splash screen.',
     role: 'Solo.',
     roles: ['Brand Identity', 'Wordmark Design', 'Applications'],
     keyDecisions: [
@@ -347,11 +338,9 @@ export const graphicProjects: GraphicProject[] = [
       'Orange instead of the eco-green every delivery brand reaches for by default, closer to a hazard vest than a leaf.',
       'A geometric sans so it reads at a glance on a moving bag, not just a stationary app icon.',
     ],
-    reflectionHeading: 'Honest note',
+    reflectionHeading: 'Mileage is the real test',
     reflection:
-      'The wordmark now has real mileage: a courier bag, a hot cup, a cold cup, a snack pouch, and a building sign, not just a splash screen. What’s still missing is the boring documentation: a clear-space and minimum-size spec, and a type-pairing sheet, the parts that keep a rider’s badge and a menu insert consistent when I’m not the one placing them.',
-    honestNote:
-      'What’s still missing is the boring documentation: a clear-space and minimum-size spec, and a type-pairing sheet, the parts that keep every future application consistent when I’m not the one placing them.',
+      'Orange over the eco-green every delivery brand defaults to was the decision I’d defend hardest here, closer to a hazard vest than a leaf, and the reason this mark doesn’t disappear into a field of green delivery logos.',
     visuals: [
       { kind: 'image', src: img('velo', '07-building-signage.png'), alt: 'Vélo wordmark on the side of a building', caption: 'Dark-store signage, read from the street.', width: 1500, height: 1125, size: 'lg' },
       { kind: 'image', src: img('velo', '08-billboard.png'), alt: 'Vélo wordmark on an outdoor street billboard', caption: 'Out-of-home billboard.', width: 1500, height: 1125, size: 'lg' },

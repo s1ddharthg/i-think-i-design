@@ -28,7 +28,7 @@ export default function Nav() {
       >
         <Link
           href="/"
-          className="rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-tight text-white transition-colors hover:bg-white/10 sm:px-4 sm:py-2 sm:text-sm"
+          className="rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-tight text-white transition-[background-color,transform] duration-150 hover:bg-white/10 active:scale-[0.97] motion-reduce:active:scale-100 sm:px-4 sm:py-2 sm:text-sm"
         >
           SG
         </Link>
@@ -48,7 +48,7 @@ export default function Nav() {
               )}
               <Link
                 href={link.href}
-                className="relative z-10 block rounded-xl px-2.5 py-1.5 text-xs whitespace-nowrap text-white/70 transition-colors hover:text-white sm:px-4 sm:py-2 sm:text-sm"
+                className="relative z-10 block rounded-xl px-2.5 py-1.5 text-xs whitespace-nowrap text-white/70 transition-[color,transform] duration-150 hover:text-white active:scale-[0.97] motion-reduce:active:scale-100 sm:px-4 sm:py-2 sm:text-sm"
               >
                 <span className="sm:hidden">{link.shortLabel}</span>
                 <span className="hidden sm:inline">{link.label}</span>
