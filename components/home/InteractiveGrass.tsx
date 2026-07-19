@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three/webgpu';
+import { WebGLRenderer } from 'three';
 import {
   hash,
   instanceIndex,
@@ -108,20 +109,57 @@ function GrassField() {
 }
 
 export default function InteractiveGrass() {
+  // `'gpu' in navigator` (checked by the caller before mounting this
+  // component) only confirms the WebGPU API exists — requestAdapter() can
+  // still resolve null on a blocklisted GPU, driver issue, or restrictive
+  // environment, rejecting renderer.init() below. R3F's async `gl` factory
+  // has no error handling of its own, and a rejected promise there becomes
+  // an unhandled promise rejection in dev, or reaches Next's route-level
+  // error boundary in prod — replacing the whole homepage. A React error
+  // boundary can't help: R3F calls the async `gl` factory fire-and-forget
+  // inside a layout effect (see @react-three/fiber's CanvasImpl `run()`),
+  // so a rejection there never becomes a synchronous throw during render
+  // that a boundary would catch. Fail soft instead: catch it here, hand
+  // Canvas a working fallback renderer so its setup never throws, and flip
+  // this flag so the parent removes the grass on the next render.
+  const [failed, setFailed] = useState(false);
+
+  if (failed) return null;
+
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3">
       <Canvas
         className="pointer-events-auto"
+        style={{ touchAction: 'pan-y' }}
         orthographic={false}
         camera={{ position: [0, 3, 8], fov: 45 }}
         gl={async (props) => {
-          const renderer = new THREE.WebGPURenderer({
-            canvas: props.canvas as HTMLCanvasElement,
-            antialias: true,
-            alpha: true,
-          });
-          await renderer.init();
-          return renderer;
+          const canvas = props.canvas as HTMLCanvasElement;
+          try {
+            const renderer = new THREE.WebGPURenderer({ canvas, antialias: true, alpha: true });
+            await renderer.init();
+            return renderer;
+          } catch (err) {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn('InteractiveGrass: WebGPU init failed, disabling grass', err);
+            }
+            setFailed(true);
+            // WebGPURenderer.init() already tries its own WebGL2 fallback
+            // internally before rejecting, so landing here means neither
+            // backend worked. Hand back a plain WebGLRenderer (always
+            // available, and R3F's setup calls real methods like
+            // setSize/setPixelRatio on whatever this resolves to) so the
+            // factory's promise never rejects; the component above unmounts
+            // on the next render regardless, so this is never actually drawn.
+            try {
+              return new WebGLRenderer({ canvas, antialias: true, alpha: true });
+            } catch {
+              // ponytail: last-resort stub for the near-impossible case where
+              // even a plain WebGL2 context can't be created on this canvas —
+              // just enough surface for R3F's setup to not throw either.
+              return { domElement: canvas, render() {}, setSize() {}, setPixelRatio() {} };
+            }
+          }
         }}
       >
         <ambientLight intensity={1.2} />

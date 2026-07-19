@@ -168,7 +168,7 @@ export const uiuxProjects: UiuxProject[] = [
   {
     slug: 'festember',
     index: '02',
-    title: 'Festember: App',
+    title: 'Festember App',
     tagline: 'The ticketing app 18,000 students actually use to attend the fest.',
     caption: '18,000 students, 500 colleges. And the app has to work on every single one of those four days.',
     discipline: 'Product Design',
@@ -271,7 +271,7 @@ export const uiuxProjects: UiuxProject[] = [
   {
     slug: 'festember-website',
     index: '03',
-    title: 'Festember: Website',
+    title: 'Festember Website',
     tagline: 'The “Saga of Secrets” marketing site: a noir re-skin built for exactly one year.',
     caption: 'One theme, one year, one noir silhouette: the website that had to feel like a secret worth showing up for.',
     discipline: 'Web Design',
