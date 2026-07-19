@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,25 +11,6 @@ import { uiuxProjects } from '@/lib/uiux';
 import { drawFramedArtwork } from '@/lib/poster';
 
 gsap.registerPlugin(ScrollTrigger);
-
-// Separate WebGPU render surface for the grass scaffold — dynamically
-// imported so its module (which pulls in three/webgpu) never loads on
-// browsers that fail the navigator.gpu check below.
-const InteractiveGrass = dynamic(() => import('@/components/home/InteractiveGrass'), { ssr: false });
-
-// Mounts InteractiveGrass only while the section is actually on screen, so
-// its WebGPU renderer isn't kept alive (and rendering) off-screen.
-function useInView(ref: React.RefObject<HTMLElement | null>) {
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.15 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [ref]);
-  return inView;
-}
 
 // A scroll-driven image tube — projects ring a cylinder in rows, each row
 // spinning at its own speed for a parallax read, adapted from
@@ -388,8 +368,6 @@ export default function WorkVortex() {
   const heightSpan = (rows.length - 1) * ROW_GAP + ROW_GAP;
   const textures = useCoverTextures(items);
   const progressRef = useRef<SharedProgress>({ smoothed: 0 });
-  const inView = useInView(sectionRef);
-  const hasWebGPU = typeof navigator !== 'undefined' && 'gpu' in navigator;
 
   useEffect(() => {
     const mm = gsap.matchMedia(sectionRef);
@@ -442,7 +420,6 @@ export default function WorkVortex() {
           ));
         })}
       </Canvas>
-      {inView && hasWebGPU && <InteractiveGrass />}
     </section>
   );
 }
