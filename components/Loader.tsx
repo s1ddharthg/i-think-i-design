@@ -3,12 +3,16 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 
-const WORDS = ['Good', 'things', 'take', 'time'];
-const MIN_VISIBLE_MS = 900; // floor so a fast load never just flashes
+// Fill (0.4s) + exit (1s) always run after this, so the floor below keeps
+// total time on screen at 3s+ even on an instant load.
+const MIN_VISIBLE_MS = 1700;
 
 export default function Loader({ onDone }: { onDone: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  const topBarRef = useRef<HTMLDivElement>(null);
+  const bottomBarRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -65,12 +69,32 @@ export default function Loader({ onDone }: { onDone: () => void }) {
       });
       tl.to(counter, { value: 100, duration: 0.4, ease: 'power2.out', onUpdate: () => setBar(counter.value) });
       tl.to(barRef.current, { scaleX: 1, duration: 0.4, ease: 'power2.out' }, '<');
+      if (!reduceMotion) {
+        // The frame that boxed the whole thing in now opens wide — the
+        // bars double as both the entrance's cinematic aspect ratio and
+        // the exit's curtain-opening payoff, instead of two unrelated effects.
+        tl.to([topBarRef.current, bottomBarRef.current], { scaleY: 0, duration: 0.6, ease: 'power3.inOut' }, '<0.1');
+      }
     };
 
     if (!reduceMotion && containerRef.current) {
       const words = containerRef.current.querySelectorAll('.loader-word');
+      const progressRow = containerRef.current.querySelector('.loader-progress');
+      gsap.set([topBarRef.current, bottomBarRef.current], { scaleY: 1 });
+      gsap.set(fillRef.current, { clipPath: 'inset(100% 0 0 0)' });
       gsap.set(words, { yPercent: 120 });
-      gsap.to(words, { yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.09 });
+      gsap.set(progressRow, { autoAlpha: 0 });
+      gsap
+        .timeline()
+        .from(containerRef.current, { autoAlpha: 0, duration: 0.5, ease: 'power2.out' })
+        .from([topBarRef.current, bottomBarRef.current], { scaleY: 0, duration: 0.7, ease: 'power3.out' }, 0.1)
+        .to(
+          fillRef.current,
+          { clipPath: 'inset(0% 0 0 0)', duration: 1.1, ease: 'power3.inOut' },
+          0.35
+        )
+        .to(words, { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.06 }, 0.7)
+        .to(progressRow, { autoAlpha: 1, duration: 0.5, ease: 'power2.out' }, 1.1);
     }
 
     Promise.all([loaded, new Promise((res) => setTimeout(res, MIN_VISIBLE_MS))]).then(finish);
@@ -84,30 +108,73 @@ export default function Loader({ onDone }: { onDone: () => void }) {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black text-white"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-black text-white"
     >
-      <h1
-        aria-label="Good things take time"
-        className="flex flex-wrap justify-center gap-x-[0.28em] px-6 text-center text-[clamp(2.4rem,7.5vw,5.75rem)] leading-[1.05] font-semibold tracking-tight"
-      >
-        {WORDS.map((word, i) => (
-          <span key={i} aria-hidden className="inline-block overflow-hidden pb-[0.1em]">
-            <span
-              className={`loader-word inline-block will-change-transform ${
-                i === WORDS.length - 1 ? 'font-normal italic text-white/80' : ''
-              }`}
-            >
-              {word}
-            </span>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(60% 50% at 50% 48%, rgba(238,255,0,0.05) 0%, rgba(0,0,0,0) 70%)',
+        }}
+      />
+
+      <div className="relative flex flex-col items-center px-6 text-center">
+        {/* SG mark: a static ghost outline with a neon-yellow fill that rises
+            in via clip-path — the loader's one signature move, tying it to
+            the same mark used for the favicon and OG image. */}
+        <div className="relative select-none" aria-hidden>
+          <span
+            className="block text-[clamp(4.5rem,16vw,11rem)] leading-none font-black tracking-tighter"
+            style={{ color: 'transparent', WebkitTextStroke: '1.5px rgba(255,255,255,0.18)' }}
+          >
+            SG
           </span>
-        ))}
-      </h1>
-      <div className="mt-12 flex items-center gap-4">
-        <div className="h-px w-40 overflow-hidden bg-white/15">
-          <div ref={barRef} className="h-full w-full origin-left scale-x-0 bg-white/70" />
+          <span
+            ref={fillRef}
+            className="absolute inset-0 block text-[clamp(4.5rem,16vw,11rem)] leading-none font-black tracking-tighter"
+            style={{ color: 'var(--accent)' }}
+          >
+            SG
+          </span>
         </div>
-        <span className="text-xs tabular-nums text-white/50">{progress}%</span>
+
+        <h1
+          aria-label="Siddharth G — UI/UX and Graphic Designer"
+          className="mt-3 flex flex-wrap justify-center gap-x-[0.5em] text-[11px] font-medium tracking-[0.35em] text-white/50 uppercase"
+        >
+          {['UI/UX', 'Graphic Design'].map((word) => (
+            <span key={word} className="inline-block overflow-hidden pb-[0.15em]">
+              <span className="loader-word inline-block will-change-transform">{word}</span>
+            </span>
+          ))}
+        </h1>
+
+        <div className="loader-progress mt-10 flex items-center gap-3">
+          <div className="h-px w-40 overflow-hidden bg-white/15">
+            <div
+              ref={barRef}
+              className="h-full w-full origin-left scale-x-0"
+              style={{ background: 'var(--accent)', boxShadow: '0 0 8px rgba(238,255,0,0.6)' }}
+            />
+          </div>
+          <span className="font-mono text-[10px] tabular-nums text-white/40">{String(progress).padStart(2, '0')}%</span>
+        </div>
       </div>
+
+      {/* Letterbox bars — the cinematic frame for the whole sequence. They
+          rise in on entrance and, on exit, double as the curtain that opens
+          to reveal the page, rather than being purely decorative. */}
+      <div
+        ref={topBarRef}
+        aria-hidden
+        className="absolute inset-x-0 top-0 z-10 h-[clamp(2.5rem,9vh,6rem)] origin-top border-b border-white/10 bg-black"
+      />
+      <div
+        ref={bottomBarRef}
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 z-10 h-[clamp(2.5rem,9vh,6rem)] origin-bottom border-t border-white/10 bg-black"
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
 import VortexTransition from "@/components/home/VortexTransition";
+import { BASE_URL } from "./sitemap";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,9 +17,62 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_NAME = "Siddharth G";
+const TITLE = "Siddharth G — UI/UX & Graphic Designer";
+const DESCRIPTION =
+  "Portfolio of Siddharth G (Sid), a UI/UX and graphic designer. Product design and branding case studies — get in touch for freelance or full-time work.";
+
 export const metadata: Metadata = {
-  title: "Sid: UI/UX & Graphic Design",
-  description: "I'm sid, a UI/UX designer and graphic designer.",
+  metadataBase: new URL(BASE_URL),
+  title: { default: TITLE, template: `%s · ${SITE_NAME}` },
+  description: DESCRIPTION,
+  keywords: [
+    "UI/UX designer",
+    "graphic designer",
+    "product designer",
+    "portfolio",
+    "branding",
+    "Siddharth G",
+  ],
+  authors: [{ name: SITE_NAME, url: BASE_URL }],
+  creator: SITE_NAME,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    url: BASE_URL,
+    siteName: SITE_NAME,
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+};
+
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      name: SITE_NAME,
+      url: BASE_URL,
+      jobTitle: "UI/UX & Graphic Designer",
+      sameAs: [],
+    },
+    {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: BASE_URL,
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -32,6 +86,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-black" suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          // Static, hardcoded structured data — no user input reaches this string.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
+        />
         <SmoothScroll />
         <Nav />
         <CustomCursor />

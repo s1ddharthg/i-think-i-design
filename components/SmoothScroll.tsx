@@ -57,7 +57,20 @@ export default function SmoothScroll() {
     // unfixed on any page with late layout growth (e.g. case-study
     // filmstrips) that outpaced Lenis's initial measurement or a GSAP
     // refresh.
-    const ro = new ResizeObserver(() => lenis.resize());
+    // Debounced, not immediate: on mobile, sections sized with svh units
+    // change document.body's height every time the address bar hides/shows
+    // during a scroll gesture. GSAP's ScrollTrigger deliberately excludes
+    // 'resize' from its auto-refresh events for exactly this reason — an
+    // immediate resize->lenis.resize() here bypasses that protection and
+    // recomputes scroll limits mid-gesture, which is its own feedback loop
+    // (recompute nudges scroll -> chrome toggles again -> resize fires again),
+    // visible as the page shaking. Waiting for resizing to settle keeps the
+    // late-image-layout fix this observer exists for, without the mid-scroll churn.
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => lenis.resize(), 200);
+    });
     ro.observe(document.body);
 
     const onTick = (time: number) => lenis.raf(time * 1000);
@@ -70,6 +83,7 @@ export default function SmoothScroll() {
     return () => {
       gsap.ticker.remove(onTick);
       ScrollTrigger.removeEventListener('refresh', onRefresh);
+      clearTimeout(resizeTimeout);
       ro.disconnect();
       lenis.destroy();
       delete (window as unknown as { lenis?: Lenis }).lenis;

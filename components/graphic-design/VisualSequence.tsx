@@ -109,10 +109,15 @@ function TextRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'text' }>
   );
 }
 
+// Every Instagram mockup in a project renders at this same fixed width,
+// solo or grouped — 3 of them side by side still fit inside max-w-5xl below,
+// so the tile size never has to shrink to make a row fit.
+const IG_TILE = 'w-full max-w-[20rem]';
+
 function IgPostRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-post' }>; reduce: boolean | null }) {
   return (
     <motion.div {...reveal(reduce)} className="flex flex-col items-center">
-      <div className={`w-full ${visual.size === 'lg' ? 'max-w-xl' : 'max-w-md'}`}>
+      <div className={IG_TILE}>
         <InstagramPost src={visual.src} alt={visual.alt} postCaption={visual.postCaption} />
       </div>
       <p className="mt-4 text-sm text-white/45">{visual.caption}</p>
@@ -122,7 +127,9 @@ function IgPostRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-pos
 
 // Two or more regular-size Instagram mockups in a row read as a set, not a
 // stack — three per row, wrapping to a second row at four or more, same
-// rule for every case study rather than a per-project layout choice.
+// rule for every case study rather than a per-project layout choice. Each
+// tile is capped at the same IG_TILE width as a solo post, so grouping never
+// changes how big an individual mockup renders.
 function IgPostGroup({
   visuals,
   reduce,
@@ -130,15 +137,13 @@ function IgPostGroup({
   visuals: Extract<Visual, { kind: 'ig-post' }>[];
   reduce: boolean | null;
 }) {
-  const cols = Math.min(visuals.length, 3);
   return (
     <motion.div
       {...reveal(reduce)}
-      className="mx-auto grid w-full max-w-5xl gap-x-6 gap-y-12"
-      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+      className="mx-auto flex w-full max-w-5xl flex-wrap justify-center gap-x-6 gap-y-12"
     >
       {visuals.map((v, i) => (
-        <div key={i} className="flex flex-col items-center">
+        <div key={i} className={`flex flex-col items-center ${IG_TILE}`}>
           <InstagramPost src={v.src} alt={v.alt} postCaption={v.postCaption} />
           <p className="mt-4 text-center text-sm text-white/45">{v.caption}</p>
         </div>

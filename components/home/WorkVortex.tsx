@@ -422,7 +422,7 @@ export default function WorkVortex() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="work-vortex" className="relative h-screen w-full">
+    <section ref={sectionRef} id="work-vortex" className="relative h-[100svh] w-full">
       <div
         ref={headingRef}
         className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-center text-white"

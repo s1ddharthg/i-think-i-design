@@ -3,45 +3,20 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
 
-// Minimal outline icons, hand-drawn to Instagram's proportions — no icon
-// library needed for a handful of static glyphs used in exactly one place.
 const HeartIcon = ({ filled }: { filled?: boolean }) => (
-  <svg
-    viewBox="0 0 24 24"
+  <Heart
+    className="h-6 w-6"
+    strokeWidth={1.6}
     fill={filled ? '#ff3040' : 'none'}
     stroke={filled ? '#ff3040' : 'currentColor'}
-    strokeWidth={1.6}
-    className="h-6 w-6"
-  >
-    <path d="M12 20.5s-7.5-4.6-9.7-9.1C.8 8 2 4.6 5.3 3.7c2-.5 4 .3 5.2 2 .4.6.9.6 1.3 0 1.2-1.7 3.2-2.5 5.2-2 3.3.9 4.5 4.3 3 7.7-2.2 4.5-9.7 9.1-9.7 9.1Z" />
-  </svg>
+  />
 );
-const CommentIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-6 w-6">
-    <path
-      d="M21 11.5a8.38 8.38 0 0 1-4.7 7.6 8.5 8.5 0 0 1-8.6-.9L3 21l1.9-4.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 7.6-8.4 8.38 8.38 0 0 1 9.4 7.4Z"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-const SendIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} className="h-6 w-6">
-    <path d="M22 2 11 13" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M22 2 15 22l-4-9-9-4Z" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const CommentIcon = () => <MessageCircle className="h-6 w-6" strokeWidth={1.6} />;
+const SendIcon = () => <Send className="h-6 w-6" strokeWidth={1.6} />;
 const BookmarkIcon = ({ filled }: { filled?: boolean }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill={filled ? 'currentColor' : 'none'}
-    stroke="currentColor"
-    strokeWidth={1.6}
-    className="h-6 w-6"
-  >
-    <path d="M6 3h12v18l-6-4.5L6 21V3Z" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
+  <Bookmark className="h-6 w-6" strokeWidth={1.6} fill={filled ? 'currentColor' : 'none'} />
 );
 
 const HANDLE = 'sid.design';

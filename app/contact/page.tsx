@@ -18,11 +18,25 @@ const SERVICES = [
   'Frontend development',
 ];
 
-const BUDGETS = ['$15k', '$30k', '$55k', '$150k'];
+const MIN_BUDGET = 600;
+const MAX_BUDGET = 150000;
+
+// Log-scale so the low end (where most inquiries land) isn't crushed into
+// the first few pixels of a linear slider spanning $600 to $150k.
+function sliderToBudget(t: number) {
+  return MIN_BUDGET * Math.pow(MAX_BUDGET / MIN_BUDGET, t / 100);
+}
+
+function formatBudget(v: number) {
+  if (v >= MAX_BUDGET - 1) return '$150k+';
+  if (v >= 1000) return `$${Math.round(v / 100) / 10}k`;
+  return `$${Math.round(v / 10) * 10}`;
+}
 
 export default function ContactPage() {
   const [services, setServices] = useState<string[]>([]);
-  const [budget, setBudget] = useState(1);
+  const [budgetSlider, setBudgetSlider] = useState(0);
+  const budget = useMemo(() => sliderToBudget(budgetSlider), [budgetSlider]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -38,7 +52,7 @@ export default function ContactPage() {
       `Name: ${name}`,
       `Email: ${email}`,
       `Looking for: ${services.length ? services.join(', ') : '—'}`,
-      `Budget: ${BUDGETS[budget]}`,
+      `Budget: ${formatBudget(budget)}`,
       '',
       'Project:',
       message,
@@ -179,23 +193,22 @@ export default function ContactPage() {
               <div className="flex flex-col gap-6">
                 <div className="flex items-baseline justify-between">
                   <span className="text-sm text-white/50">What&apos;s your budget?</span>
-                  <span className="text-2xl font-semibold" style={{ color: 'var(--accent)' }}>
-                    {BUDGETS[budget]}
+                  <span className="text-2xl font-semibold tabular-nums" style={{ color: 'var(--accent)' }}>
+                    {formatBudget(budget)}
                   </span>
                 </div>
                 <input
                   type="range"
                   min={0}
-                  max={BUDGETS.length - 1}
-                  step={1}
-                  value={budget}
-                  onChange={(e) => setBudget(Number(e.target.value))}
+                  max={100}
+                  step={0.1}
+                  value={budgetSlider}
+                  onChange={(e) => setBudgetSlider(Number(e.target.value))}
                   className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-white"
                 />
                 <div className="flex justify-between text-xs text-white/50">
-                  {BUDGETS.map((b) => (
-                    <span key={b}>{b}</span>
-                  ))}
+                  <span>$600</span>
+                  <span>$150k+</span>
                 </div>
               </div>
 

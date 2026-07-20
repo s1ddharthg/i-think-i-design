@@ -12,8 +12,10 @@ const HEADLINE: { text: string; accent?: boolean }[] = [
   { text: 'brands', accent: true }, { text: 'worth' }, { text: 'staying' }, { text: 'up' }, { text: 'for.' },
 ];
 
-const BIO =
-  "I'm Sid — a UI/UX and graphic designer. Nothing beats designing at 1 AM with some music on.";
+const BIO_LINES = [
+  "I'm Sid — a UI/UX and graphic designer.",
+  'and nothing beats designing at 1 AM with some music on.',
+];
 
 export default function Hero({ intro }: { intro: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -69,7 +71,11 @@ export default function Hero({ intro }: { intro: boolean }) {
         </h1>
 
         <p className="hero-bio mt-8 max-w-xl text-pretty text-base leading-relaxed text-white/55 sm:text-lg">
-          {BIO}
+          {BIO_LINES.map((line, i) => (
+            <span key={i} className="block">
+              {line}
+            </span>
+          ))}
         </p>
       </div>
 
