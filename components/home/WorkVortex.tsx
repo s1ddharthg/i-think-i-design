@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import gsap from 'gsap';
@@ -400,6 +400,38 @@ export default function WorkVortex() {
   const heightSpan = (rows.length - 1) * ROW_GAP + ROW_GAP;
   const textures = useCoverTextures(items);
   const progressRef = useRef<SharedProgress>({ smoothed: 0 });
+  // Not window.innerHeight via a CSS viewport unit (svh/dvh): this section is
+  // both GSAP-pinned and holds the WebGL canvas, and mobile browsers fire
+  // resize continuously while the address bar hides/shows mid-scroll. A live
+  // CSS unit drags the canvas's aspect ratio and the pin's cached scroll
+  // distance along with every one of those micro-resizes, which is what
+  // reads as violent shaking. Settling on a plain, JS-measured pixel height
+  // that only updates on a real size change (>150px, i.e. not chrome
+  // showing/hiding) decouples both systems from that churn entirely. This
+  // component is dynamic-imported with ssr:false, so window exists here on
+  // first render — no hydration mismatch.
+  const [vh, setVh] = useState(() => window.innerHeight);
+
+  useEffect(() => {
+    let last = vh;
+    let t: ReturnType<typeof setTimeout>;
+    const onResize = () => {
+      clearTimeout(t);
+      t = setTimeout(() => {
+        const h = window.innerHeight;
+        if (Math.abs(h - last) > 150) {
+          last = h;
+          setVh(h);
+        }
+      }, 400);
+    };
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', onResize);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const mm = gsap.matchMedia(sectionRef);
@@ -422,7 +454,7 @@ export default function WorkVortex() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="work-vortex" className="relative h-[100svh] w-full">
+    <section ref={sectionRef} id="work-vortex" className="relative w-full" style={{ height: vh }}>
       <div
         ref={headingRef}
         className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-center text-white"
