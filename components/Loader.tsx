@@ -143,7 +143,7 @@ export default function Loader({ onDone }: { onDone: () => void }) {
           aria-label="Siddharth G — UI/UX and Graphic Designer"
           className="mt-3 flex flex-wrap justify-center gap-x-[0.5em] text-[11px] font-medium tracking-[0.35em] text-white/50 uppercase"
         >
-          {['UI/UX', 'Graphic Design'].map((word) => (
+          {['UI/UX &', 'Graphic Design'].map((word) => (
             <span key={word} className="inline-block overflow-hidden pb-[0.15em]">
               <span className="loader-word inline-block will-change-transform">{word}</span>
             </span>
