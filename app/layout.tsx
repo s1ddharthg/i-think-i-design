@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 const SITE_NAME = "Siddharth G";
 const TITLE = "Siddharth G — UI/UX & Graphic Designer";
 const DESCRIPTION =
-  "Portfolio of Siddharth G (Sid), a UI/UX and graphic designer. Product design and branding case studies — get in touch for freelance or full-time work.";
+  "Hey, I'm Sid, a UI/UX and graphic designer. This little corner of the internet is where I showcase things I'm proud of.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
