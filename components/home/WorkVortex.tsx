@@ -77,6 +77,17 @@ function usePrefersReducedMotion() {
   );
 }
 
+// R3F's pointer state updates from touch-drag the same as mouse hover — on
+// mobile every scroll gesture reads as a "hover" at the touch point. Gating
+// pointer-driven effects to real hover-capable pointers (mice/trackpads)
+// keeps them off touch devices, where they'd fight the scroll gesture.
+function useFinePointer() {
+  return useMemo(
+    () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    []
+  );
+}
+
 // One canvas texture per project, high enough resolution that the larger
 // planes stay sharp instead of blurring up.
 function useCoverTextures(items: VortexItem[]) {
@@ -151,6 +162,7 @@ function TubePlane({
   const router = useRouter();
   const { camera, gl } = useThree();
   const reduceMotion = usePrefersReducedMotion();
+  const finePointer = useFinePointer();
   const boost = useRef(0);
   const ndc = useMemo(() => new THREE.Vector3(), []);
   const corner = useMemo(() => new THREE.Vector3(), []);
@@ -172,11 +184,13 @@ function TubePlane({
     const dist = ref.current.position.distanceTo(state.camera.position);
     const near = THREE.MathUtils.clamp(1 - (dist - 3.2) / 8, 0, 1);
 
-    ndc.copy(ref.current.position).project(state.camera);
     let hover = 0;
-    if (Math.abs(ndc.z) <= 1) {
-      const d = Math.hypot(ndc.x - state.pointer.x, ndc.y - state.pointer.y);
-      hover = THREE.MathUtils.clamp(1 - d / 0.35, 0, 1);
+    if (finePointer) {
+      ndc.copy(ref.current.position).project(state.camera);
+      if (Math.abs(ndc.z) <= 1) {
+        const d = Math.hypot(ndc.x - state.pointer.x, ndc.y - state.pointer.y);
+        hover = THREE.MathUtils.clamp(1 - d / 0.35, 0, 1);
+      }
     }
 
     const target = Math.min(near * 0.6 + hover * 0.6, 1);
@@ -351,6 +365,7 @@ function CameraRig({
 }) {
   const { camera } = useThree();
   const reduceMotion = usePrefersReducedMotion();
+  const finePointer = useFinePointer();
   const raw = useRef(0);
 
   useEffect(() => {
@@ -384,7 +399,9 @@ function CameraRig({
     const p = progressRef.current.smoothed;
     camera.position.z = 15;
     camera.position.y = heightSpan / 2 - p * heightSpan;
-    camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 1.1, 3, delta);
+    if (finePointer) {
+      camera.position.x = THREE.MathUtils.damp(camera.position.x, state.pointer.x * 1.1, 3, delta);
+    }
     camera.lookAt(0, camera.position.y, 0);
   });
   /* eslint-enable react-hooks/immutability */
