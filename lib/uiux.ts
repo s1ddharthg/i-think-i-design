@@ -14,6 +14,7 @@ export type Section = {
   device: Device;
   url?: string; // Mac-browser URL pill
   screens: Screen[];
+  transitionStyle?: 'fade'; // Mac only: crossfade + snap instead of a continuous pan
 };
 
 // Non-walkthrough visuals. `board`s render up top as the mockup showcase;
@@ -58,6 +59,7 @@ export type UiuxProject = {
   reflection: string;
   sections: Section[];
   extras?: Extra[];
+  externalLink?: { label: string; url: string };
 };
 
 const img = (slug: string, file: string) => `/images/ui-ux/${slug}/${file}`;
@@ -74,15 +76,15 @@ export const uiuxProjects: UiuxProject[] = [
     cover: img('velo', 'cover.png'),
     coverAlt: 'Three phones on a night sky showing the Vélo onboarding, home, and cart screens',
     brief:
-      '6,000 students, 30+ vendors, spread across a 300-acre campus. Three apps for three chores is two apps too many — Vélo bets that food, laundry, and groceries can share one courier, one app, and one "wait, that’s already done?"',
+      '6,000 students, 30+ vendors, spread across a 300-acre campus. Three apps for three chores is two apps too many. Vélo bets that food, laundry, and groceries can share one courier, one app, and one "wait, that’s already done?"',
     role: 'Solo: product concept, UI design, and the brand identity across the full flow.',
     roles: ['Product concept', 'UI design', 'Brand identity'],
     process: {
       userPain:
-        'Hostel and student life means outsourcing errands across three unrelated apps — three logins, three different waiting experiences, three separate deliveries showing up on three separate schedules. None of Swiggy, Zomato, or Blinkit currently treat a non-food errand like laundry as part of their core loop; it’s food-first, everything else bolted on and buried.',
+        'Hostel and student life means outsourcing errands across three unrelated apps: three logins, three different waiting experiences, three separate deliveries showing up on three separate schedules. None of Swiggy, Zomato, or Blinkit currently treat a non-food errand like laundry as part of their core loop; it’s food-first, everything else bolted on and buried.',
       businessPain: '',
       competitors:
-        'Pulled up Swiggy, Zomato, and Blinkit side by side and mapped exactly where each one’s flow breaks the moment you need something that isn’t food — category depth, checkout friction, how many taps it takes to find anything that isn’t a restaurant.',
+        'Pulled up Swiggy, Zomato, and Blinkit side by side and mapped exactly where each one’s flow breaks the moment you need something that isn’t food: category depth, checkout friction, how many taps it takes to find anything that isn’t a restaurant.',
       approach: '',
       kpis: [
         'Cross-category repeat usage: did a food order lead to a laundry order',
@@ -96,7 +98,7 @@ export const uiuxProjects: UiuxProject[] = [
     keyDecisions: [
       'An onboarding carousel narrates a specific person, someone who doesn’t want to leave the couch, not a generic "fast and convenient" pitch.',
       'Three services, three cards, one home screen. Just what you need, in front of you, nothing else competing for attention.',
-      'Bundling exactly food, laundry, and groceries under one brand — the actual thesis being that these are the three things a hostel student outsources most, and no one delivery brand currently owns all three.',
+      'Bundling exactly food, laundry, and groceries under one brand: the actual thesis being that these are the three things a hostel student outsources most, and no one delivery brand currently owns all three.',
       'Simplistic and minimal, with just enough flair to feel fun without losing the serious, get-it-done core.',
     ],
     reflectionHeading: 'The restraint lesson',
@@ -163,12 +165,13 @@ export const uiuxProjects: UiuxProject[] = [
       '18,000 students, 500 colleges, four days, and an app that gets exactly one shot a year to not break. Live now on the Play Store.',
     role: 'Solo: app UI across onboarding, event discovery, tickets, and payments.',
     roles: ['App UI', 'Discovery', 'Ticketing', 'Payments'],
+    externalLink: { label: 'Get it on Play Store', url: 'https://play.google.com/store/apps/details?id=com.festember.app&pcampaignid=web_share' },
     process: {
       userPain:
         'Students need to discover events, navigate the fest, buy tickets for workshops and guest lectures, and manage payments without getting lost inside a fest that’s genuinely chaotic by design. The harder business problem: the app has to survive being handed a completely new visual theme every single year without the underlying product breaking underneath it.',
       businessPain: '',
       competitors:
-        'How event-discovery apps at similar scale — Insider, BookMyShow, District by Zomato — structure their discovery-to-ticket flow, and where they lose people between "browsing" and "bought."',
+        'How event-discovery apps at similar scale (Insider, BookMyShow, District by Zomato) structure their discovery-to-ticket flow, and where they lose people between "browsing" and "bought."',
       approach: '',
       kpis: [
         'Ticket-purchase completion rate',
@@ -181,10 +184,10 @@ export const uiuxProjects: UiuxProject[] = [
         'What shipped replaces the scattered manual process with one flow: onboarding, discovery across real event clusters, a real ticket listing, and payment. It’s the app 18,000 students actually use to get into the fest.',
     },
     keyDecisions: [
-      'The app stays visually neutral on purpose, so it gets reused every year regardless of theme — bold, modern, and stylish enough that people still want to be part of the experience.',
+      'The app stays visually neutral on purpose, so it gets reused every year regardless of theme: bold, modern, and stylish enough that people still want to be part of the experience.',
       'Real event content from day one: actual event listings with a real date, venue, and description, not lorem text dressed up for a screenshot.',
       'Discovery, ticketing, and payments all live inside the same app instead of three separate destinations, since fest-goers are usually deciding and buying in the same five minutes between classes.',
-      'Familiar navigation, ticketing, and payment experiences throughout — people look for familiarity, not a new pattern to learn.',
+      'Familiar navigation, ticketing, and payment experiences throughout. People look for familiarity, not a new pattern to learn.',
     ],
     reflectionHeading: 'Designing the layer nobody photographs',
     reflection:
@@ -259,12 +262,12 @@ export const uiuxProjects: UiuxProject[] = [
     cover: img('festember', 'web/cover.png'),
     coverAlt: 'Festember Saga of Secrets noir marketing hero',
     brief:
-      'The website built for NIT Trichy’s annual inter-college cultural festival. The website’s only job is to make this year’s theme, "Saga of Secrets," look worth showing up for — a new line of thought every year.',
+      'The website built for NIT Trichy’s annual inter-college cultural festival. The website’s only job is to make this year’s theme, "Saga of Secrets," look worth showing up for, a new line of thought every year.',
     role: 'Solo. Marketing website: hero, About, navigation, and the mobile-web treatment.',
     roles: ['Web design', 'Art direction', 'Responsive'],
     process: {
       userPain:
-        'To design a website that symbolises this edition’s theme without seeming overly dramatic. A marketing site that looks the same as last year’s doesn’t do the job — it needs great UX to inform people while still looking fun and creative, like a fest website should.',
+        'To design a website that symbolises this edition’s theme without seeming overly dramatic. A marketing site that looks the same as last year’s doesn’t do the job. It needs great UX to inform people while still looking fun and creative, like a fest website should.',
       businessPain: '',
       competitors:
         'I flipped the script. This year’s theme was different enough that instead of Dribbble or Behance, I looked at elements from popular video games like GTA V and Assassin’s Creed, and TV show intro sequences that fit the mood.',
@@ -309,7 +312,12 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
     ],
-    extras: [],
+    extras: [
+      { kind: 'board', src: img('festember', 'web/cover.png'), alt: 'Festember website cover', caption: 'Saga of Secrets, the year’s marketing face.' },
+      { kind: 'board', src: img('festember', 'web/highlights.svg'), alt: 'Festember website hero: Saga of Secrets', caption: 'The noir hero, full size.' },
+      { kind: 'board', src: img('festember', 'web/about.svg'), alt: 'Festember website About section', caption: 'The About section, holding the same theme.' },
+      { kind: 'board', src: img('festember', 'web/highlights.svg'), alt: 'Festember website hero: Saga of Secrets', caption: 'Back to the hero, the piece that carries the theme.' },
+    ],
   },
 
   // ──────────────────────────────────────────────────────── TuteDude
@@ -331,7 +339,7 @@ export const uiuxProjects: UiuxProject[] = [
         'The site looks cluttered and disorganised. TuteDude’s real Python course page leads with course details before it leads with its strongest trust signal: a 100% fee refund on completion. Anyone who bounces in the first ten seconds never sees the one thing that kills their biggest objection, and a lot of the data a student or educator would want to see stays buried.',
       businessPain: '',
       competitors:
-        'Coursera, Udemy, BYJU’S, and Aakash — specifically how each one handles pricing anxiety and urgency, since that’s the exact moment TuteDude’s page was losing people.',
+        'Coursera, Udemy, BYJU’S, and Aakash, specifically how each one handles pricing anxiety and urgency, since that’s the exact moment TuteDude’s page was losing people.',
       approach: '',
       kpis: [
         'Enrol-CTA click-through rate',
@@ -344,10 +352,10 @@ export const uiuxProjects: UiuxProject[] = [
     },
     keyDecisions: [
       'Visual infographics and illustrations in place of paragraphs, so the offer and the curriculum explain themselves faster and the page looks cleaner doing it.',
-      'A cleaner, more modern, professional design overall — the kind of polish that signals a company worth trusting with your money.',
+      'A cleaner, more modern, professional design overall: the kind of polish that signals a company worth trusting with your money.',
       'Pulled the refund offer into the hero as the headline claim instead of leaving it in the fine print. It’s the strongest objection-killer on the page, so it earns the best real estate.',
       'Framed urgency honestly ("only a few seats left") instead of manufacturing false scarcity with a countdown timer that resets every time you refresh.',
-      'Broke the value proposition into four scannable promises — free-on-completion learning, 1-on-1 mentor support, doubts solved in 10 minutes, lifetime access — instead of one paragraph nobody reads past line two.',
+      'Broke the value proposition into four scannable promises (free-on-completion learning, 1-on-1 mentor support, doubts solved in 10 minutes, lifetime access) instead of one paragraph nobody reads past line two.',
     ],
     reflectionHeading: 'Why I rebuilt a page nobody asked me to',
     reflection:
@@ -397,7 +405,7 @@ export const uiuxProjects: UiuxProject[] = [
     roles: ['Landing page', 'Dashboard', 'Prediction flow'],
     process: {
       userPain:
-        'TradeView is not a standard trading application — it’s a concept for a trading platform where stocks are based on real-world events. The more interesting question, and the one nobody’s core product is built around: will this specific thing happen. A prediction market on stock-moving events, not the stock price itself.',
+        'TradeView is not a standard trading application. It’s a concept for a trading platform where stocks are based on real-world events. The more interesting question, and the one nobody’s core product is built around: will this specific thing happen. A prediction market on stock-moving events, not the stock price itself.',
       businessPain: '',
       competitors:
         'Polymarket and Kalshi for how prediction markets frame odds in a way a first-time user actually understands, next to mainstream trading apps like Zerodha and Groww, to find the exact gap between "trade the stock" and "bet on the event."',
@@ -416,20 +424,12 @@ export const uiuxProjects: UiuxProject[] = [
       'Most of TradeView looks like every other trading app because most trading apps do the same things. The prediction-market screen is the exception, and the only screen I’d open a portfolio review with.',
     sections: [
       {
-        id: 'event',
-        label: 'Prediction Event',
-        blurb: 'Tesla Stocks Drop: Buy/Sell odds as a plain price, a visible Rules Summary. The whole reason the app exists.',
-        device: 'mac',
-        url: 'tradeview.app/event/tesla-drop',
-        screens: [{ src: img('tradeview', 'event.svg'), alt: 'Tesla Stocks Drop prediction event page' }],
-      },
-      {
         id: 'landing',
         label: 'Landing',
         blurb: 'A single green radial glow on black: serious fintech before a chart ever loads.',
         device: 'mac',
         url: 'tradeview.app',
-        screens: [{ src: img('tradeview', 'cover.svg'), alt: 'TradeView landing page' }],
+        screens: [{ src: img('tradeview', 'Landing.svg'), alt: 'TradeView landing page' }],
       },
       {
         id: 'dashboard',
@@ -437,11 +437,19 @@ export const uiuxProjects: UiuxProject[] = [
         blurb: 'The home base: balances, activity, and a way back into every open position.',
         device: 'mac',
         url: 'tradeview.app/home',
-        screens: [{ src: img('tradeview', 'dashboard.svg'), alt: 'TradeView home dashboard' }],
+        screens: [{ src: img('tradeview', 'dashboard_real.svg'), alt: 'TradeView home dashboard' }],
+      },
+      {
+        id: 'event',
+        label: 'Prediction Event',
+        blurb: 'Tesla Stocks Drop: Buy/Sell odds as a plain price, a visible Rules Summary. The whole reason the app exists.',
+        device: 'mac',
+        url: 'tradeview.app/event/tesla-drop',
+        screens: [{ src: img('tradeview', 'event.svg'), alt: 'Tesla Stocks Drop prediction event page' }],
       },
     ],
     extras: [
-      { kind: 'board', src: img('tradeview', 'event.svg'), alt: 'TradeView Tesla Stocks Drop board', caption: 'Tesla Stocks Drop: the differentiator, full size.' },
+      { kind: 'board', src: img('tradeview', 'dashboard_real.svg'), alt: 'TradeView dashboard, full size', caption: 'The dashboard: balances, activity, every open position.' },
     ],
   },
 
@@ -461,7 +469,7 @@ export const uiuxProjects: UiuxProject[] = [
     roles: ['Web design', 'Art direction', 'Event catalogue'],
     process: {
       userPain:
-        'Pragyan draws a more technical, slightly older crowd than Festember — industry sponsors, workshop-goers, people evaluating whether this fest is worth their company’s name on a banner. A cultural-fest visual language would undersell that entirely. The site needed to look serious and slightly unsettling, on purpose.',
+        'Pragyan draws a more technical, slightly older crowd than Festember: industry sponsors, workshop-goers, people evaluating whether this fest is worth their company’s name on a banner. A cultural-fest visual language would undersell that entirely. The site needed to look serious and slightly unsettling, on purpose.',
       businessPain: '',
       competitors:
         'Cyberpunk and gaming-event sites, the kind that show up on Awwwards for exactly this reason, to find how much "dangerous" a college fest website can get away with before it stops being legible to a sponsor scanning it on a phone.',
@@ -504,8 +512,7 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('cyberscape', 'cover.svg'), alt: 'Cyberscape landing board', caption: 'The landing: full cinematic mood.' },
-      { kind: 'board', src: img('cyberscape', 'events.svg'), alt: 'Cyberscape events board', caption: 'The catalogue, kept scannable under the theme.' },
+      { kind: 'board', src: img('cyberscape', 'cluster-mockup.png'), alt: 'Cyberscape event clusters, full size', caption: 'Event clusters, the organising spine of the whole catalogue.' },
     ],
   },
 
@@ -535,7 +542,7 @@ export const uiuxProjects: UiuxProject[] = [
     },
     keyDecisions: [
       'Near-black background, restrained white type, no dashboard chrome up front, so the first impression is trust and authority, not data density.',
-      'A copy-led hero instead of a product screenshot — the words "we help investors and businesses make confident financial decisions" have to do the convincing before any UI shows up.',
+      'A copy-led hero instead of a product screenshot: the words "we help investors and businesses make confident financial decisions" have to do the convincing before any UI shows up.',
       'One visual flourish only, an isometric card stack, so restraint doesn’t tip into blankness.',
     ],
     reflectionHeading: 'What one screen can prove',
@@ -548,6 +555,7 @@ export const uiuxProjects: UiuxProject[] = [
         blurb: 'The single hero and the sections beneath it: institutional tone, credibility first, product second.',
         device: 'mac',
         url: 'apex.capital',
+        transitionStyle: 'fade',
         screens: [
           { src: img('apex', 'main.svg'), alt: 'Apex landing hero' },
           { src: img('apex', 'highlights.svg'), alt: 'Apex highlights section' },

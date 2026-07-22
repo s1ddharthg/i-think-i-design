@@ -22,17 +22,9 @@ export default function ViewSimilar({ slug }: { slug: string }) {
   return (
     <section className="border-t border-white/10 bg-black px-6 py-24 text-white md:px-10">
       <div className="mx-auto max-w-5xl">
-        <motion.span
-          initial={reduce ? false : { opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.6 }}
-          transition={{ duration: 0.6, ease: EASE }}
-          className="text-xs uppercase tracking-[0.3em] text-white/50"
-        >
-          View similar
-        </motion.span>
+        <span className="text-sm font-medium text-white/70">View similar</span>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
           {similar.map((project, i) => (
             <motion.div
               key={project.slug}
@@ -41,21 +33,17 @@ export default function ViewSimilar({ slug }: { slug: string }) {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.7, ease: EASE, delay: i * 0.08 }}
             >
-              <Link
-                href={`/work/${project.slug}`}
-                className="group relative flex aspect-[4/5] w-full flex-col justify-end overflow-hidden rounded-xl"
-              >
-                <Image
-                  src={project.cover}
-                  alt={project.coverAlt}
-                  fill
-                  sizes="33vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="relative p-5">
-                  <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+              <Link href={`/work/${project.slug}`} className="group block">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-white/10 bg-white/5">
+                  <Image
+                    src={project.cover}
+                    alt={project.coverAlt}
+                    fill
+                    sizes="33vw"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
+                  />
                 </div>
+                <h3 className="mt-3 text-lg font-semibold text-white">{project.title}</h3>
               </Link>
             </motion.div>
           ))}

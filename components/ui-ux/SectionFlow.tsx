@@ -150,8 +150,62 @@ function PhoneFlow({ section, onActive }: { section: Section; onActive: (id: str
   );
 }
 
-// Mac — a long page reads best as a continuous vertical pan through the frame.
+// Mac — a long page reads best as a continuous vertical pan through the
+// frame, except where a section opts into a discrete crossfade instead.
 function MacFlow({ section, onActive }: { section: Section; onActive: (id: string) => void }) {
+  if (section.transitionStyle === 'fade') return <MacFlowFade section={section} onActive={onActive} />;
+  return <MacFlowPan section={section} onActive={onActive} />;
+}
+
+// Snaps to the nearest screen as the user scrolls and crossfades into it,
+// rather than panning continuously — reads better for a handful of discrete
+// full-page states instead of one long scrollable page.
+function MacFlowFade({ section, onActive }: { section: Section; onActive: (id: string) => void }) {
+  const ref = useRef<HTMLElement>(null);
+  const [idx, setIdx] = useState(0);
+  const n = section.screens.length;
+
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    if (n > 1) setIdx(Math.min(n - 1, Math.max(0, Math.round(v * (n - 1)))));
+    if (v > 0.02 && v < 0.98) onActive(section.id);
+  });
+
+  const jumpTo = (i: number) => {
+    const el = ref.current;
+    if (!el || n < 2) return;
+    const travel = el.offsetHeight - window.innerHeight;
+    scrollToY(el.offsetTop + (i / (n - 1)) * travel);
+  };
+
+  const heightVh = 110 + (n - 1) * 46;
+
+  return (
+    <section ref={ref} id={section.id} className="relative scroll-mt-28" style={{ height: `${heightVh}vh` }}>
+      <div className="sticky top-0 flex h-[100svh] flex-col items-center justify-center gap-5">
+        <Label section={section} />
+        <DeviceMockup device="mac" url={section.url}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.45, ease: EASE }}
+              className="absolute inset-0"
+            >
+              <Image src={section.screens[idx].src} alt={section.screens[idx].alt} fill sizes="900px" draggable={false} className="select-none object-contain" />
+            </motion.div>
+          </AnimatePresence>
+        </DeviceMockup>
+        <Controls n={n} idx={idx} onJump={jumpTo} />
+      </div>
+    </section>
+  );
+}
+
+function MacFlowPan({ section, onActive }: { section: Section; onActive: (id: string) => void }) {
   const ref = useRef<HTMLElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const [maxY, setMaxY] = useState(0);

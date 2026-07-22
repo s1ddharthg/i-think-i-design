@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
+import ScrollVisualizer from "@/components/ScrollVisualizer";
 import VortexTransition from "@/components/home/VortexTransition";
 import { BASE_URL } from "./sitemap";
 import "./globals.css";
@@ -102,6 +103,7 @@ export default function RootLayout({
         />
         <SmoothScroll />
         <Nav />
+        <ScrollVisualizer />
         <CustomCursor />
         <VortexTransition />
         {children}

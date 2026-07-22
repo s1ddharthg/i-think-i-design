@@ -56,6 +56,7 @@ export type GraphicProject = {
   reflectionHeading: string;
   reflection: string;
   visuals: Visual[];
+  externalLink?: { label: string; url: string };
 };
 
 const img = (slug: string, file: string) => `/images/graphic-design/${slug}/${file}`;
@@ -72,12 +73,12 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 1500,
     coverHeight: 1125,
     brief:
-      'A speculative brand-strategy poster series spanning three industries at once: hospitality (Airbnb), ecommerce and logistics (Amazon), and media (YouTube). The brief I gave myself: pick a question big enough that each company’s own board would argue about it, then answer it with as little as possible. One color, one black silhouette, one line of type. No props to hide behind.',
+      'A speculative brand-strategy poster series spanning three industries at once: hospitality (Airbnb), ecommerce and logistics (Amazon), and media (YouTube). My goal: pick a question big enough that each company’s own board would argue about it, then answer it with as little as possible. One color, one black silhouette, one line of type. No props to hide behind.',
     role: 'Solo. Concept, illustration, and type, across all three.',
     roles: ['Concept', 'Illustration', 'Type'],
     keyDecisions: [
       'Airbnb got coral because the question was about workspaces people actually live in, and coral feels domestic in a way a tech blue never would.',
-      'Amazon got amber, the color of every delivery box that’s ever shown up at your door — the poster is delivery boxes, so the color had to be too.',
+      'Amazon got amber, the color of every delivery box that’s ever shown up at your door. The poster is delivery boxes, so the color had to be too.',
       'YouTube got a flat sports-jersey green to push against expectations. A platform so strongly associated with red felt more interesting when viewed through a completely different lens.',
       'Every poster gets exactly one silhouette. If an idea couldn’t survive being reduced to a single human shape, it wasn’t finished yet.',
     ],
@@ -114,12 +115,12 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 1440,
     coverHeight: 1080,
     brief:
-      'Moxie is a real Indian haircare brand. Six pieces of it are mine, made uninvited — and by the fourth one, I’d basically invented a real brand’s problems for myself to solve. The brief I gave myself: build a set spanning a shelf’s-eye view, packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension, and make all six look like they came out of the same studio, not six separate weekends.',
+      'Moxie is a real Indian haircare brand. Six pieces of it are mine, made uninvited, and by the fourth one, I’d basically invented a real brand’s problems for myself to solve. My goal: build a set spanning a shelf’s-eye view, packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension, and make all six look like they came out of the same studio, not six separate weekends.',
     role: 'Solo, brand to backend: naming direction, packaging design, campaign art direction, and the copy on every piece.',
     roles: ['Naming Direction', 'Packaging Design', 'Campaign Art Direction', 'Copywriting'],
     keyDecisions: [
       'Yellow instead of the lilac-and-sage every haircare brand defaults to, because I wanted Moxie to win the "which bottle do I see first" test on a shelf full of soft pastels.',
-      'A wordmark with a hard period — MOXIE. — because "beauty with attitude" in a soft script typeface would’ve been lying.',
+      'A wordmark with a hard period: MOXIE. Because "beauty with attitude" in a soft script typeface would’ve been lying.',
       'One recurring sticker shape, reused on the ad, the ingredient graphic, and the review post, so someone scrolling fast still clocks all six as one brand.',
     ],
     reflectionHeading: 'A brand is a habit, not a logo',
@@ -143,18 +144,19 @@ export const graphicProjects: GraphicProject[] = [
     index: '03',
     title: '15 Days of UI',
     tagline: 'One loud cover, built to stop a scroll before day one.',
-    caption: '15 days, 15 screens — because 30 is just too much, isn’t it?',
+    caption: '15 days, 15 screens, because 30 is just too much, isn’t it?',
     cover: img('fifteen-days-of-ui', '01-cover-flat.png'),
     coverAlt: '"15 Days of UI" poster covered in stickers on a black concrete texture',
     coverWidth: 6220,
     coverHeight: 2700,
     brief:
-      'Launch key art for the design-community challenge space on Dribbble and Behance: a self-initiated, 15-day, one-screen-a-day UI challenge. The brief I gave myself: announce it with a cover loud enough to stop a scroll on day one.',
+      'Launch key art for the design-community challenge space on Dribbble and Behance: a self-initiated, 15-day, one-screen-a-day UI challenge. My goal: announce it with a cover loud enough to stop a scroll on day one.',
     role: 'Solo.',
     roles: ['Art Direction', 'Cover Design', 'Typography'],
+    externalLink: { label: 'View on Instagram', url: 'https://www.instagram.com/p/DLkMgtGSrUp/?igsh=dXhxZDFkdzFiOGw3' },
     keyDecisions: [
       'Leaned on Figma-native elements to stay tied to the actual software the project was built in.',
-      'Went maximalist on purpose — stickers, arrows, a distressed concrete texture — because a quiet cover for a "challenge" post reads as an apology, not an invitation.',
+      'Went maximalist on purpose (stickers, arrows, a distressed concrete texture) because a quiet cover for a "challenge" post reads as an apology, not an invitation.',
       'Kept the tool credit and handle visible, since a challenge post is basically a tiny brand launch.',
     ],
     reflectionHeading: 'Designing the invitation first',
@@ -180,7 +182,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'pragyan-hackathon',
     index: '04',
     title: 'Pragyan Hackathon × Kanini',
-    tagline: 'A poster with a real client, a real deadline, and zero patience for instincts that didn’t fit the brief.',
+    tagline: 'A poster with a real client, a real deadline, and zero patience for instincts that didn’t fit.',
     caption: 'A 2-day AI hackathon needed to look like it belonged in a Chennai tech park, not a college hallway.',
     cover: img('pragyan-hackathon', '01-cover.png'),
     coverAlt: 'Pragyan Hackathon poster, framed, leaning against a wall',
@@ -190,6 +192,7 @@ export const graphicProjects: GraphicProject[] = [
       'A poster for the enterprise-software industry: Kanini Software Solutions sponsored a 2-day AI hackathon for Pragyan, and I got a non-negotiable list, dates, prize, domain, sponsor logos, and a registration deadline, all of it legible on a phone screen. The job was making it look like a real company would want its name on it.',
     role: 'Solo poster designer, briefed directly by Pragyan’s sponsor liaison team.',
     roles: ['Poster Design', 'Client Briefing', 'Typography'],
+    externalLink: { label: 'View on Instagram', url: 'https://www.instagram.com/p/DUZ3KDXEZph/?igsh=dWNkc2RmcXZzYWVt' },
     keyDecisions: [
       'AI/ML-coded elements with emphasis on deep learning and image processing, to symbolise the hackathon’s main theme.',
       'Near-black with a scanline texture, so it felt like it belonged in a data center.',
@@ -228,14 +231,14 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 2460,
     coverHeight: 1536,
     brief:
-      'New season, new mood, though I’ll admit I didn’t plan for it to look this different from the last one. The brief: the new season needed cover art that said "new energy" without losing "still the same show."',
+      'New season, new mood, though I’ll admit I didn’t plan for it to look this different from the last one. The goal: the new season needed cover art that said "new energy" without losing "still the same show."',
     role: 'Solo cover designer, also this episode’s guest.',
     roles: ['Cover Design', 'Podcast Guest'],
     keyDecisions: [
       'Spray-paint blue and citron, because the show’s whole appeal is that it doesn’t sound rehearsed, and the art needed to match.',
-      'The "out now!" speech bubble is hand-drawn on purpose — a podcast is a voice medium, the art should sound a little like one too.',
+      'The "out now!" speech bubble is hand-drawn on purpose. A podcast is a voice medium, the art should sound a little like one too.',
       'Split the wordmark across white and yellow so it still reads at the size it’ll actually be seen at: a podcast app thumbnail, not a poster.',
-      'Designed to survive leaving the app entirely — the same three moves read just as clearly printed flat, taped to a wall, or folded on a table.',
+      'Designed to survive leaving the app entirely: the same three moves read just as clearly printed flat, taped to a wall, or folded on a table.',
     ],
     reflectionHeading: 'What changes between seasons, what doesn’t',
     reflection:
@@ -276,9 +279,10 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 2818,
     coverHeight: 1344,
     brief:
-      'Everything else on this poster exists to hold up the type. That’s the whole idea. The brief: design key art for Pixalette, a design event built on a theme of retro-futurism.',
+      'Everything else on this poster exists to hold up the type. That’s the whole idea. The goal: design key art for Pixalette, a design event built on a theme of retro-futurism.',
     role: 'Solo. The 3D render, the layout, the info cards.',
     roles: ['3D Render', 'Layout', 'Info Cards'],
+    externalLink: { label: 'View on Instagram', url: 'https://www.instagram.com/p/DUzuj1gEY1k/?igsh=MTl3eDhoMm5tcnM0MQ==' },
     keyDecisions: [
       'Built the letters as physical 3D neon tubes, lit like an arcade cabinet, because a flat neon text effect would’ve looked like a font choice, not a place.',
       'Amber instead of the blue-and-pink every gaming poster reaches for by default.',
@@ -292,7 +296,7 @@ export const graphicProjects: GraphicProject[] = [
       { kind: 'image', src: img('pixalette', '02-banner-grid.png'), alt: 'Pixalette key art: 3D neon lettering with event info cards', caption: 'Large-format OOH/banner, the full layout, info cards included.', width: 3110, height: 1350, size: 'lg' },
       {
         kind: 'text',
-        body: 'The brief was basically "make the name feel like a place you could walk into," so the type had to stop behaving like type. Modeling the letters as lit neon tubes instead of applying a neon effect to flat text meant every letterform had to survive being seen from an angle, with real shadow falloff, a much harder constraint than picking a glow filter, and the reason this reads as key art instead of a poster with a cool font.',
+        body: 'The goal was basically "make the name feel like a place you could walk into," so the type had to stop behaving like type. Modeling the letters as lit neon tubes instead of applying a neon effect to flat text meant every letterform had to survive being seen from an angle, with real shadow falloff, a much harder constraint than picking a glow filter, and the reason this reads as key art instead of a poster with a cool font.',
       },
       { kind: 'image', src: img('pixalette', '03-ooh-fence.png'), alt: 'Pixalette banner mounted on an outdoor construction fence', caption: 'Out in the world: the banner in context.', width: 1500, height: 1125 },
     ],
@@ -308,9 +312,10 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 3110,
     coverHeight: 4050,
     brief:
-      'Twelve phones, a dozen different lighting setups, one poster that had to look like it came from a single camera. The brief: recap a season of Festember in one shareable image, built from real event photos that had nothing in common except the event.',
+      'Twelve phones, a dozen different lighting setups, one poster that had to look like it came from a single camera. The goal: recap a season of Festember in one shareable image, built from real event photos that had nothing in common except the event.',
     role: 'Solo. Sourced and selected the photos, built the composite.',
     roles: ['Photo Curation', 'Composite Design'],
+    externalLink: { label: 'View on Instagram', url: 'https://www.instagram.com/p/DVL6ZfdCEko/?igsh=MW1jMzh1N2JxZHVpMA==' },
     keyDecisions: [
       'Film-strip framing and sprocket holes, so casual phone photos read as memories, not screenshots.',
       'One halftone duotone treatment across every photo, the actual heavy lifting that made a dozen mismatched shots look like they belonged together.',
@@ -340,11 +345,11 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 4000,
     coverHeight: 3000,
     brief:
-      'The brief: design a cycling brand mark that doesn’t lean on a literal bike icon to prove it’s about cycling.',
+      'The goal: design a cycling brand mark that doesn’t lean on a literal bike icon to prove it’s about cycling.',
     role: 'Solo.',
     roles: ['Brand Identity', 'Wordmark Design', 'Applications'],
     keyDecisions: [
-      'The "l" doubles as a handlebar and seat post, the "o" closes as a wheel — the reference is built into the letters themselves, not bolted on next to them.',
+      'The "l" doubles as a handlebar and seat post, the "o" closes as a wheel: the reference is built into the letters themselves, not bolted on next to them.',
       'Orange instead of the eco-green every cycling brand reaches for by default.',
       'A geometric sans, so it reads as an app, not a cycling club crest.',
     ],

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
+import { ExternalLink, Quote } from 'lucide-react';
 import type { GraphicProject } from '@/lib/graphicDesign';
 import VisualSequence from '@/components/graphic-design/VisualSequence';
 import ScrollVortex from '@/components/graphic-design/ScrollVortex';
@@ -73,6 +74,17 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
                 {r}
               </span>
             ))}
+            {project.externalLink && (
+              <a
+                href={project.externalLink.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1 text-xs text-white/70 transition-colors duration-200 ease-out hover:border-white/30 hover:text-white"
+              >
+                {project.externalLink.label}
+                <ExternalLink className="h-3 w-3" strokeWidth={2} />
+              </a>
+            )}
           </div>
         </motion.div>
 
@@ -130,14 +142,13 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
           transition={{ duration: 0.7, ease: EASE }}
           className="group"
         >
-          <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.25em] text-white/35">
-            <span className="h-1 w-1 rounded-full bg-white/35 transition-colors duration-300 ease-out group-hover:bg-white/70" />
-            Insight
-          </span>
-          <span aria-hidden className="mt-3 block font-serif text-6xl leading-none text-white/15 transition-colors duration-300 ease-out group-hover:text-white/35 sm:text-7xl">
-            “
-          </span>
-          <blockquote className="text-balance -mt-3 text-2xl font-medium leading-snug text-white/90 sm:text-3xl">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-white/15 text-white/50 transition-colors duration-300 ease-out group-hover:border-white/40 group-hover:text-white/90">
+              <Quote aria-hidden className="h-4 w-4" strokeWidth={2.25} />
+            </span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.25em] text-white/50">Insight</span>
+          </div>
+          <blockquote className="text-balance mt-6 text-2xl font-medium leading-snug text-white/90 sm:text-3xl">
             {project.caption}
           </blockquote>
           <span

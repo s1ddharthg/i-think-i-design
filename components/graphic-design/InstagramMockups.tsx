@@ -206,7 +206,7 @@ export function InstagramPost({
       />
       <div className="px-3 pt-2 pb-3">
         <p className="text-[12px] font-semibold text-black">{liked ? '2,482' : '2,481'} likes</p>
-        <p className="mt-0.5 text-[13px] leading-snug text-black">
+        <p className="mt-0.5 line-clamp-2 text-[13px] leading-snug text-black">
           <span className="font-semibold">{HANDLE}</span> {postCaption}
         </p>
       </div>
