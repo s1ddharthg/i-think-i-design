@@ -61,19 +61,18 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
             {project.title}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-white/60">{project.tagline}</p>
-          <span className="mt-4 inline-block rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">
-            {project.discipline}
-          </span>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="inline-block rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">
+              {project.discipline}
+            </span>
+            {project.roles.map((r) => (
+              <span key={r} className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-xs text-white/50">{r}</span>
+            ))}
+          </div>
         </motion.div>
 
         <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={fadeUp} className="mt-10 border-t border-white/10 pt-10">
           <p className="text-pretty max-w-[62ch] text-lg leading-relaxed text-white/80">{project.brief}</p>
-          <div className="mt-6 flex flex-wrap gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
-            {project.roles.map((r) => (
-              <span key={r} className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">{r}</span>
-            ))}
-          </div>
-          <p className="mt-3 text-sm text-white/50">{project.role}</p>
         </motion.div>
 
         {/* The thinking — the PM layer: pain points, competitive landscape,
@@ -96,6 +95,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
               <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/75">{project.process.approach}</p>
             </div>
 
+            {/* Outcome — hidden in production for now
             <div className="mt-8 border-t border-white/10 pt-8">
               <h3 className="text-lg font-semibold text-white/90">The outcome</h3>
               <ul className="mt-4 flex flex-wrap gap-2">
@@ -105,6 +105,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
               </ul>
               <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/85">{project.process.outcome}</p>
             </div>
+            */}
           </motion.div>
         )}
 
@@ -132,7 +133,6 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                   <Image src={b.src} alt={b.alt} width={1600} height={1000} sizes="(max-width:768px) 92vw, 1100px" className="h-auto w-full" />
                 </div>
-                <figcaption className="mt-3 text-sm text-white/50">{b.caption}</figcaption>
               </motion.figure>
             ))}
           </div>
@@ -219,15 +219,26 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
         </div>
       )}
 
-      {/* Caption + reflection */}
-      <div className="mx-auto max-w-4xl px-6 py-20">
-        <motion.p initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.8, ease: EASE }} className="text-balance text-2xl font-medium leading-snug text-white/90 sm:text-3xl">
-          “{project.caption}”
-        </motion.p>
-        <motion.div initial={reduce ? false : { opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7, ease: EASE }} className="mt-12 rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10">
-          <span className="text-xs uppercase tracking-[0.2em] text-white/50">{project.reflectionHeading}</span>
-          <p className="text-pretty mt-4 text-lg leading-relaxed text-white/70">{project.reflection}</p>
-        </motion.div>
+      {/* Insight — the pull-quote, standing on its own */}
+      <div className="mx-auto max-w-3xl px-6 py-24 sm:py-28">
+        <motion.figure
+          initial={reduce ? false : { opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.7, ease: EASE }}
+          className="group"
+        >
+          <span aria-hidden className="block font-serif text-6xl leading-none text-white/15 transition-colors duration-300 ease-out group-hover:text-white/35 sm:text-7xl">
+            “
+          </span>
+          <blockquote className="text-balance -mt-3 text-2xl font-medium leading-snug text-white/90 sm:text-3xl">
+            {project.caption}
+          </blockquote>
+          <span
+            aria-hidden
+            className="mt-6 block h-px w-16 origin-left scale-x-75 bg-white/25 transition-all duration-300 ease-out group-hover:w-24 group-hover:scale-x-100 group-hover:bg-white/60"
+          />
+        </motion.figure>
       </div>
 
       <ViewSimilar slug={project.slug} />

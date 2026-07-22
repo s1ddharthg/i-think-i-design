@@ -122,25 +122,14 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
       {
-        id: 'home',
-        label: 'Home',
-        blurb: 'One home screen, three services. The errand is the choice: food, laundry, or groceries, not a category tree.',
+        id: 'categories',
+        label: 'Categories',
+        blurb: 'One home screen, three services, and a browse view for each: food, groceries, and laundry share the same skeleton, so nothing feels bolted on.',
         device: 'iphone',
         screens: [
           { src: img('velo', 'home.svg'), alt: 'Vélo home screen with three service cards' },
-          { src: img('velo', 'mez.svg'), alt: 'Vélo services screen' },
-          { src: img('velo', 'profile.svg'), alt: 'Vélo profile screen' },
-        ],
-      },
-      {
-        id: 'categories',
-        label: 'Categories',
-        blurb: 'Food, groceries, and laundry each get their own browse view built on the same skeleton, so nothing feels bolted on.',
-        device: 'iphone',
-        screens: [
           { src: img('velo', 'food-category.svg'), alt: 'Food category screen' },
           { src: img('velo', 'groceries-category.svg'), alt: 'Groceries category screen' },
-          { src: img('velo', 'add-groceries.svg'), alt: 'Add groceries to cart screen' },
           { src: img('velo', 'laundry.svg'), alt: 'Laundry service screen' },
         ],
       },
@@ -150,13 +139,14 @@ export const uiuxProjects: UiuxProject[] = [
         blurb: 'The cart got a second pass: a revamp that trimmed checkout down to the fields that actually decide the order.',
         device: 'iphone',
         screens: [
-          { src: img('velo', 'cart.svg'), alt: 'Cart for snacks and food' },
           { src: img('velo', 'revamped-cart.svg'), alt: 'Revamped cart screen' },
+          { src: img('velo', 'add-groceries.svg'), alt: 'Add groceries to cart screen' },
+          { src: img('velo', 'mez.svg'), alt: 'Vélo services screen' },
+          { src: img('velo', 'profile.svg'), alt: 'Vélo profile screen' },
         ],
       },
     ],
     extras: [
-      { kind: 'board', src: img('velo', 'cover.png'), alt: 'Three Vélo phones on a night sky', caption: 'The hero: the wordmark surviving across three screens at once.' },
       { kind: 'board', src: img('velo', 'main-board.png'), alt: 'Vélo home screen presentation board', caption: 'Home, where three services share one calm surface.' },
       { kind: 'board', src: img('velo', 'food-board.png'), alt: 'Vélo food ordering presentation board', caption: 'Food, the busiest of the three services, in context.' },
     ],
@@ -258,7 +248,6 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('festember', 'app/board-cover.svg'), alt: 'Festember app presentation board', caption: 'The neutral app, presented on its own terms.' },
       { kind: 'board', src: img('festember', 'app/board-onboarding.svg'), alt: 'Festember app onboarding board', caption: 'Onboarding: the reusable front door.' },
       { kind: 'board', src: img('festember', 'app/board-event.svg'), alt: 'Festember app event board', caption: 'Fashionistas Gala: the real event that anchored the ticketing flow.' },
       { kind: 'board', src: img('festember', 'app/board-ticketing.svg'), alt: 'Festember app ticketing board', caption: 'Ticketing, from listing to confirmation.' },
@@ -313,7 +302,6 @@ export const uiuxProjects: UiuxProject[] = [
         label: 'Desktop',
         blurb: 'The full-size noir hero and the About section: the silhouette treatment given the real estate it was built for.',
         device: 'mac',
-        url: 'festember.com',
         screens: [
           { src: img('festember', 'web/highlights.svg'), alt: 'Festember website hero: Saga of Secrets' },
           { src: img('festember', 'web/about.svg'), alt: 'Festember website About section' },
@@ -331,15 +319,7 @@ export const uiuxProjects: UiuxProject[] = [
         ],
       },
     ],
-    extras: [
-      { kind: 'board', src: img('festember', 'web/cover.png'), alt: 'Festember website cover', caption: 'Saga of Secrets: the year’s marketing face.' },
-      {
-        kind: 'compare',
-        caption: 'The real live festember.com next to my hero, same theme, held to the same noir treatment.',
-        before: { src: img('festember', 'web/live-site.jpg'), alt: 'Live festember.com Saga of Secrets homepage', label: 'festember.com, live' },
-        after: { src: img('festember', 'web/highlights.svg'), alt: 'Redesigned Festember hero', label: 'My re-skin' },
-      },
-    ],
+    extras: [],
   },
 
   // ──────────────────────────────────────────────────────── TuteDude
@@ -404,7 +384,6 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('tutedude', 'cover.svg'), alt: 'TuteDude redesign cover', caption: 'The redesign, refund offer leading.' },
       { kind: 'board', src: img('tutedude', 'why.svg'), alt: 'Why TuteDude four-promise value grid', caption: 'The value prop broken into four scannable promises.' },
       {
         kind: 'compare',
@@ -466,7 +445,6 @@ export const uiuxProjects: UiuxProject[] = [
       },
     ],
     extras: [
-      { kind: 'board', src: img('tradeview', 'cover.svg'), alt: 'TradeView landing board', caption: 'The landing: the whole “serious fintech” pitch in one glow.' },
       { kind: 'board', src: img('tradeview', 'event.svg'), alt: 'TradeView Tesla Stocks Drop board', caption: 'Tesla Stocks Drop: the differentiator, full size.' },
     ],
   },
