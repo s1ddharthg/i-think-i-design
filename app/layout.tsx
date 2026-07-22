@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 const SITE_NAME = "Siddharth G";
-const TITLE = "Siddharth G — UI/UX & Graphic Designer";
+const TITLE = "Siddharth G - UI/UX & Graphic Designer";
 const DESCRIPTION =
   "Hey, I'm Sid, a UI/UX and graphic designer. This little corner of the internet is where I showcase things I'm proud of.";
 
@@ -97,7 +97,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-black" suppressHydrationWarning>
         <script
           type="application/ld+json"
-          // Static, hardcoded structured data — no user input reaches this string.
+          // Static, hardcoded structured data - no user input reaches this string.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
         <SmoothScroll />

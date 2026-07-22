@@ -68,13 +68,10 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
 
         <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={fadeUp} className="mt-10 border-t border-white/10 pt-10">
           <p className="text-pretty max-w-[62ch] text-lg leading-relaxed text-white/80">{project.brief}</p>
-          <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">My Role</span>
-            <div className="flex flex-wrap gap-2">
-              {project.roles.map((r) => (
-                <span key={r} className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">{r}</span>
-              ))}
-            </div>
+          <div className="mt-6 flex flex-wrap gap-2 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
+            {project.roles.map((r) => (
+              <span key={r} className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/70">{r}</span>
+            ))}
           </div>
           <p className="mt-3 text-sm text-white/50">{project.role}</p>
         </motion.div>
@@ -85,39 +82,28 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           <motion.div initial={reduce ? false : 'hidden'} whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={fadeUp} className="mt-20">
             <h2 className="text-2xl font-semibold tracking-tight text-white/95">The thinking</h2>
 
-            <div className="mt-8 grid gap-8 border-t border-white/10 pt-8 sm:grid-cols-2">
-              <div>
-                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The user’s problem</span>
-                <p className="text-pretty mt-3 leading-relaxed text-white/75">{project.process.userPain}</p>
-              </div>
-              <div>
-                <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The business problem</span>
-                <p className="text-pretty mt-3 leading-relaxed text-white/75">{project.process.businessPain}</p>
+            <div className="mt-8 border-t border-white/10 pt-8">
+              <h3 className="text-lg font-semibold text-white/90">The problem</h3>
+              <div className="mt-4 grid gap-6 sm:grid-cols-2">
+                <p className="text-pretty leading-relaxed text-white/75">{project.process.userPain}</p>
+                <p className="text-pretty leading-relaxed text-white/75">{project.process.businessPain}</p>
               </div>
             </div>
 
             <div className="mt-8 border-t border-white/10 pt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">What I studied</span>
-              <p className="text-pretty mt-3 max-w-[68ch] leading-relaxed text-white/75">{project.process.competitors}</p>
+              <h3 className="text-lg font-semibold text-white/90">The approach</h3>
+              <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/75">{project.process.competitors}</p>
+              <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/75">{project.process.approach}</p>
             </div>
 
             <div className="mt-8 border-t border-white/10 pt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The approach</span>
-              <p className="text-pretty mt-3 max-w-[68ch] leading-relaxed text-white/75">{project.process.approach}</p>
-            </div>
-
-            <div className="mt-8 border-t border-white/10 pt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">What I’d call success</span>
-              <ul className="mt-3 flex flex-wrap gap-2">
+              <h3 className="text-lg font-semibold text-white/90">The outcome</h3>
+              <ul className="mt-4 flex flex-wrap gap-2">
                 {project.process.kpis.map((k) => (
                   <li key={k} className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-white/70">{k}</li>
                 ))}
               </ul>
-            </div>
-
-            <div className="mt-8 border-t border-white/10 pt-8">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">Where it landed</span>
-              <p className="text-pretty mt-3 max-w-[68ch] leading-relaxed text-white/85">{project.process.outcome}</p>
+              <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/85">{project.process.outcome}</p>
             </div>
           </motion.div>
         )}
@@ -140,8 +126,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
       {/* Mockup showcase — the boards, before you interact with the flow */}
       {boards.length > 0 && (
         <div className="mx-auto max-w-6xl px-6 pt-16 pb-8">
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The mockups</span>
-          <div className="mt-6 flex flex-col gap-10">
+          <div className="flex flex-col gap-10">
             {boards.map((b, i) => (
               <motion.figure key={i} initial={reduce ? false : { opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.25 }} transition={{ duration: 0.8, ease: EASE }}>
                 <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
@@ -159,7 +144,7 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
         <div className="grid gap-10 lg:grid-cols-[240px_1fr]">
           <aside className="hidden lg:block">
             <div className="sticky top-28 pr-4">
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">The flow</span>
+              <span className="text-sm font-medium text-white/70">Contents</span>
               <ul className="mt-5 flex flex-col gap-1">
                 {project.sections.map((s) => {
                   const on = active === s.id;
@@ -259,7 +244,7 @@ function ViewSimilar({ slug }: { slug: string }) {
   return (
     <section className="border-t border-white/10 bg-black px-6 py-24 text-white md:px-10">
       <div className="mx-auto max-w-5xl">
-        <span className="text-xs uppercase tracking-[0.3em] text-white/50">View similar</span>
+        <span className="text-sm font-medium text-white/70">View similar</span>
         <div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
           {similar.map((p, k) => (
             <motion.div key={p.slug} initial={reduce ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7, ease: EASE, delay: k * 0.08 }}>

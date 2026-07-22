@@ -76,7 +76,7 @@ export const graphicProjects: GraphicProject[] = [
     keyDecisions: [
       'Airbnb got coral because the question was about workspaces people actually live in, and coral feels domestic in a way a tech blue never would.',
       'Amazon got amber, the color of every delivery box that’s ever shown up at your door. The poster is delivery boxes, so the color had to be too.',
-      'YouTube got a flat sports-jersey green, because "collaborative learning" needed to feel like a study group, not a keynote.',
+      'YouTube got a flat sports-jersey green to push against expectations. A platform so strongly associated with red felt more interesting viewed through a completely different lens.',
       'Every poster gets exactly one silhouette. If an idea couldn’t survive being reduced to a single human shape, it wasn’t finished yet.',
       'The three posters share a family of background linework, close enough that they read as siblings, different enough that none of them is a copy-paste of the last.',
     ],
@@ -152,6 +152,7 @@ export const graphicProjects: GraphicProject[] = [
     role: 'Solo.',
     roles: ['Art Direction', 'Cover Design', 'Typography'],
     keyDecisions: [
+      'Leaned on Figma-native shapes and UI chrome in the artwork itself, staying tied to the actual software the challenge was built in.',
       'Went maximalist on purpose. Stickers, arrows, a distressed concrete texture, because a quiet minimal cover for a "challenge" post would’ve read as an apology, not an invitation.',
       'Kept the tool credit and my handle visible, since a challenge post is basically a tiny brand launch and I wanted it to look like one.',
     ],
@@ -188,6 +189,7 @@ export const graphicProjects: GraphicProject[] = [
     role: 'Solo poster designer, briefed directly by Pragyan’s sponsor liaison team.',
     roles: ['Poster Design', 'Client Briefing', 'Typography'],
     keyDecisions: [
+      'AI/ML-coded visual elements, leaning on deep learning and image-processing motifs, to symbolise the hackathon’s actual theme instead of a generic "hackathon" graphic.',
       'Near-black with a scanline texture, because I wanted this to feel like it belonged in a data center, not a college corridor.',
       'A slab typeface heavy enough to hold its ground on top of a busy dark background.',
       'Two photo "chips" styled like scan windows, a crowd shot and an AI visual, so the poster felt evidence-based without new event photography.',
@@ -249,7 +251,7 @@ export const graphicProjects: GraphicProject[] = [
         kind: 'text',
         body: 'Last season’s cover was a sticker collage: busy, dense, collected. This one is three spray-paint marks and a hand-drawn speech bubble, and I let it be that different on purpose. The reasoning: a podcast that prides itself on not sounding rehearsed shouldn’t have art that looks focus-grouped into consistency. The tradeoff is real, though: a listener scrolling past both seasons back to back has no visual thread to grab onto, and that’s the next problem worth solving, not this one.',
       },
-      { kind: 'ig-post', src: img('pragyan-podcast', '05-flat-cover.png'), alt: 'Pragyan Podcast Season 6 cover art', postCaption: 'New season, new noise. Season 6 Ep. 1, out now 🎙️', caption: 'The announcement post, cover art doing double duty as the launch asset.' },
+      { kind: 'ig-post', src: img('pragyan-podcast', '05-flat-cover.png'), alt: 'Pragyan Podcast Season 6 cover art', postCaption: 'Season 6, Episode 1: Superstitions and I, out now 🎙️', caption: 'The announcement post, cover art doing double duty as the launch asset.' },
       {
         kind: 'gallery',
         images: [
@@ -270,7 +272,7 @@ export const graphicProjects: GraphicProject[] = [
     coverWidth: 2818,
     coverHeight: 1344,
     brief:
-      'Key art for the live-events and nightlife-entertainment industry: Pixalette, a retro arcade night, where the headline treatment had to do the job a logo usually does.',
+      'Key art for a design event built around a retro-futurism theme: Pixalette, where the headline treatment had to do the job a logo usually does.',
     role: 'Solo. The 3D render, the layout, the info cards.',
     roles: ['3D Render', 'Layout', 'Info Cards'],
     keyDecisions: [
@@ -336,7 +338,7 @@ export const graphicProjects: GraphicProject[] = [
     keyDecisions: [
       'The "l" doubles as a handlebar and seat post, the "o" closes as a wheel: the reference is built into the letters themselves, not bolted on next to them.',
       'Orange instead of the eco-green every delivery brand reaches for by default, closer to a hazard vest than a leaf.',
-      'A geometric sans so it reads at a glance on a moving bag, not just a stationary app icon.',
+      'A geometric sans, so it reads as an app, not a cycling club crest, and holds up at a glance on a moving bag, not just a stationary icon.',
     ],
     reflectionHeading: 'Mileage is the real test',
     reflection:

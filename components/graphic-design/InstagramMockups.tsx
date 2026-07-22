@@ -177,6 +177,7 @@ export function InstagramPost({
 
   return (
     <motion.div
+      data-cursor-surface="light"
       whileHover={{ y: -6 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="overflow-hidden rounded-lg bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)] hover:shadow-[0_28px_70px_-15px_rgba(0,0,0,0.75)]"
@@ -264,7 +265,7 @@ export function InstagramGrid({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)]">
+    <div data-cursor-surface="light" className="overflow-hidden rounded-lg bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)]">
       <div className="flex items-center gap-2.5 px-3 py-2.5">
         <div className="h-7 w-7 shrink-0 rounded-full bg-gradient-to-br from-amber-300 via-rose-400 to-indigo-500 p-[1.5px]">
           <div className="h-full w-full rounded-full border border-white bg-white" />

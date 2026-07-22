@@ -14,9 +14,14 @@ function modeFor(el: Element | null): Mode {
   return 'default';
 }
 
+function onLightSurface(el: Element | null): boolean {
+  return !!el?.closest('[data-cursor-surface="light"]');
+}
+
 export default function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
   const [mode, setMode] = useState<Mode>('default');
+  const [light, setLight] = useState(false);
   const [down, setDown] = useState(false);
 
   const x = useMotionValue(-100);
@@ -36,7 +41,9 @@ export default function CustomCursor() {
     const onMove = (e: PointerEvent) => {
       x.set(e.clientX);
       y.set(e.clientY);
-      setMode(modeFor(e.target as Element));
+      const target = e.target as Element;
+      setMode(modeFor(target));
+      setLight(onLightSurface(target));
     };
     const onDown = () => setDown(true);
     const onUp = () => setDown(false);
@@ -71,9 +78,16 @@ export default function CustomCursor() {
             mode === 'arrow' || mode === 'send'
               ? 'var(--accent)'
               : mode === 'link'
-                ? 'rgba(255,255,255,0.10)'
+                ? light
+                  ? 'rgba(0,0,0,0.14)'
+                  : 'rgba(255,255,255,0.10)'
                 : 'rgba(255,255,255,0)',
-          borderColor: mode === 'default' || mode === 'link' ? 'rgba(255,255,255,0.7)' : 'rgba(255,211,78,0)',
+          borderColor:
+            mode === 'default' || mode === 'link'
+              ? light
+                ? 'rgba(0,0,0,0.55)'
+                : 'rgba(255,255,255,0.7)'
+              : 'rgba(255,211,78,0)',
           borderWidth: mode === 'default' || mode === 'link' ? 1.5 : 0,
           scale: down ? 0.82 : 1,
           x: '-50%',

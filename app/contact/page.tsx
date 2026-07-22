@@ -111,8 +111,8 @@ export default function ContactPage() {
               transition={{ duration: 0.6, ease: EASE }}
               className="mt-16 max-w-md text-lg text-white/70"
             >
-              Your email client should be open with everything filled in —{' '}
-              <span style={{ color: 'var(--accent)' }}>just hit send.</span>
+              Your email client should be open with everything filled in.{' '}
+              <span style={{ color: 'var(--accent)' }}>Just hit send.</span>
             </motion.p>
           ) : (
             <motion.form
