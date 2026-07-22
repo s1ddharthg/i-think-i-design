@@ -43,7 +43,7 @@ export default function GraphicGallery() {
           </h1>
           <p className="mt-6 max-w-[62ch] text-pretty text-lg leading-relaxed text-white/60">
             A business question, a real haircare brand I made posters for uninvited, a hackathon
-            deadline that very much did — hand me any of it and my first move is finding the one
+            deadline that very much did: hand me any of it and my first move is finding the one
             shape, color, or line that can carry the whole idea. Three of these had a real client
             and a real deadline. The rest exist because waiting for someone to hand me a brief felt
             slower than writing my own.

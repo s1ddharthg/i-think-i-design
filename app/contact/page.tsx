@@ -51,7 +51,7 @@ export default function ContactPage() {
     const lines = [
       `Name: ${name}`,
       `Email: ${email}`,
-      `Looking for: ${services.length ? services.join(', ') : '—'}`,
+      `Looking for: ${services.length ? services.join(', ') : 'Not specified'}`,
       `Budget: ${formatBudget(budget)}`,
       '',
       'Project:',

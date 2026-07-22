@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import gsap from 'gsap';
+import { animate, motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 
 type DiveDetail = {
   rect: { x: number; y: number; width: number; height: number };
@@ -10,20 +10,44 @@ type DiveDetail = {
   slug: string;
 };
 
+type Pending = {
+  path: string;
+  originCenterX: number;
+  originCenterY: number;
+  originWidth: number;
+  originHeight: number;
+};
+
+const EASE_IN: [number, number, number, number] = [0.55, 0, 0.85, 0.35];
+const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
 // Listens for a 'vortex:dive' CustomEvent dispatched by WorkVortex on click.
 // Clones the clicked plane's cover into a fixed-position overlay at its exact
-// screen rect, then scales/rotates/blurs it toward the viewer — the "sucked
-// into the vortex" moment — before the black flash at its peak covers the
-// route swap. Lives in the root layout so it survives the navigation itself.
+// screen rect, flings it toward the viewer with a twisting motion-blur while
+// the world fades to black behind it, swaps the route at full black, then
+// flies the same clone from that blur back to identity landing exactly on
+// the destination case study's hero rect (marked with data-dive-target) —
+// a shared-element landing rather than a wipe. Once landed, the clone fades
+// out over the real <Image> beneath it (same rect, same crop) for an
+// invisible handoff. Lives in the root layout so it survives the navigation.
 export default function VortexTransition() {
   const router = useRouter();
   const pathname = usePathname();
   const imgRef = useRef<HTMLDivElement>(null);
-  const blackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(false);
   const [src, setSrc] = useState('');
-  const pendingRect = useRef<DiveDetail['rect'] | null>(null);
-  const pendingPath = useRef<string | null>(null);
+  const pending = useRef<Pending | null>(null);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const scaleX = useMotionValue(1);
+  const scaleY = useMotionValue(1);
+  const rotate = useMotionValue(0);
+  const blur = useMotionValue(0);
+  const saturate = useMotionValue(1);
+  const cloneOpacity = useMotionValue(1);
+  const backdropOpacity = useMotionValue(0);
+  const filter = useMotionTemplate`blur(${blur}px) saturate(${saturate})`;
 
   useEffect(() => {
     function onDive(e: Event) {
@@ -36,82 +60,114 @@ export default function VortexTransition() {
         return;
       }
 
-      pendingRect.current = rect;
-      pendingPath.current = targetPath;
+      pending.current = {
+        path: targetPath,
+        originCenterX: rect.x + rect.width / 2,
+        originCenterY: rect.y + rect.height / 2,
+        originWidth: rect.width,
+        originHeight: rect.height,
+      };
       setSrc(src);
+
+      if (imgRef.current) {
+        Object.assign(imgRef.current.style, {
+          left: `${rect.x}px`,
+          top: `${rect.y}px`,
+          width: `${rect.width}px`,
+          height: `${rect.height}px`,
+        });
+      }
+      x.set(0);
+      y.set(0);
+      scaleX.set(1);
+      scaleY.set(1);
+      rotate.set(0);
+      blur.set(0);
+      saturate.set(1);
+      cloneOpacity.set(1);
+      backdropOpacity.set(0);
+
       setActive(true);
     }
 
     window.addEventListener('vortex:dive', onDive);
     return () => window.removeEventListener('vortex:dive', onDive);
-  }, [router]);
+  }, [router, x, y, scaleX, scaleY, rotate, blur, saturate, cloneOpacity, backdropOpacity]);
 
-  // Runs once `active` flips true and the overlay has actually mounted, so
-  // the refs below are guaranteed to be populated (unlike a raw rAF, which
-  // can fire before React commits the new DOM).
+  // Flight out: grow/spin/blur toward the viewer while the world fades to
+  // black. Runs once `active` flips true and the overlay has mounted, so
+  // refs are guaranteed populated (a raw rAF can fire before React commits).
   useEffect(() => {
     if (!active) return;
-    const rect = pendingRect.current;
-    const targetPath = pendingPath.current;
-    if (!rect || !targetPath || !imgRef.current || !blackRef.current) return;
+    const p = pending.current;
+    if (!p) return;
 
-    gsap.set(imgRef.current, {
-      left: rect.x,
-      top: rect.y,
-      width: rect.width,
-      height: rect.height,
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      filter: 'blur(0px)',
-    });
-    gsap.set(blackRef.current, { opacity: 0 });
+    const opts = { duration: 0.42, ease: EASE_IN };
+    const flight = [
+      animate(scaleX, 19, opts),
+      animate(scaleY, 19, opts),
+      animate(rotate, 46, opts),
+      animate(blur, 40, opts),
+      animate(saturate, 1.7, opts),
+      animate(backdropOpacity, 1, opts),
+    ];
+    Promise.all(flight).then(() => router.push(p.path));
 
-    const tl = gsap.timeline();
-    tl.to(imgRef.current, {
-      scale: 16,
-      rotate: 10,
-      filter: 'blur(24px)',
-      duration: 0.55,
-      ease: 'power2.in',
-    });
-    tl.to(blackRef.current, { opacity: 1, duration: 0.3, ease: 'power1.in' }, 0.28);
-    tl.call(() => router.push(targetPath), undefined, 0.5);
-
-    return () => {
-      tl.kill();
-    };
+    return () => flight.forEach((f) => f.stop());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
-  // Once the new route has actually mounted, fade the black cover out.
+  // Once the new route has actually mounted: measure its hero rect and fly
+  // the clone from the mid-flight blur into an exact landing on it, fading
+  // the backdrop out as it lands. Falls back to a plain fade-out in place if
+  // no target is found.
   useEffect(() => {
-    if (!active || !pendingPath.current || pathname !== pendingPath.current) return;
-    if (!blackRef.current) return;
+    const p = pending.current;
+    if (!active || !p || pathname !== p.path) return;
 
-    gsap.to(blackRef.current, {
-      opacity: 0,
-      duration: 0.35,
-      ease: 'power1.out',
-      delay: 0.05,
-      onComplete: () => {
+    const target = document.querySelector('[data-dive-target]');
+    const rect = target?.getBoundingClientRect();
+
+    const opts = { duration: rect ? 0.45 : 0.3, ease: EASE_OUT };
+    const landing = rect
+      ? [
+          animate(x, rect.x + rect.width / 2 - p.originCenterX, opts),
+          animate(y, rect.y + rect.height / 2 - p.originCenterY, opts),
+          animate(scaleX, rect.width / p.originWidth, opts),
+          animate(scaleY, rect.height / p.originHeight, opts),
+          animate(rotate, 0, opts),
+          animate(blur, 0, opts),
+          animate(saturate, 1, opts),
+          animate(backdropOpacity, 0, opts),
+        ]
+      : [animate(cloneOpacity, 0, opts), animate(backdropOpacity, 0, opts)];
+
+    Promise.all(landing).then(() => {
+      if (!rect) {
         setActive(false);
-        pendingPath.current = null;
-        pendingRect.current = null;
-      },
+        pending.current = null;
+        return;
+      }
+      animate(cloneOpacity, 0, { duration: 0.15 }).then(() => {
+        setActive(false);
+        pending.current = null;
+      });
     });
+
+    return () => landing.forEach((f) => f.stop());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, active]);
 
   if (!active) return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[999]">
-      <div
+      <motion.div className="fixed inset-0 bg-black" style={{ opacity: backdropOpacity }} />
+      <motion.div
         ref={imgRef}
         className="fixed origin-center rounded-2xl bg-cover bg-center will-change-transform"
-        style={{ backgroundImage: src ? `url(${src})` : undefined }}
+        style={{ backgroundImage: src ? `url(${src})` : undefined, x, y, scaleX, scaleY, rotate, filter, opacity: cloneOpacity }}
       />
-      <div ref={blackRef} className="fixed inset-0 bg-black opacity-0" />
     </div>
   );
 }

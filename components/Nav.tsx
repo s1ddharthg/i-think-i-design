@@ -28,6 +28,12 @@ export default function Nav() {
       >
         <Link
           href="/"
+          onClick={() => {
+            if (pathname !== '/') return;
+            const lenis = (window as unknown as { lenis?: { scrollTo: (t: number, o?: object) => void } }).lenis;
+            if (lenis) lenis.scrollTo(0);
+            else window.scrollTo({ top: 0 });
+          }}
           className="rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-tight text-white transition-[background-color,transform] duration-150 hover:bg-white/10 active:scale-[0.97] motion-reduce:active:scale-100 sm:px-4 sm:py-2 sm:text-sm"
         >
           SG

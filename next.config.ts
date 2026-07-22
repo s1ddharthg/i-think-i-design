@@ -6,9 +6,13 @@ import type { NextConfig } from "next";
 // in that case — see https://nextjs.org/docs/app/guides/content-security-policy
 // ("Without Nonces"). Everything else stays locked to 'self': no third-party
 // scripts, fonts, or fetches run here.
+// Dev needs 'unsafe-eval' for React Fast Refresh / dev-mode stack traces.
+// Never shipped to production, where the CSP stays fully locked down.
+const isDev = process.env.NODE_ENV !== 'production';
+
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",

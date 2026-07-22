@@ -140,7 +140,7 @@ export default function Loader({ onDone }: { onDone: () => void }) {
         </div>
 
         <h1
-          aria-label="Siddharth G — UI/UX and Graphic Designer"
+          aria-label="Siddharth G, UI/UX and Graphic Designer"
           className="mt-3 flex flex-wrap justify-center gap-x-[0.5em] text-[11px] font-medium tracking-[0.35em] text-white/50 uppercase"
         >
           {['UI/UX &', 'Graphic Design'].map((word) => (

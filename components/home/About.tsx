@@ -8,7 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const experience = [
-  { year: '2025 — 2026', role: 'Creative Director', place: 'Festember', logo: '/logos/festember.png' },
+  { year: '2025–2026', role: 'Creative Director', place: 'Festember', logo: '/logos/festember.png' },
   { year: '2025', role: 'Software Intern', place: 'Oracle', logo: '/logos/oracle.svg' },
   { year: '2024', role: 'Product Management Intern', place: 'Anumati by Perfios AA', logo: '/logos/anumati.png' },
 ];
@@ -54,7 +54,7 @@ export default function About() {
         <div className="about-intro sm:w-1/2">
           <span className="block text-xs uppercase tracking-[0.3em] text-white/50">About</span>
           <p className="mt-6 text-xl leading-relaxed text-white/80">
-            Designer working across UI/UX and graphic design — obsessed with the
+            Designer working across UI/UX and graphic design, obsessed with the
             small details that make an interface feel considered, not just built.
           </p>
         </div>

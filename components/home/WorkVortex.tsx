@@ -85,8 +85,8 @@ function useCoverTextures(items: VortexItem[]) {
     if (typeof document === 'undefined') return m;
     items.forEach((item) => {
       const canvas = document.createElement('canvas');
-      canvas.width = 1200;
-      canvas.height = 800;
+      canvas.width = 1824;
+      canvas.height = 1216;
       const ctx = canvas.getContext('2d');
       if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
       const t = new THREE.CanvasTexture(canvas);

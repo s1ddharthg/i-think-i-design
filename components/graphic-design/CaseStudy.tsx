@@ -40,7 +40,7 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
 
       {/* Hero cover — contained, same format as the UI/UX case studies. */}
       <div className="mx-auto max-w-6xl px-6">
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+        <div data-dive-target className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5">
           <Image
             src={project.cover}
             alt={project.coverAlt}

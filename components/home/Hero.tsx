@@ -13,7 +13,7 @@ const HEADLINE: { text: string; accent?: boolean }[] = [
 ];
 
 const BIO_LINES = [
-  "I'm Sid — a UI/UX and graphic designer.",
+  "I'm Sid, a UI/UX and graphic designer.",
   'and nothing beats designing at 1 AM with some music on.',
 ];
 

@@ -25,7 +25,7 @@ export default function UiuxGallery() {
           </h1>
           <p className="mt-6 max-w-[62ch] text-pretty text-lg leading-relaxed text-white/60">
             A courier app, a festival’s two products, a real course page rebuilt uninvited, a
-            prediction market, a techno-fest site. Each one is a full flow — onboarding to checkout —
+            prediction market, a techno-fest site. Each one is a full flow, onboarding to checkout,
             shown the way it actually moves, inside a phone or a browser, with the honest notes left in.
           </p>
         </motion.div>

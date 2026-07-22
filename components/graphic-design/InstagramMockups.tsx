@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
 
 const HeartIcon = ({ filled }: { filled?: boolean }) => (
@@ -76,15 +76,17 @@ function ActionRow({
   onShare: () => void;
   copied: boolean;
 }) {
+  const reduce = useReducedMotion();
+
   return (
     <div className="relative flex items-center gap-3.5 px-3 pt-2.5 text-black">
       <motion.button
         type="button"
         aria-label={liked ? 'Unlike' : 'Like'}
         onClick={onLike}
-        whileHover={{ scale: 1.18, rotate: -6 }}
-        whileTap={{ scale: 0.8 }}
-        animate={liked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+        whileHover={reduce ? undefined : { scale: 1.18, rotate: -6 }}
+        whileTap={reduce ? undefined : { scale: 0.8 }}
+        animate={reduce ? undefined : liked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       >
         <HeartIcon filled={liked} />
@@ -93,8 +95,8 @@ function ActionRow({
         type="button"
         aria-label="Comment"
         onClick={onComment}
-        whileHover={{ scale: 1.18, rotate: 6 }}
-        whileTap={{ scale: 0.85 }}
+        whileHover={reduce ? undefined : { scale: 1.18, rotate: 6 }}
+        whileTap={reduce ? undefined : { scale: 0.85 }}
       >
         <CommentIcon />
       </motion.button>
@@ -102,8 +104,8 @@ function ActionRow({
         type="button"
         aria-label="Share"
         onClick={onShare}
-        whileHover={{ scale: 1.18, x: 2, y: -2 }}
-        whileTap={{ scale: 0.85 }}
+        whileHover={reduce ? undefined : { scale: 1.18, x: 2, y: -2 }}
+        whileTap={reduce ? undefined : { scale: 0.85 }}
       >
         <SendIcon />
       </motion.button>
@@ -111,8 +113,8 @@ function ActionRow({
         type="button"
         aria-label={saved ? 'Remove from saved' : 'Save'}
         onClick={onSave}
-        whileHover={{ scale: 1.18 }}
-        whileTap={{ scale: 0.8 }}
+        whileHover={reduce ? undefined : { scale: 1.18 }}
+        whileTap={reduce ? undefined : { scale: 0.8 }}
         className="ml-auto"
       >
         <BookmarkIcon filled={saved} />
@@ -120,9 +122,10 @@ function ActionRow({
       <AnimatePresence>
         {copied && (
           <motion.span
-            initial={{ opacity: 0, y: 4 }}
+            initial={{ opacity: 0, y: reduce ? 0 : 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: reduce ? 0.01 : 0.2 }}
             className="absolute -top-8 right-3 rounded-full bg-black px-2.5 py-1 text-[10px] font-medium text-white"
           >
             Link copied
@@ -134,6 +137,8 @@ function ActionRow({
 }
 
 function CommentComposer({ open }: { open: boolean }) {
+  const reduce = useReducedMotion();
+
   return (
     <AnimatePresence initial={false}>
       {open && (
@@ -141,7 +146,7 @@ function CommentComposer({ open }: { open: boolean }) {
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: reduce ? 0.01 : 0.25, ease: [0.22, 1, 0.36, 1] }}
           className="overflow-hidden px-3"
         >
           <div className="flex items-center gap-2 border-t border-black/10 py-2.5">
@@ -170,6 +175,7 @@ export function InstagramPost({
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const reduce = useReducedMotion();
   const { share, copied } = useShare(
     typeof window !== 'undefined' ? window.location.href : '',
     postCaption
@@ -178,7 +184,7 @@ export function InstagramPost({
   return (
     <motion.div
       data-cursor-surface="light"
-      whileHover={{ y: -6 }}
+      whileHover={reduce ? undefined : { y: -6 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="overflow-hidden rounded-lg bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)] hover:shadow-[0_28px_70px_-15px_rgba(0,0,0,0.75)]"
     >
@@ -219,6 +225,7 @@ function baseLikes(src: string) {
 
 function GridTile({ src, alt }: { src: string; alt: string }) {
   const [liked, setLiked] = useState(false);
+  const reduce = useReducedMotion();
   const count = baseLikes(src) + (liked ? 1 : 0);
 
   return (
@@ -232,11 +239,11 @@ function GridTile({ src, alt }: { src: string; alt: string }) {
         alt={alt}
         fill
         sizes="(min-width: 1024px) 33vw, 33vw"
-        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        className="object-cover transition-transform duration-500 ease-out motion-reduce:transition-none group-hover:scale-[1.03] motion-reduce:group-hover:scale-100"
       />
       <div className="absolute inset-0 flex items-center justify-center gap-4 bg-black/0 opacity-0 transition-all duration-200 group-hover:bg-black/25 group-hover:opacity-100">
         <motion.span
-          whileHover={{ scale: 1.15 }}
+          whileHover={reduce ? undefined : { scale: 1.15 }}
           className="flex items-center gap-1.5 text-sm font-semibold text-white"
         >
           <HeartIcon filled={liked} />
