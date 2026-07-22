@@ -64,6 +64,16 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
             {project.title}
           </h1>
           <p className="mt-5 max-w-xl text-lg text-white/60">{project.tagline}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            {project.roles.map((r) => (
+              <span
+                key={r}
+                className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1 text-xs text-white/50"
+              >
+                {r}
+              </span>
+            ))}
+          </div>
         </motion.div>
 
         <motion.div
@@ -76,23 +86,6 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
           <p className="text-pretty max-w-[62ch] text-lg leading-relaxed text-white/80">
             {project.brief}
           </p>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-5 py-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
-              My Role
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {project.roles.map((r) => (
-                <span
-                  key={r}
-                  className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/70"
-                >
-                  {r}
-                </span>
-              ))}
-            </div>
-          </div>
-          <p className="mt-3 text-sm text-white/50">{project.role}</p>
         </motion.div>
 
         <motion.div
@@ -128,21 +121,30 @@ export default function CaseStudy({ project }: { project: GraphicProject }) {
         <VisualSequence visuals={project.visuals} />
       </div>
 
-      <div className="mx-auto max-w-4xl px-6 pb-32">
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
+      {/* Insight — the pull-quote, standing on its own */}
+      <div className="mx-auto max-w-3xl px-6 pb-32">
+        <motion.figure
+          initial={reduce ? false : { opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.4 }}
+          viewport={{ once: true, amount: 0.6 }}
           transition={{ duration: 0.7, ease: EASE }}
-          className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 sm:p-10"
+          className="group"
         >
-          <span className="text-xs uppercase tracking-[0.2em] text-white/50">
-            {project.reflectionHeading}
+          <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.25em] text-white/35">
+            <span className="h-1 w-1 rounded-full bg-white/35 transition-colors duration-300 ease-out group-hover:bg-white/70" />
+            Insight
           </span>
-          <p className="text-pretty mt-4 text-lg leading-relaxed text-white/70">
-            {project.reflection}
-          </p>
-        </motion.div>
+          <span aria-hidden className="mt-3 block font-serif text-6xl leading-none text-white/15 transition-colors duration-300 ease-out group-hover:text-white/35 sm:text-7xl">
+            “
+          </span>
+          <blockquote className="text-balance -mt-3 text-2xl font-medium leading-snug text-white/90 sm:text-3xl">
+            {project.caption}
+          </blockquote>
+          <span
+            aria-hidden
+            className="mt-6 block h-px w-16 origin-left scale-x-75 bg-white/25 transition-all duration-300 ease-out group-hover:w-24 group-hover:scale-x-100 group-hover:bg-white/60"
+          />
+        </motion.figure>
       </div>
 
       <ViewSimilar slug={project.slug} />

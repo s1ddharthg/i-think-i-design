@@ -44,6 +44,7 @@ export type GraphicProject = {
   index: string;
   title: string;
   tagline: string;
+  caption: string;
   cover: string;
   coverAlt: string;
   coverWidth: number;
@@ -65,6 +66,7 @@ export const graphicProjects: GraphicProject[] = [
     index: '01',
     title: 'Less Is More',
     tagline: 'Three questions, three brands, one shape, one color, one line each.',
+    caption: 'Can Airbnb redefine booking workspaces? One question, one shape, one color.',
     cover: img('less-is-more', '01-cover.png'),
     coverAlt: 'Airbnb, Amazon, and YouTube posters, each reduced to one silhouette and one color',
     coverWidth: 1500,
@@ -75,10 +77,9 @@ export const graphicProjects: GraphicProject[] = [
     roles: ['Concept', 'Illustration', 'Type'],
     keyDecisions: [
       'Airbnb got coral because the question was about workspaces people actually live in, and coral feels domestic in a way a tech blue never would.',
-      'Amazon got amber, the color of every delivery box that’s ever shown up at your door. The poster is delivery boxes, so the color had to be too.',
-      'YouTube got a flat sports-jersey green to push against expectations. A platform so strongly associated with red felt more interesting viewed through a completely different lens.',
+      'Amazon got amber, the color of every delivery box that’s ever shown up at your door — the poster is delivery boxes, so the color had to be too.',
+      'YouTube got a flat sports-jersey green to push against expectations. A platform so strongly associated with red felt more interesting when viewed through a completely different lens.',
       'Every poster gets exactly one silhouette. If an idea couldn’t survive being reduced to a single human shape, it wasn’t finished yet.',
-      'The three posters share a family of background linework, close enough that they read as siblings, different enough that none of them is a copy-paste of the last.',
     ],
     reflectionHeading: 'The harder constraint',
     reflection:
@@ -107,19 +108,18 @@ export const graphicProjects: GraphicProject[] = [
     index: '02',
     title: 'Moxie',
     tagline: 'A real Indian haircare brand, six pieces I made for them, uninvited.',
+    caption: 'Meet Moxie: beauty with attitude, built to earn a spot in the cart.',
     cover: img('moxie', '00-cover.svg'),
     coverAlt: 'Moxie brand cover artwork, the wordmark and packaging system on a yellow field',
     coverWidth: 1440,
     coverHeight: 1080,
     brief:
-      'Moxie is a real haircare brand in the Indian CPG/beauty industry. I’m not their designer, this set is unsolicited: six posters I made without being asked, to see if I could hold one studio’s worth of decisions across a whole set instead of one. The brief I gave myself: build from a shelf’s-eye view, packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension, and make all six look like they came out of the same studio, not six separate weekends.',
+      'Moxie is a real Indian haircare brand. Six pieces of it are mine, made uninvited — and by the fourth one, I’d basically invented a real brand’s problems for myself to solve. The brief I gave myself: build a set spanning a shelf’s-eye view, packaging, a hero shot, a review post, an ingredient callout, an ad, and a printed extension, and make all six look like they came out of the same studio, not six separate weekends.',
     role: 'Solo, brand to backend: naming direction, packaging design, campaign art direction, and the copy on every piece.',
     roles: ['Naming Direction', 'Packaging Design', 'Campaign Art Direction', 'Copywriting'],
     keyDecisions: [
       'Yellow instead of the lilac-and-sage every haircare brand defaults to, because I wanted Moxie to win the "which bottle do I see first" test on a shelf full of soft pastels.',
-      'A wordmark with a hard period: MOXIE. Because "beauty with attitude" in a soft script typeface would’ve been lying.',
-      'Three secondary colors, one per hair concern, so the full range reads as organized rather than matched by accident.',
-      'Photoreal renders for anything selling the product, illustrated characters for anything selling the feeling. The ecommerce shot has to look real. The zine card doesn’t need to.',
+      'A wordmark with a hard period — MOXIE. — because "beauty with attitude" in a soft script typeface would’ve been lying.',
       'One recurring sticker shape, reused on the ad, the ingredient graphic, and the review post, so someone scrolling fast still clocks all six as one brand.',
     ],
     reflectionHeading: 'A brand is a habit, not a logo',
@@ -143,6 +143,7 @@ export const graphicProjects: GraphicProject[] = [
     index: '03',
     title: '15 Days of UI',
     tagline: 'One loud cover, built to stop a scroll before day one.',
+    caption: '15 days, 15 screens — because 30 is just too much, isn’t it?',
     cover: img('fifteen-days-of-ui', '01-cover-flat.png'),
     coverAlt: '"15 Days of UI" poster covered in stickers on a black concrete texture',
     coverWidth: 6220,
@@ -152,9 +153,9 @@ export const graphicProjects: GraphicProject[] = [
     role: 'Solo.',
     roles: ['Art Direction', 'Cover Design', 'Typography'],
     keyDecisions: [
-      'Leaned on Figma-native shapes and UI chrome in the artwork itself, staying tied to the actual software the challenge was built in.',
-      'Went maximalist on purpose. Stickers, arrows, a distressed concrete texture, because a quiet minimal cover for a "challenge" post would’ve read as an apology, not an invitation.',
-      'Kept the tool credit and my handle visible, since a challenge post is basically a tiny brand launch and I wanted it to look like one.',
+      'Leaned on Figma-native elements to stay tied to the actual software the project was built in.',
+      'Went maximalist on purpose — stickers, arrows, a distressed concrete texture — because a quiet cover for a "challenge" post reads as an apology, not an invitation.',
+      'Kept the tool credit and handle visible, since a challenge post is basically a tiny brand launch.',
     ],
     reflectionHeading: 'Designing the invitation first',
     reflection:
@@ -180,6 +181,7 @@ export const graphicProjects: GraphicProject[] = [
     index: '04',
     title: 'Pragyan Hackathon × Kanini',
     tagline: 'A poster with a real client, a real deadline, and zero patience for instincts that didn’t fit the brief.',
+    caption: 'A 2-day AI hackathon needed to look like it belonged in a Chennai tech park, not a college hallway.',
     cover: img('pragyan-hackathon', '01-cover.png'),
     coverAlt: 'Pragyan Hackathon poster, framed, leaning against a wall',
     coverWidth: 1500,
@@ -189,10 +191,9 @@ export const graphicProjects: GraphicProject[] = [
     role: 'Solo poster designer, briefed directly by Pragyan’s sponsor liaison team.',
     roles: ['Poster Design', 'Client Briefing', 'Typography'],
     keyDecisions: [
-      'AI/ML-coded visual elements, leaning on deep learning and image-processing motifs, to symbolise the hackathon’s actual theme instead of a generic "hackathon" graphic.',
-      'Near-black with a scanline texture, because I wanted this to feel like it belonged in a data center, not a college corridor.',
-      'A slab typeface heavy enough to hold its ground on top of a busy dark background.',
-      'Two photo "chips" styled like scan windows, a crowd shot and an AI visual, so the poster felt evidence-based without new event photography.',
+      'AI/ML-coded elements with emphasis on deep learning and image processing, to symbolise the hackathon’s main theme.',
+      'Near-black with a scanline texture, so it felt like it belonged in a data center.',
+      'A slab typeface heavy enough to hold its ground on a busy dark background.',
       'One yellow, reserved for exactly four things: date, city, prize, deadline.',
     ],
     reflectionHeading: 'A two-day constraint is a good discipline',
@@ -221,18 +222,20 @@ export const graphicProjects: GraphicProject[] = [
     index: '05',
     title: 'The Pragyan Podcast',
     tagline: 'A cover for a season that sounds different on purpose.',
+    caption: 'Season 6, Episode 1. Superstitions and I.',
     cover: img('pragyan-podcast', '01-cover-spotify.png'),
     coverAlt: 'The Pragyan Podcast Season 6 cover, shown in a Spotify now-playing screen',
     coverWidth: 2460,
     coverHeight: 1536,
     brief:
-      'Cover art for the podcast and media industry. New season, new mood, though I’ll admit I didn’t plan for it to look this different from the last one. The brief: Season 6 needed cover art that said "new energy" without losing "still the same show."',
+      'New season, new mood, though I’ll admit I didn’t plan for it to look this different from the last one. The brief: the new season needed cover art that said "new energy" without losing "still the same show."',
     role: 'Solo cover designer, also this episode’s guest.',
     roles: ['Cover Design', 'Podcast Guest'],
     keyDecisions: [
-      'Spray-paint blue and citron, because the show’s whole appeal is that it doesn’t sound rehearsed, and the art needed to match that.',
-      'Split the wordmark across white and yellow so it still reads at the size it’ll actually be seen at, a podcast app thumbnail, not a poster.',
-      'The "out now!" speech bubble is hand-drawn on purpose. A podcast is a voice medium. The art should sound a little like one too.',
+      'Spray-paint blue and citron, because the show’s whole appeal is that it doesn’t sound rehearsed, and the art needed to match.',
+      'The "out now!" speech bubble is hand-drawn on purpose — a podcast is a voice medium, the art should sound a little like one too.',
+      'Split the wordmark across white and yellow so it still reads at the size it’ll actually be seen at: a podcast app thumbnail, not a poster.',
+      'Designed to survive leaving the app entirely — the same three moves read just as clearly printed flat, taped to a wall, or folded on a table.',
     ],
     reflectionHeading: 'What changes between seasons, what doesn’t',
     reflection:
@@ -267,18 +270,20 @@ export const graphicProjects: GraphicProject[] = [
     index: '06',
     title: 'Pixalette',
     tagline: 'The typography is the poster. Everything else holds it up.',
+    caption: 'Pixalette. Where the headline does all the talking.',
     cover: img('pixalette', '01-cover-macro.png'),
     coverAlt: 'Macro crop of the Pixalette 3D neon-tube lettering',
     coverWidth: 2818,
     coverHeight: 1344,
     brief:
-      'Key art for a design event built around a retro-futurism theme: Pixalette, where the headline treatment had to do the job a logo usually does.',
+      'Everything else on this poster exists to hold up the type. That’s the whole idea. The brief: design key art for Pixalette, a design event built on a theme of retro-futurism.',
     role: 'Solo. The 3D render, the layout, the info cards.',
     roles: ['3D Render', 'Layout', 'Info Cards'],
     keyDecisions: [
       'Built the letters as physical 3D neon tubes, lit like an arcade cabinet, because a flat neon text effect would’ve looked like a font choice, not a place.',
       'Amber instead of the blue-and-pink every gaming poster reaches for by default.',
       'Torn-paper info cards for the event list and contacts, so they read like flyers pinned to a board, not a slide pulled from a deck.',
+      'Rendered every letter from a slightly different camera angle across the layout, so the sign reads as one continuous space instead of a flat logo repeated at different sizes.',
     ],
     reflectionHeading: 'Cutting the default palette',
     reflection:
@@ -297,18 +302,20 @@ export const graphicProjects: GraphicProject[] = [
     index: '07',
     title: 'Festember Highlights',
     tagline: 'One poster, a dozen different phones.',
+    caption: 'A season, told in one frame. Sourced from a dozen phones, unified into one look.',
     cover: img('festy-highlights', '01-cover-flat.png'),
     coverAlt: 'Festember Highlights poster: a halftone duotone photo composite in a film-strip frame',
     coverWidth: 3110,
     coverHeight: 4050,
     brief:
-      'A recap poster for the event and social-content industry: one season of Festember distilled into a single shareable image, built from real event photos that had nothing in common except the event.',
+      'Twelve phones, a dozen different lighting setups, one poster that had to look like it came from a single camera. The brief: recap a season of Festember in one shareable image, built from real event photos that had nothing in common except the event.',
     role: 'Solo. Sourced and selected the photos, built the composite.',
     roles: ['Photo Curation', 'Composite Design'],
     keyDecisions: [
       'Film-strip framing and sprocket holes, so casual phone photos read as memories, not screenshots.',
-      'One halftone duotone treatment across every photo, which did the actual heavy lifting of making a dozen mismatched shots look like they belonged in the same poster.',
+      'One halftone duotone treatment across every photo, the actual heavy lifting that made a dozen mismatched shots look like they belonged together.',
       'A large central "F" mark, the one place for the eye to land in an otherwise busy grid.',
+      'Cropped every source photo to the same aspect ratio before laying out the grid, so twelve unrelated shots read as one deliberate sequence instead of a scrapbook.',
     ],
     reflectionHeading: 'Curation is a skill too',
     reflection:
@@ -327,18 +334,19 @@ export const graphicProjects: GraphicProject[] = [
     index: '08',
     title: 'Vélo',
     tagline: 'A wordmark for cycle couriers, built to survive a bag, a cup, and a building sign.',
+    caption: 'Vélo. Where the wordmark and the wheel are the same shape.',
     cover: img('velo', '01-cover-bag-hand.png'),
     coverAlt: 'A hand holding a Vélo courier delivery bag',
     coverWidth: 4000,
     coverHeight: 3000,
     brief:
-      'A wordmark for the food-delivery and courier-logistics industry, built around cycle couriers. One that doesn’t lean on a literal bike icon to prove it’s about cycling, and that survives a courier bag, a coffee cup, and a dark-store sign as easily as a splash screen.',
+      'The brief: design a cycling brand mark that doesn’t lean on a literal bike icon to prove it’s about cycling.',
     role: 'Solo.',
     roles: ['Brand Identity', 'Wordmark Design', 'Applications'],
     keyDecisions: [
-      'The "l" doubles as a handlebar and seat post, the "o" closes as a wheel: the reference is built into the letters themselves, not bolted on next to them.',
-      'Orange instead of the eco-green every delivery brand reaches for by default, closer to a hazard vest than a leaf.',
-      'A geometric sans, so it reads as an app, not a cycling club crest, and holds up at a glance on a moving bag, not just a stationary icon.',
+      'The "l" doubles as a handlebar and seat post, the "o" closes as a wheel — the reference is built into the letters themselves, not bolted on next to them.',
+      'Orange instead of the eco-green every cycling brand reaches for by default.',
+      'A geometric sans, so it reads as an app, not a cycling club crest.',
     ],
     reflectionHeading: 'Mileage is the real test',
     reflection:

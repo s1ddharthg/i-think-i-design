@@ -83,16 +83,20 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
 
             <div className="mt-8 border-t border-white/10 pt-8">
               <h3 className="text-lg font-semibold text-white/90">The problem</h3>
-              <div className="mt-4 grid gap-6 sm:grid-cols-2">
+              <div className={project.process.businessPain ? 'mt-4 grid gap-6 sm:grid-cols-2' : 'mt-4'}>
                 <p className="text-pretty leading-relaxed text-white/75">{project.process.userPain}</p>
-                <p className="text-pretty leading-relaxed text-white/75">{project.process.businessPain}</p>
+                {project.process.businessPain && (
+                  <p className="text-pretty leading-relaxed text-white/75">{project.process.businessPain}</p>
+                )}
               </div>
             </div>
 
             <div className="mt-8 border-t border-white/10 pt-8">
               <h3 className="text-lg font-semibold text-white/90">The approach</h3>
               <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/75">{project.process.competitors}</p>
-              <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/75">{project.process.approach}</p>
+              {project.process.approach && (
+                <p className="text-pretty mt-4 max-w-[68ch] leading-relaxed text-white/75">{project.process.approach}</p>
+              )}
             </div>
 
             {/* Outcome — hidden in production for now
@@ -228,7 +232,11 @@ export default function UiuxCaseStudy({ project }: { project: UiuxProject }) {
           transition={{ duration: 0.7, ease: EASE }}
           className="group"
         >
-          <span aria-hidden className="block font-serif text-6xl leading-none text-white/15 transition-colors duration-300 ease-out group-hover:text-white/35 sm:text-7xl">
+          <span className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.25em] text-white/35">
+            <span className="h-1 w-1 rounded-full bg-white/35 transition-colors duration-300 ease-out group-hover:bg-white/70" />
+            Insight
+          </span>
+          <span aria-hidden className="mt-3 block font-serif text-6xl leading-none text-white/15 transition-colors duration-300 ease-out group-hover:text-white/35 sm:text-7xl">
             “
           </span>
           <blockquote className="text-balance -mt-3 text-2xl font-medium leading-snug text-white/90 sm:text-3xl">

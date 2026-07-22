@@ -30,7 +30,6 @@ function SingleImage({ visual, reduce }: { visual: Extract<Visual, { kind: 'imag
         sizes="(min-width: 768px) 56vw, 92vw"
         className="h-auto w-full rounded-sm"
       />
-      <figcaption className="mt-4 text-sm text-white/45">{visual.caption}</figcaption>
     </motion.figure>
   );
 }
@@ -49,7 +48,6 @@ function FeatureRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'image
         sizes="100vw"
         className="h-auto w-full"
       />
-      <figcaption className="mt-4 text-sm text-white/45">{visual.caption}</figcaption>
     </motion.figure>
   );
 }
@@ -72,7 +70,7 @@ function GalleryTile({ src, alt, className = '' }: { src: string; alt: string; c
 }
 
 function GalleryRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'gallery' }>; reduce: boolean | null }) {
-  const { images, caption } = visual;
+  const { images } = visual;
   const Tile = GalleryTile;
 
   return (
@@ -91,7 +89,6 @@ function GalleryRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'galle
           ))}
         </div>
       )}
-      <p className="mt-4 text-sm text-white/45">{caption}</p>
     </motion.div>
   );
 }
@@ -120,7 +117,6 @@ function IgPostRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-pos
       <div className={IG_TILE}>
         <InstagramPost src={visual.src} alt={visual.alt} postCaption={visual.postCaption} />
       </div>
-      <p className="mt-4 text-sm text-white/45">{visual.caption}</p>
     </motion.div>
   );
 }
@@ -145,7 +141,6 @@ function IgPostGroup({
       {visuals.map((v, i) => (
         <div key={i} className={`flex flex-col items-center ${IG_TILE}`}>
           <InstagramPost src={v.src} alt={v.alt} postCaption={v.postCaption} />
-          <p className="mt-4 text-center text-sm text-white/45">{v.caption}</p>
         </div>
       ))}
     </motion.div>
@@ -159,7 +154,6 @@ function IgGridRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-gri
         <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen">
           <InstagramGrid images={visual.images} fullBleed />
         </div>
-        <p className="mt-4 text-sm text-white/45">{visual.caption}</p>
       </motion.div>
     );
   }
@@ -168,7 +162,6 @@ function IgGridRow({ visual, reduce }: { visual: Extract<Visual, { kind: 'ig-gri
       <div className="w-full max-w-2xl">
         <InstagramGrid images={visual.images} />
       </div>
-      <p className="mt-4 text-sm text-white/45">{visual.caption}</p>
     </motion.div>
   );
 }
