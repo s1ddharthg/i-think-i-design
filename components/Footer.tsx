@@ -26,6 +26,7 @@ const SERVICES = ['Product design', 'UI/UX', 'Brand identity', 'Web design', 'De
 function MagneticCTA() {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLAnchorElement>(null);
+  const rectRef = useRef<DOMRect | null>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 260, damping: 18, mass: 0.5 });
@@ -37,9 +38,17 @@ function MagneticCTA() {
         ref={ref}
         href="/contact"
         data-cursor="arrow"
+        onPointerEnter={(e) => {
+          if (reduce) return;
+          // Measured once per hover, not per move: reading layout on every
+          // pointermove while this same element's transform is animating
+          // forces a synchronous style recalc each frame (Lighthouse's
+          // "forced reflow" warning). The rect barely changes mid-hover.
+          rectRef.current = e.currentTarget.getBoundingClientRect();
+        }}
         onPointerMove={(e) => {
           if (reduce) return;
-          const r = e.currentTarget.getBoundingClientRect();
+          const r = rectRef.current ?? e.currentTarget.getBoundingClientRect();
           x.set(((e.clientX - (r.left + r.width / 2)) / r.width) * 22);
           y.set(((e.clientY - (r.top + r.height / 2)) / r.height) * 22);
         }}

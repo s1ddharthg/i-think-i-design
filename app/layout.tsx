@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/Nav";
-import CustomCursor from "@/components/CustomCursor";
-import SmoothScroll from "@/components/SmoothScroll";
-import ScrollVisualizer from "@/components/ScrollVisualizer";
-import MusicToggle from "@/components/MusicToggle";
-import VortexTransition from "@/components/home/VortexTransition";
+import ClientEffects from "@/components/ClientEffects";
 import { BASE_URL } from "./sitemap";
 import "./globals.css";
 
@@ -102,12 +98,8 @@ export default function RootLayout({
           // Static, hardcoded structured data - no user input reaches this string.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
-        <SmoothScroll />
         <Nav />
-        <ScrollVisualizer />
-        <MusicToggle />
-        <CustomCursor />
-        <VortexTransition />
+        <ClientEffects />
         {children}
       </body>
     </html>
