@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useTransform, type MotionValue } from 'framer-motion';
+import { audioBus } from '@/lib/audioBus';
 
 const BAR_COUNT = 14;
 
@@ -52,7 +53,7 @@ export default function ScrollVisualizer() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-y-0 left-0 z-40 hidden w-10 flex-col items-start justify-center gap-[7px] pl-3 sm:flex"
+      className="pointer-events-none fixed inset-y-0 left-0 z-40 hidden w-12 flex-col items-start justify-center gap-[9px] pl-3 sm:flex"
     >
       {Array.from({ length: BAR_COUNT }).map((_, i) => (
         <Bar key={i} index={i} count={BAR_COUNT} progress={progress} velocityRef={velocityRef} reduce={!!reduce} />
@@ -88,13 +89,21 @@ function Bar({
     if (reduce) return;
     const idle = Math.sin(t / 380 + phase) * 0.06 + 0.06;
     const v = Math.min(1, Math.abs(velocityRef.current) / 32);
-    scaleX.set(Math.min(1, 0.15 + idle + v * weight * 0.75));
+
+    let audioLevel = 0;
+    if (audioBus.analyser && audioBus.data) {
+      audioBus.analyser.getByteFrequencyData(audioBus.data);
+      const bin = Math.floor((index / count) * audioBus.data.length);
+      audioLevel = audioBus.data[bin] / 255;
+    }
+
+    scaleX.set(Math.min(1, 0.15 + idle + v * weight * 0.75 + audioLevel * weight * 0.85));
   });
 
   return (
     <motion.div
       style={{ scaleX, opacity, transformOrigin: 'left center' }}
-      className="h-[3px] w-6 rounded-r-full bg-white"
+      className="h-[4px] w-8 rounded-r-full bg-white"
     />
   );
 }

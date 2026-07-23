@@ -4,6 +4,7 @@ import Nav from "@/components/Nav";
 import CustomCursor from "@/components/CustomCursor";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollVisualizer from "@/components/ScrollVisualizer";
+import MusicToggle from "@/components/MusicToggle";
 import VortexTransition from "@/components/home/VortexTransition";
 import { BASE_URL } from "./sitemap";
 import "./globals.css";
@@ -104,6 +105,7 @@ export default function RootLayout({
         <SmoothScroll />
         <Nav />
         <ScrollVisualizer />
+        <MusicToggle />
         <CustomCursor />
         <VortexTransition />
         {children}
