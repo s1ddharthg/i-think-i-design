@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { animate, motion, useMotionTemplate, useMotionValue } from 'framer-motion';
+import { optimizedSrc } from '@/lib/optimizedImage';
 
 type DiveDetail = {
   rect: { x: number; y: number; width: number; height: number };
@@ -67,7 +68,10 @@ export default function VortexTransition() {
         originWidth: rect.width,
         originHeight: rect.height,
       };
-      setSrc(src);
+      // The clone flies up to full-viewport scale, but stays blurred/backdrop-
+      // covered for nearly all of that flight and fades over the destination's
+      // own <Image> right after landing — it never needs source resolution.
+      setSrc(optimizedSrc(src, window.innerWidth <= 768 ? 750 : 1920));
 
       if (imgRef.current) {
         Object.assign(imgRef.current.style, {

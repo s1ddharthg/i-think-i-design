@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import { graphicProjects } from '@/lib/graphicDesign';
 import { uiuxProjects } from '@/lib/uiux';
 import { drawFramedArtwork } from '@/lib/poster';
+import { optimizedSrc } from '@/lib/optimizedImage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -90,25 +91,34 @@ function useFinePointer() {
 
 // One canvas texture per project, high enough resolution that the larger
 // planes stay sharp instead of blurring up.
-function useCoverTextures(items: VortexItem[]) {
+function useCoverTextures(items: VortexItem[], lowCost: boolean) {
   const map = useMemo(() => {
     const m = new Map<string, THREE.CanvasTexture>();
     if (typeof document === 'undefined') return m;
+    // Touch devices skip fine-pointer hover/parallax anyway (see
+    // useFinePointer) and pin-scroll this whole section on the main thread —
+    // a phone GPU paying full desktop resolution for 20-30 of these textures
+    // is exactly the kind of per-frame cost that makes the pin's transform
+    // correction lag behind native scroll and look like a shake. Quartering
+    // the pixel count (and anisotropy, which is a per-pixel sampling cost)
+    // keeps the tube sharp enough at the size it's actually viewed on-screen.
+    const w = lowCost ? 912 : 1824;
+    const h = lowCost ? 608 : 1216;
     items.forEach((item) => {
       const canvas = document.createElement('canvas');
-      canvas.width = 1824;
-      canvas.height = 1216;
+      canvas.width = w;
+      canvas.height = h;
       const ctx = canvas.getContext('2d');
       if (ctx) drawFramedArtwork(ctx, canvas.width, canvas.height, item.slug, item.accent, item.category, item.title);
       const t = new THREE.CanvasTexture(canvas);
       t.colorSpace = THREE.SRGBColorSpace;
-      t.anisotropy = 16;
+      t.anisotropy = lowCost ? 4 : 16;
       t.minFilter = THREE.LinearMipmapLinearFilter;
       t.generateMipmaps = true;
       m.set(item.slug, t);
     });
     return m;
-  }, [items]);
+  }, [items, lowCost]);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,7 +126,7 @@ function useCoverTextures(items: VortexItem[]) {
       const texture = map.get(item.slug);
       if (!texture) return;
       const img = new window.Image();
-      img.src = item.cover;
+      img.src = optimizedSrc(item.cover, lowCost ? 640 : 1200);
       img.onload = () => {
         if (cancelled) return;
         const canvas = texture.image as HTMLCanvasElement;
@@ -135,7 +145,7 @@ function useCoverTextures(items: VortexItem[]) {
     return () => {
       cancelled = true;
     };
-  }, [items, map]);
+  }, [items, map, lowCost]);
 
   useEffect(() => () => map.forEach((t) => t.dispose()), [map]);
 
@@ -382,6 +392,11 @@ function CameraRig({
       scrub: true,
       pin: true,
       pinType: 'transform',
+      // A fast mobile fling can cross the pin's start point between ticks —
+      // GSAP then has to snap the section into its pinned position after the
+      // fact, which reads as a violent jump/shake. anticipatePin lets it
+      // predict the pin and ease into it instead of correcting late.
+      anticipatePin: 1,
       onUpdate: (self) => {
         raw.current = self.progress;
       },
@@ -415,7 +430,8 @@ export default function WorkVortex() {
   const items = useMemo(() => buildItems(), []);
   const rows = useMemo(() => chunkIntoRows(items, COLS), [items]);
   const heightSpan = (rows.length - 1) * ROW_GAP + ROW_GAP;
-  const textures = useCoverTextures(items);
+  const finePointer = useFinePointer();
+  const textures = useCoverTextures(items, !finePointer);
   const progressRef = useRef<SharedProgress>({ smoothed: 0 });
   // Not window.innerHeight via a CSS viewport unit (svh/dvh): this section is
   // both GSAP-pinned and holds the WebGL canvas, and mobile browsers fire
@@ -480,7 +496,11 @@ export default function WorkVortex() {
           Dive <span style={{ color: 'var(--accent)' }}>in.</span>
         </h2>
       </div>
-      <Canvas camera={{ position: [0, heightSpan / 2, 15], fov: 50 }} dpr={[1, 1.75]}>
+      <Canvas
+        camera={{ position: [0, heightSpan / 2, 15], fov: 50 }}
+        dpr={finePointer ? [1, 1.75] : 1}
+        gl={{ antialias: finePointer }}
+      >
         <ambientLight intensity={0.65} />
         <directionalLight position={[4, 6, 8]} intensity={1.4} />
         <pointLight position={[-4, -2, 6]} intensity={0.6} color="#88ccff" />

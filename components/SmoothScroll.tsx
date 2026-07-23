@@ -15,6 +15,13 @@ export default function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+    // Address-bar show/hide fires a window 'resize' mid-scroll on mobile;
+    // GSAP's default auto-refresh on resize would re-measure trigger
+    // positions right in the middle of that gesture and yank the scroll —
+    // the other half of the class of bug the ResizeObserver below guards
+    // against. ignoreMobileResize is GSAP's own official opt-out for it.
+    ScrollTrigger.config({ ignoreMobileResize: true });
+
     const lenis = new Lenis({
       lerp: 0.085, // lower = heavier, more delayed — the pulled-in feel
       wheelMultiplier: 1,
