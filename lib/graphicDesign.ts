@@ -43,6 +43,7 @@ export type GraphicProject = {
   slug: string;
   index: string;
   title: string;
+  discipline: string;
   tagline: string;
   caption: string;
   cover: string;
@@ -66,6 +67,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'less-is-more',
     index: '01',
     title: 'Less Is More',
+    discipline: 'Brand Identity',
     tagline: 'Three questions, three brands, one shape, one color, one line each.',
     caption: 'Can Airbnb redefine booking workspaces? One question, one shape, one color.',
     cover: img('less-is-more', '01-cover.png'),
@@ -108,6 +110,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'moxie',
     index: '02',
     title: 'Moxie',
+    discipline: 'Packaging Design',
     tagline: 'A real Indian haircare brand, six pieces I made for them, uninvited.',
     caption: 'Meet Moxie: beauty with attitude, built to earn a spot in the cart.',
     cover: img('moxie', '00-cover.svg'),
@@ -143,6 +146,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'fifteen-days-of-ui',
     index: '03',
     title: '15 Days of UI',
+    discipline: 'Poster Series',
     tagline: 'One loud cover, built to stop a scroll before day one.',
     caption: '15 days, 15 screens, because 30 is just too much, isn’t it?',
     cover: img('fifteen-days-of-ui', '01-cover-flat.png'),
@@ -182,6 +186,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'pragyan-hackathon',
     index: '04',
     title: 'Pragyan Hackathon × Kanini',
+    discipline: 'Event Branding',
     tagline: 'A poster with a real client, a real deadline, and zero patience for instincts that didn’t fit.',
     caption: 'A 2-day AI hackathon needed to look like it belonged in a Chennai tech park, not a college hallway.',
     cover: img('pragyan-hackathon', '01-cover.png'),
@@ -224,6 +229,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'pragyan-podcast',
     index: '05',
     title: 'The Pragyan Podcast',
+    discipline: 'Album Art',
     tagline: 'A cover for a season that sounds different on purpose.',
     caption: 'Season 6, Episode 1. Superstitions and I.',
     cover: img('pragyan-podcast', '01-cover-spotify.png'),
@@ -272,6 +278,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'pixalette',
     index: '06',
     title: 'Pixalette',
+    discipline: 'Poster Design',
     tagline: 'The typography is the poster. Everything else holds it up.',
     caption: 'Pixalette. Where the headline does all the talking.',
     cover: img('pixalette', '01-cover-macro.png'),
@@ -305,6 +312,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'festy-highlights',
     index: '07',
     title: 'Festember Highlights',
+    discipline: 'Social Design',
     tagline: 'One poster, a dozen different phones.',
     caption: 'A season, told in one frame. Sourced from a dozen phones, unified into one look.',
     cover: img('festy-highlights', '01-cover-flat.png'),
@@ -338,6 +346,7 @@ export const graphicProjects: GraphicProject[] = [
     slug: 'velo',
     index: '08',
     title: 'Vélo',
+    discipline: 'Brand Identity',
     tagline: 'A wordmark for cycle couriers, built to survive a bag, a cup, and a building sign.',
     caption: 'Vélo. Where the wordmark and the wheel are the same shape.',
     cover: img('velo', '01-cover-bag-hand.png'),

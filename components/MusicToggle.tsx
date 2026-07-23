@@ -37,12 +37,37 @@ export default function MusicToggle() {
   return (
     <div className="fixed top-6 right-6 z-50">
       <audio ref={audioRef} src="/audio/background-music-jazz.mp3" loop preload="none" />
+
+      {/* Mobile: an icon-only circle. The old text pill could grow wide
+          enough on narrow screens to run into the nav pill centered on the
+          same row — a fixed-size circle can't. */}
       <button
         type="button"
         onClick={toggle}
         aria-label={playing ? 'Mute background music' : 'Play background music'}
         aria-pressed={playing}
-        className="group flex items-center gap-2 rounded-2xl border border-white/10 bg-black/50 px-3.5 py-2 text-white backdrop-blur-xl transition-[background-color,transform] duration-200 ease-out hover:bg-white/10 active:scale-[0.97] motion-reduce:active:scale-100"
+        className="group flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-xl transition-[background-color,transform] duration-200 ease-out hover:bg-white/10 active:scale-[0.97] motion-reduce:active:scale-100 sm:hidden"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 6v4h2.5L8 12.5v-9L4.5 6H2Z" fill={playing ? 'var(--accent)' : 'currentColor'} />
+          <path
+            d="M10.8 5.2a4 4 0 0 1 0 5.6M12.7 3.3a6.8 6.8 0 0 1 0 9.4"
+            stroke={playing ? 'var(--accent)' : 'currentColor'}
+            strokeOpacity={playing ? 1 : 0.4}
+            strokeWidth="1.3"
+            strokeLinecap="round"
+            className={playing ? 'drop-shadow-[0_0_4px_var(--accent)]' : ''}
+          />
+        </svg>
+      </button>
+
+      {/* Desktop: the original labeled pill. */}
+      <button
+        type="button"
+        onClick={toggle}
+        aria-label={playing ? 'Mute background music' : 'Play background music'}
+        aria-pressed={playing}
+        className="group hidden items-center gap-2 rounded-2xl border border-white/10 bg-black/50 px-3.5 py-2 text-white backdrop-blur-xl transition-[background-color,transform] duration-200 ease-out hover:bg-white/10 active:scale-[0.97] motion-reduce:active:scale-100 sm:flex"
       >
         <span
           className={`h-1.5 w-1.5 shrink-0 rounded-full transition-[background-color,box-shadow,transform] duration-200 ease-out group-hover:scale-125 ${

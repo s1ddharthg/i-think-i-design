@@ -78,7 +78,10 @@ export default function GraphicGallery() {
                   />
                 </div>
                 <div className="mt-4">
-                  <h2 className="text-xl font-semibold tracking-tight text-white">{project.title}</h2>
+                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
+                    {project.discipline}
+                  </span>
+                  <h2 className="mt-1.5 text-xl font-semibold tracking-tight text-white">{project.title}</h2>
                 </div>
               </Link>
             </motion.div>
