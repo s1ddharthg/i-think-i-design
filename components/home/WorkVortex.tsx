@@ -361,15 +361,35 @@ function TubePlane({
 function HoverTracker({
   registry,
   hoverRef,
+  pointerOver,
   onChange,
 }: {
   registry: React.RefObject<THREE.Mesh[]>;
   hoverRef: React.RefObject<string | null>;
+  pointerOver: React.RefObject<boolean>;
   onChange: (slug: string | null) => void;
 }) {
+  const clear = () => {
+    if (hoverRef.current === null) return;
+    hoverRef.current = null;
+    onChange(null);
+  };
+
   useFrame((state) => {
     const meshes = registry.current;
     if (!meshes?.length) return;
+
+    // R3F seeds state.pointer at (0, 0), which is not "no pointer" — it is
+    // dead centre of the viewport. Raycasting from it before the visitor has
+    // moved the mouse hits whatever plane happens to be centred, so the tube
+    // came up with one project already lit and labelled on page load. Wait
+    // for a real pointer to be over the section, and drop the hover the
+    // moment it leaves.
+    if (!pointerOver.current) {
+      clear();
+      return;
+    }
+
     state.raycaster.setFromCamera(state.pointer, state.camera);
     // Skip planes the depth fade has already taken to near-nothing — a ray
     // still hits them, but labelling something the visitor cannot actually
@@ -473,17 +493,21 @@ export default function WorkVortex() {
     [bySlug]
   );
 
-  // The label follows the real cursor position, written straight to style so
-  // it never re-renders React on pointer movement.
-  useEffect(() => {
-    if (!finePointer || reduceMotion) return;
-    const onMove = (e: PointerEvent) => {
-      const el = cursorRef.current;
-      if (el) el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-    };
-    window.addEventListener('pointermove', onMove, { passive: true });
-    return () => window.removeEventListener('pointermove', onMove);
-  }, [finePointer, reduceMotion]);
+  // Scoped to the section rather than the window: this doubles as the signal
+  // that a real cursor is over the tube at all, which is what stops
+  // HoverTracker from raycasting out of R3F's (0, 0) default and lighting up
+  // a project nobody pointed at. Position is written straight to style, so
+  // moving the mouse never re-renders React.
+  const pointerOver = useRef(false);
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
+    pointerOver.current = true;
+    const el = cursorRef.current;
+    if (el) el.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+  }, []);
+  const onPointerLeave = useCallback(() => {
+    pointerOver.current = false;
+  }, []);
 
   useEffect(() => {
     const mm = gsap.matchMedia(sectionRef);
@@ -516,7 +540,11 @@ export default function WorkVortex() {
       // therefore the scroll position) mid-gesture.
       style={{ height: reduceMotion ? '100svh' : `${SCROLL_SPAN * 100}vh` }}
     >
-      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+      <div
+        className="sticky top-0 h-[100svh] w-full overflow-hidden"
+        onPointerMove={finePointer && !reduceMotion ? onPointerMove : undefined}
+        onPointerLeave={finePointer && !reduceMotion ? onPointerLeave : undefined}
+      >
         <div
           ref={headingRef}
           className="pointer-events-none absolute top-16 left-1/2 z-10 -translate-x-1/2 text-center text-white"
@@ -533,7 +561,12 @@ export default function WorkVortex() {
         >
           <CameraRig sectionRef={sectionRef} progressRef={progressRef} heightSpan={heightSpan} />
           {finePointer && !reduceMotion && (
-            <HoverTracker registry={registry} hoverRef={hoverRef} onChange={onHoverChange} />
+            <HoverTracker
+              registry={registry}
+              hoverRef={hoverRef}
+              pointerOver={pointerOver}
+              onChange={onHoverChange}
+            />
           )}
           {rows.map((row, rowIndex) => {
             const y = heightSpan / 2 - rowIndex * ROW_GAP;
