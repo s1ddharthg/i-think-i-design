@@ -121,7 +121,13 @@ export default function ContactPage() {
   // Shared between both text inputs and both selects, so the sentence keeps
   // one baseline no matter which control a word happens to be.
   const fieldBase =
-    'absolute inset-0 w-full min-w-0 rounded-none border-b-2 bg-transparent px-1 text-left transition-colors focus:outline-none';
+    // leading-none matters: the control is stretched to the mirror's line box,
+    // which the sentence sets to 1.7em, and border-b-2 takes 2px back out of
+    // that content box. Inheriting the 1.7 line-height left the text one line
+    // box taller than the space it had, so glyphs clipped along the underline.
+    // At leading-none the line box is a comfortable margin shorter than the
+    // control, and the browser centres it.
+    'absolute inset-0 w-full min-w-0 rounded-none border-b-2 bg-transparent px-1 text-left leading-none transition-colors focus:outline-none';
 
   return (
     <>
