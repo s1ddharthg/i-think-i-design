@@ -38,6 +38,17 @@ const nextConfig: NextConfig = {
     // default since it can carry inline script; sandbox it via CSP instead.
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Default minimumCacheTTL is 60s — every optimized variant revalidates,
+    // and re-writes, about once a minute under any real traffic. That dwarfs
+    // the (width × quality) combinatorics for the ~20 source images this site
+    // has; it was the actual driver behind the account's image-cache-write
+    // count, not the srcset breakpoints. These images are static build
+    // output — a new deploy is the only time they change — so cache them for
+    // a year instead of revalidating every minute.
+    minimumCacheTTL: 31536000,
+    // Avif buys little over webp for photographic covers here and doubles
+    // every write (one per format). One format, one write per variant.
+    formats: ['image/webp'],
   },
   async headers() {
     return [{ source: '/(.*)', headers: SECURITY_HEADERS }];
