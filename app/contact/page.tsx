@@ -30,10 +30,7 @@ const BUDGETS = [
   'still working it out',
 ];
 
-const ENDPOINT = 'https://api.web3forms.com/submit';
-const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
-
-type Status = 'idle' | 'sending' | 'sent' | 'error';
+type Status = 'idle' | 'sent';
 
 /**
  * An input that is exactly as wide as its own content.
@@ -75,7 +72,6 @@ export default function ContactPage() {
   const [service, setService] = useState(SERVICES[0]);
   const [budget, setBudget] = useState(BUDGETS[2]);
   const [status, setStatus] = useState<Status>('idle');
-  const [error, setError] = useState('');
   const reduce = useReducedMotion();
 
   // The mail body is the sentence the visitor actually composed, then the
@@ -92,48 +88,21 @@ export default function ContactPage() {
       `Email    ${email.trim()}`,
       `Service  ${service}`,
       `Budget   ${budget}`,
-      '',
-      `Sent from the contact form at designedbysid.work`,
     ].join('\n');
   }, [name, email, service, budget]);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  // No backend: the visitor's own mail client sends it, so there is nothing
+  // here to fail or to need a spam filter (a honeypot only matters once
+  // something is submitting on the visitor's behalf).
+  const mailtoHref = useMemo(() => {
+    const subject = `${name.trim() || 'New inquiry'} — ${service} — ${budget}`;
+    return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(composed)}`;
+  }, [name, service, budget, composed]);
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (status === 'sending') return;
-
-    // Honeypot: bots fill every field they find, humans never see this one.
-    const form = e.currentTarget;
-    if ((form.elements.namedItem('company') as HTMLInputElement | null)?.value) return;
-
-    if (!ACCESS_KEY) {
-      setStatus('error');
-      setError(
-        'The form is not connected yet. Email me directly and it will reach me just the same.'
-      );
-      return;
-    }
-
-    setStatus('sending');
-    setError('');
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          access_key: ACCESS_KEY,
-          subject: `${name.trim() || 'New inquiry'} — ${service} — ${budget}`,
-          from_name: name.trim(),
-          email: email.trim(),
-          message: composed,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.message || 'Send failed');
-      setStatus('sent');
-    } catch {
-      setStatus('error');
-      setError('That did not go through. Try again, or email me directly.');
-    }
+    window.location.href = mailtoHref;
+    setStatus('sent');
   }
 
   const container = {
@@ -192,11 +161,11 @@ export default function ContactPage() {
               className="mt-16 max-w-xl border-t border-white/10 pt-12"
             >
               <p className="text-[clamp(1.5rem,3.4vw,2.5rem)] leading-snug font-medium tracking-tight">
-                Got it, {name.trim().split(' ')[0] || 'and thank you'}.{' '}
-                <span style={{ color: 'var(--accent)' }}>I&apos;ll come back to you shortly.</span>
+                Your email client should be open with everything filled in.{' '}
+                <span style={{ color: 'var(--accent)' }}>Just hit send.</span>
               </p>
               <p className="mt-6 text-white/60">
-                If it is urgent, {CONTACT_EMAIL} reaches me faster.
+                Nothing arrived? {CONTACT_EMAIL} reaches me directly.
               </p>
             </motion.div>
           ) : (
@@ -205,17 +174,6 @@ export default function ContactPage() {
               onSubmit={onSubmit}
               className="mt-16 max-w-3xl border-t border-white/10 pt-12"
             >
-              {/* Honeypot. Hidden from sight and from assistive tech, so only
-                  something crawling the DOM will ever fill it. */}
-              <input
-                type="text"
-                name="company"
-                tabIndex={-1}
-                autoComplete="off"
-                aria-hidden
-                className="absolute h-0 w-0 opacity-0"
-              />
-
               <p className="text-[clamp(1.45rem,3.9vw,2.9rem)] leading-[1.7] font-medium tracking-tight text-white/85">
                 Hi Sid, I&apos;m{' '}
                 <FieldShell mirror={name || 'your name'}>
@@ -281,28 +239,12 @@ export default function ContactPage() {
                 .
               </p>
 
-              <div className="mt-14 flex flex-wrap items-center gap-6">
-                <button
-                  type="submit"
-                  disabled={status === 'sending'}
-                  className="w-fit rounded-full bg-white px-9 py-3.5 text-sm font-semibold text-black transition-[transform,background-color,opacity] duration-200 hover:bg-white/90 active:scale-[0.97] disabled:opacity-60 motion-reduce:active:scale-100"
-                >
-                  {status === 'sending' ? 'Sending…' : 'Send it'}
-                </button>
-
-                {status === 'error' && (
-                  <p role="alert" className="max-w-sm text-sm text-white/70">
-                    {error}{' '}
-                    <a
-                      href={`mailto:${CONTACT_EMAIL}`}
-                      className="underline underline-offset-4"
-                      style={{ color: 'var(--accent)' }}
-                    >
-                      {CONTACT_EMAIL}
-                    </a>
-                  </p>
-                )}
-              </div>
+              <button
+                type="submit"
+                className="mt-14 w-fit rounded-full bg-white px-9 py-3.5 text-sm font-semibold text-black transition-[transform,background-color] duration-200 hover:bg-white/90 active:scale-[0.97] motion-reduce:active:scale-100"
+              >
+                Send it
+              </button>
             </motion.form>
           )}
         </motion.div>
