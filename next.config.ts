@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
     // default since it can carry inline script; sandbox it via CSP instead.
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Next 16 narrowed the default to [75] and silently coerces anything else
+    // to the nearest allowed value. The vortex draws covers into WebGL
+    // textures where compression artefacts survive magnification, so it asks
+    // for 90 — which needs to be listed here to actually be honoured.
+    qualities: [75, 90],
   },
   async headers() {
     return [{ source: '/(.*)', headers: SECURITY_HEADERS }];

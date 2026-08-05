@@ -33,6 +33,20 @@ const ROW_SPEEDS = [0.55, 0.95, 1.35, 0.75];
 // camera travels for (SCROLL_SPAN - 1) viewports of scrolling.
 const SCROLL_SPAN = 3.6;
 
+// Cover resolution per device tier.
+//
+// These MUST be values Next's image optimizer accepts, which is
+// `images.imageSizes` concatenated with `images.deviceSizes` — by default
+// {32,48,64,96,128,256,384} ∪ {640,750,828,1080,1200,1920,2048,3840}. Any
+// other width makes /_next/image return 400, the cover never loads, and every
+// plane quietly keeps the generated poster it was seeded with. That failure
+// looks intentional rather than broken, which is how an earlier pass at 768
+// and 448 shipped without anyone noticing the real artwork had vanished.
+const COVER_WIDTH = { desktop: 1080, touch: 640 } as const;
+// Must appear in `images.qualities` in next.config.ts, or Next coerces it to
+// the nearest configured value.
+const COVER_QUALITY = 90;
+
 // Distance from camera at which a plane is fully present, and the distance
 // over which it fades away behind it. The camera sits outside the tube
 // (z = 15, radius 9.5) looking at the axis, and plane materials are
@@ -121,22 +135,19 @@ function useCoverTextures(items: VortexItem[], lowCost: boolean) {
   const map = useMemo(() => {
     const m = new Map<string, THREE.CanvasTexture>();
     if (typeof document === 'undefined') return m;
-    // Sized to what a plane actually occupies on screen, which is far less
-    // than it looks. The camera sits 15 out with a 50° vertical fov and the
-    // visible planes are ~24 units away, so the frustum is about 22 world
-    // units tall there; a 6.2-unit-wide plane therefore covers roughly a
-    // quarter of the viewport width — on the order of 220 CSS px, or ~390
-    // device px at the desktop dpr cap of 1.75.
+    // Matched 1:1 to COVER_WIDTH, so a cover lands in the canvas at its
+    // native size and never gets resampled twice.
     //
-    // These used to be 1824x1216. Twenty-four RGBA textures at that size,
-    // plus their mipmap chains, is around 280 MB of VRAM to render detail no
-    // display was ever going to resolve — the kind of allocation a phone
-    // answers by evicting textures mid-scroll. 768 wide keeps roughly 2x
-    // headroom over the largest a plane ever gets (hover scales it 14%) and
-    // costs about 50 MB; the touch tier renders at dpr 1, so it needs less
-    // again. Anisotropy is a per-pixel sampling cost, so it drops too.
-    const w = lowCost ? 448 : 768;
-    const h = lowCost ? 299 : 512;
+    // These were 1824x1216 originally: twenty-four RGBA textures at that size,
+    // plus mipmap chains, is around 280 MB of VRAM. 1080 wide is ~100 MB and
+    // still roughly 2.5x the largest a plane ever gets on screen (a plane
+    // covers about 220 CSS px, ~390 device px at the desktop dpr cap of 1.75,
+    // and hover scales it 14%), so the artwork stays crisp under the sharpest
+    // look a visitor can give it. The touch tier renders at dpr 1 and needs
+    // proportionally less; anisotropy is a per-pixel sampling cost, so it
+    // drops there too.
+    const w = COVER_WIDTH[lowCost ? 'touch' : 'desktop'];
+    const h = Math.round(w / (PLANE_W / PLANE_H));
     items.forEach((item) => {
       const canvas = document.createElement('canvas');
       canvas.width = w;
@@ -159,10 +170,15 @@ function useCoverTextures(items: VortexItem[], lowCost: boolean) {
       const texture = map.get(item.slug);
       if (!texture) return;
       const img = new window.Image();
-      // Matched to the canvas it is drawn into — asking the optimizer for
-      // 1200px only to scale it down into a 768px canvas was paying for
-      // bytes over the wire that were thrown away on arrival.
-      img.src = optimizedSrc(item.cover, lowCost ? 448 : 768);
+      img.src = optimizedSrc(item.cover, COVER_WIDTH[lowCost ? 'touch' : 'desktop'], COVER_QUALITY);
+      // Without this the tube silently falls back to the generated poster for
+      // any cover that fails, which is exactly how a 400 from the image
+      // optimizer went unnoticed — the planes still looked deliberate.
+      img.onerror = () => {
+        if (process.env.NODE_ENV !== 'production') {
+          console.error(`WorkVortex: cover for "${item.slug}" failed to load — ${img.src}`);
+        }
+      };
       img.onload = () => {
         if (cancelled) return;
         const canvas = texture.image as HTMLCanvasElement;
