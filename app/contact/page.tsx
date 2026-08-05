@@ -18,47 +18,123 @@ const SERVICES = [
   'Frontend development',
 ];
 
-const MIN_BUDGET = 600;
-const MAX_BUDGET = 150000;
+// The old slider ran a log scale from $600 to $150k because a linear one
+// crushed the low end. Rungs do the same job without asking a visitor to
+// aim a slider at a number they have not decided on yet.
+const BUDGETS = [
+  'under $1k',
+  '$1k – $5k',
+  '$5k – $15k',
+  '$15k – $50k',
+  '$50k+',
+  'still working it out',
+];
 
-// Log-scale so the low end (where most inquiries land) isn't crushed into
-// the first few pixels of a linear slider spanning $600 to $150k.
-function sliderToBudget(t: number) {
-  return MIN_BUDGET * Math.pow(MAX_BUDGET / MIN_BUDGET, t / 100);
-}
+const ENDPOINT = 'https://api.web3forms.com/submit';
+const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
-function formatBudget(v: number) {
-  if (v >= MAX_BUDGET - 1) return '$150k+';
-  if (v >= 1000) return `$${Math.round(v / 100) / 10}k`;
-  return `$${Math.round(v / 10) * 10}`;
+type Status = 'idle' | 'sending' | 'sent' | 'error';
+
+/**
+ * An input that is exactly as wide as its own content.
+ *
+ * A mirror span holding the same text sets the width, and the real control is
+ * absolutely positioned on top of it — no measuring, no resize listeners, no
+ * font-metric guesswork, because the mirror inherits the same font as the
+ * sentence it sits in. The mirror falls back to the placeholder so an empty
+ * field still reserves room.
+ *
+ * The control has to be taken out of flow rather than sharing a grid cell with
+ * the mirror: an <input> contributes its `size` attribute (20 characters by
+ * default) to intrinsic width and a <select> contributes its longest option,
+ * so either would have won the sizing and blown the field out to several times
+ * the width of the text actually in it.
+ */
+function FieldShell({
+  mirror,
+  className = '',
+  children,
+}: {
+  mirror: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span className={`relative inline-block max-w-full align-baseline ${className}`}>
+      <span aria-hidden className="invisible px-1 whitespace-pre">
+        {mirror || ' '}
+      </span>
+      {children}
+    </span>
+  );
 }
 
 export default function ContactPage() {
-  const [services, setServices] = useState<string[]>([]);
-  const [budgetSlider, setBudgetSlider] = useState(0);
-  const budget = useMemo(() => sliderToBudget(budgetSlider), [budgetSlider]);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [sent, setSent] = useState(false);
+  const [service, setService] = useState(SERVICES[0]);
+  const [budget, setBudget] = useState(BUDGETS[2]);
+  const [status, setStatus] = useState<Status>('idle');
+  const [error, setError] = useState('');
   const reduce = useReducedMotion();
 
-  const toggleService = (s: string) =>
-    setServices((cur) => (cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]));
-
-  const mailtoHref = useMemo(() => {
-    const subject = `New project inquiry from ${name || 'a visitor'}`;
-    const lines = [
-      `Name: ${name}`,
-      `Email: ${email}`,
-      `Looking for: ${services.length ? services.join(', ') : 'Not specified'}`,
-      `Budget: ${formatBudget(budget)}`,
+  // The mail body is the sentence the visitor actually composed, then the
+  // same facts as a block — the sentence reads well in a phone notification,
+  // the block is what you scan when you come back to it later.
+  const composed = useMemo(() => {
+    const who = name.trim() || 'Someone';
+    return [
+      `${who} is looking for ${service.toLowerCase()} help.`,
+      `Budget: ${budget}. Reach them at ${email.trim()}.`,
       '',
-      'Project:',
-      message,
-    ];
-    return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join('\n'))}`;
-  }, [name, email, message, services, budget]);
+      '—',
+      `Name     ${name.trim()}`,
+      `Email    ${email.trim()}`,
+      `Service  ${service}`,
+      `Budget   ${budget}`,
+      '',
+      `Sent from the contact form at designedbysid.work`,
+    ].join('\n');
+  }, [name, email, service, budget]);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (status === 'sending') return;
+
+    // Honeypot: bots fill every field they find, humans never see this one.
+    const form = e.currentTarget;
+    if ((form.elements.namedItem('company') as HTMLInputElement | null)?.value) return;
+
+    if (!ACCESS_KEY) {
+      setStatus('error');
+      setError(
+        'The form is not connected yet. Email me directly and it will reach me just the same.'
+      );
+      return;
+    }
+
+    setStatus('sending');
+    setError('');
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: ACCESS_KEY,
+          subject: `${name.trim() || 'New inquiry'} — ${service} — ${budget}`,
+          from_name: name.trim(),
+          email: email.trim(),
+          message: composed,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || 'Send failed');
+      setStatus('sent');
+    } catch {
+      setStatus('error');
+      setError('That did not go through. Try again, or email me directly.');
+    }
+  }
 
   const container = {
     hidden: {},
@@ -72,6 +148,11 @@ export default function ContactPage() {
     hidden: { opacity: 0, y: 24 },
     show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE } },
   };
+
+  // Shared between both text inputs and both selects, so the sentence keeps
+  // one baseline no matter which control a word happens to be.
+  const fieldBase =
+    'absolute inset-0 w-full min-w-0 rounded-none border-b-2 bg-transparent px-1 text-left transition-colors focus:outline-none';
 
   return (
     <>
@@ -88,7 +169,7 @@ export default function ContactPage() {
           initial={reduce ? false : 'hidden'}
           animate="show"
         >
-          <h1 className="text-[clamp(2.4rem,6vw,5.5rem)] font-semibold leading-[0.98] tracking-tighter">
+          <h1 className="text-[clamp(2.4rem,6vw,5.5rem)] leading-[0.98] font-semibold tracking-tighter">
             <span className="block overflow-hidden pb-[0.08em]">
               <motion.span variants={reduce ? undefined : maskedLine} className="block">
                 Start the conversation
@@ -100,124 +181,128 @@ export default function ContactPage() {
             variants={reduce ? undefined : fadeUp}
             className="mt-6 max-w-lg text-lg text-white/60"
           >
-            Let&apos;s make something amazing together. Share your goals with me, and I&apos;ll
-            help you turn them into reality.
+            Fill in the blanks. That is the whole form.
           </motion.p>
 
-          {sent ? (
-            <motion.p
+          {status === 'sent' ? (
+            <motion.div
               initial={reduce ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: EASE }}
-              className="mt-16 max-w-md text-lg text-white/70"
+              className="mt-16 max-w-xl border-t border-white/10 pt-12"
             >
-              Your email client should be open with everything filled in.{' '}
-              <span style={{ color: 'var(--accent)' }}>Just hit send.</span>
-            </motion.p>
+              <p className="text-[clamp(1.5rem,3.4vw,2.5rem)] leading-snug font-medium tracking-tight">
+                Got it, {name.trim().split(' ')[0] || 'and thank you'}.{' '}
+                <span style={{ color: 'var(--accent)' }}>I&apos;ll come back to you shortly.</span>
+              </p>
+              <p className="mt-6 text-white/60">
+                If it is urgent, {CONTACT_EMAIL} reaches me faster.
+              </p>
+            </motion.div>
           ) : (
             <motion.form
               variants={reduce ? undefined : fadeUp}
-              className="mt-16 flex max-w-2xl flex-col gap-12 border-t border-white/10 pt-12"
-              onSubmit={(e) => {
-                e.preventDefault();
-                window.location.href = mailtoHref;
-                setSent(true);
-              }}
+              onSubmit={onSubmit}
+              className="mt-16 max-w-3xl border-t border-white/10 pt-12"
             >
-              <div className="flex flex-col gap-4">
-                <span className="text-sm text-white/50">What are you looking for?</span>
-                <div className="flex flex-wrap gap-2">
-                  {SERVICES.map((s) => {
-                    const active = services.includes(s);
-                    return (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => toggleService(s)}
-                        aria-pressed={active}
-                        className={`rounded-full border px-4 py-2 text-sm transition-colors duration-200 ${
-                          active
-                            ? 'border-white bg-white text-black'
-                            : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              {/* Honeypot. Hidden from sight and from assistive tech, so only
+                  something crawling the DOM will ever fill it. */}
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden
+                className="absolute h-0 w-0 opacity-0"
+              />
 
-              <div className="grid gap-10 sm:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="contact-name" className="text-sm text-white/50">
-                    Your name
-                  </label>
+              <p className="text-[clamp(1.45rem,3.9vw,2.9rem)] leading-[1.7] font-medium tracking-tight text-white/85">
+                Hi Sid, I&apos;m{' '}
+                <FieldShell mirror={name || 'your name'}>
                   <input
-                    id="contact-name"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="border-b border-white/20 bg-transparent py-3 text-lg text-white transition-colors focus:border-white focus:outline-none"
+                    placeholder="your name"
+                    aria-label="Your name"
+                    autoComplete="name"
+                    className={`${fieldBase} border-white/25 text-white placeholder:text-white/30 focus:border-[var(--accent)]`}
                   />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="contact-email" className="text-sm text-white/50">
-                    Work email address
-                  </label>
+                </FieldShell>{' '}
+                and I&apos;m after{' '}
+                {/* A native <select>, restyled — not a hand-rolled listbox.
+                    It keeps full keyboard and screen-reader behaviour for
+                    free, and on a phone it opens the OS picker, which beats
+                    anything a custom overlay would do at that size. */}
+                <FieldShell mirror={service}>
+                  <select
+                    value={service}
+                    onChange={(e) => setService(e.target.value)}
+                    aria-label="What you are looking for"
+                    className={`${fieldBase} cursor-pointer appearance-none border-[var(--accent)] font-semibold focus:border-white`}
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    {SERVICES.map((s) => (
+                      <option key={s} value={s} className="bg-neutral-900 text-white">
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </FieldShell>{' '}
+                help. My budget is{' '}
+                <FieldShell mirror={budget}>
+                  <select
+                    value={budget}
+                    onChange={(e) => setBudget(e.target.value)}
+                    aria-label="Your budget"
+                    className={`${fieldBase} cursor-pointer appearance-none border-[var(--accent)] font-semibold focus:border-white`}
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    {BUDGETS.map((b) => (
+                      <option key={b} value={b} className="bg-neutral-900 text-white">
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                </FieldShell>
+                . Reach me at{' '}
+                <FieldShell mirror={email || 'you@company.com'}>
                   <input
-                    id="contact-email"
                     required
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="border-b border-white/20 bg-transparent py-3 text-lg text-white transition-colors focus:border-white focus:outline-none"
+                    placeholder="you@company.com"
+                    aria-label="Your email address"
+                    autoComplete="email"
+                    className={`${fieldBase} border-white/25 text-white placeholder:text-white/30 focus:border-[var(--accent)]`}
                   />
-                </div>
-              </div>
+                </FieldShell>
+                .
+              </p>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="contact-message" className="text-sm text-white/50">
-                  Tell us about your project
-                </label>
-                <textarea
-                  id="contact-message"
-                  required
-                  rows={4}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="resize-none border-b border-white/20 bg-transparent py-3 text-lg text-white transition-colors focus:border-white focus:outline-none"
-                />
-              </div>
+              <div className="mt-14 flex flex-wrap items-center gap-6">
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  className="w-fit rounded-full bg-white px-9 py-3.5 text-sm font-semibold text-black transition-[transform,background-color,opacity] duration-200 hover:bg-white/90 active:scale-[0.97] disabled:opacity-60 motion-reduce:active:scale-100"
+                >
+                  {status === 'sending' ? 'Sending…' : 'Send it'}
+                </button>
 
-              <div className="flex flex-col gap-6">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-sm text-white/50">What&apos;s your budget?</span>
-                  <span className="text-2xl font-semibold tabular-nums" style={{ color: 'var(--accent)' }}>
-                    {formatBudget(budget)}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={0.1}
-                  value={budgetSlider}
-                  onChange={(e) => setBudgetSlider(Number(e.target.value))}
-                  className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-white"
-                />
-                <div className="flex justify-between text-xs text-white/50">
-                  <span>$600</span>
-                  <span>$150k+</span>
-                </div>
+                {status === 'error' && (
+                  <p role="alert" className="max-w-sm text-sm text-white/70">
+                    {error}{' '}
+                    <a
+                      href={`mailto:${CONTACT_EMAIL}`}
+                      className="underline underline-offset-4"
+                      style={{ color: 'var(--accent)' }}
+                    >
+                      {CONTACT_EMAIL}
+                    </a>
+                  </p>
+                )}
               </div>
-
-              <button
-                type="submit"
-                className="mt-2 w-fit rounded-full bg-white px-9 py-3.5 text-sm font-semibold text-black transition-[transform,background-color] duration-200 hover:bg-white/90 active:scale-[0.97] motion-reduce:active:scale-100"
-              >
-                Send
-              </button>
             </motion.form>
           )}
         </motion.div>

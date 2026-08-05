@@ -16,10 +16,12 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  "connect-src 'self'",
+  // The contact form posts to Web3Forms. It is the only origin the site ever
+  // talks to, and only on submit — nothing here loads third-party code.
+  "connect-src 'self' https://api.web3forms.com",
+  "form-action 'self' https://api.web3forms.com",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
   "frame-ancestors 'none'",
 ].join('; ');
 
