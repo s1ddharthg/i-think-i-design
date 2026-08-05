@@ -135,6 +135,20 @@ function Swirl() {
 }
 
 export default function VortexBackdrop() {
+  // Additive blending over a full-screen point cloud is a fillrate cost, not
+  // a geometry one: every one of the 1600 sprites blends against whatever is
+  // already in the framebuffer, and that bill scales with the number of
+  // pixels, so it doubles and then some at dpr 1.5. Desktop GPUs absorb it;
+  // phones are the ones that have to render this *and* the tube canvas, so
+  // they render it at dpr 1. Only the sprite edges soften, and they are
+  // 0.045 units wide against a black backdrop.
+  const finePointer = useMemo(
+    () =>
+      typeof window !== 'undefined' &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    []
+  );
+
   // Stays running the whole scroll, including behind WorkVortex's own
   // canvas further down — that section has gaps between its image planes,
   // so a paused (frozen) swirl reads as a broken, static background. The
@@ -145,7 +159,7 @@ export default function VortexBackdrop() {
       <Canvas
         frameloop="always"
         camera={{ position: [0, 0, 10], fov: 55 }}
-        dpr={[1, 1.5]}
+        dpr={finePointer ? [1, 1.5] : 1}
         gl={{ antialias: false }}
       >
         <Swirl />

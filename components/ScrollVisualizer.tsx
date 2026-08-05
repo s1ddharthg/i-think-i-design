@@ -82,8 +82,13 @@ function Bar({
     return 0.18 + Math.max(0, 1 - dist * 3.2) * 0.72;
   });
 
-  const phase = useRef(Math.random() * Math.PI * 2).current;
-  const weight = useRef(0.5 + Math.random() * 0.9).current;
+  // Each bar needs its own idle phase and gain so the row breathes instead of
+  // pulsing in unison. These were Math.random in a useRef, which runs during
+  // render — impure, and re-rolled whenever a bar remounted. The golden ratio
+  // and golden angle spread consecutive indices about as evenly as random
+  // does, without ever producing a different answer for the same bar.
+  const phase = (index * 2.39996323) % (Math.PI * 2);
+  const weight = 0.5 + ((index * 0.61803399) % 1) * 0.9;
 
   useAnimationFrame((t) => {
     if (reduce) return;

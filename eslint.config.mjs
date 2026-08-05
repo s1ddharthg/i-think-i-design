@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Leftover agent worktrees carry their own build output. `.next/**` is
+    // root-relative, so it never matched theirs and lint drowned in compiled
+    // vendor chunks.
+    "**/.next/**",
+    ".claude/**",
   ]),
 ]);
 
