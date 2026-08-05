@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+﻿import { notFound } from 'next/navigation';
 import { getProject, projects } from '@/lib/projects';
 import { getGraphicProject } from '@/lib/graphicDesign';
 import { getUiuxProject, uiuxProjects } from '@/lib/uiux';
@@ -24,7 +24,7 @@ export default async function ProjectPage({
     return (
       <>
         <CaseStudy project={graphicProject} />
-        <Footer hideCta />
+        <Footer />
       </>
     );
   }
@@ -34,7 +34,7 @@ export default async function ProjectPage({
     return (
       <>
         <UiuxCaseStudy project={uiuxProject} />
-        <Footer hideCta />
+        <Footer />
       </>
     );
   }
@@ -77,7 +77,7 @@ export default async function ProjectPage({
           <BackButton />
         </div>
       </article>
-      <Footer hideCta />
+      <Footer />
     </>
   );
 }
