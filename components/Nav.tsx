@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import { motion, useReducedMotion } from 'framer-motion';
 
 const links = [
-  { href: '/about', label: 'About' },
   { href: '/ui-ux', label: 'UI/UX' },
   { href: '/graphic-design', label: 'Graphic Design' },
 ];
@@ -19,9 +18,9 @@ export default function Nav() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const menuActive = links.some((l) => l.href === pathname);
+  const projectsActive = links.some((l) => l.href === pathname);
 
-  // Mobile menu: close on an outside tap, same as any
+  // Mobile "Projects" dropdown: close on an outside tap, same as any
   // standard menu (there's no hover to fall back on here).
   useEffect(() => {
     if (!menuOpen) return;
@@ -54,7 +53,7 @@ export default function Nav() {
           SG
         </Link>
 
-        {/* Desktop: About, UI/UX and Graphic Design as their own capsule links. */}
+        {/* Desktop: UI/UX and Graphic Design as their own capsule links. */}
         <div className="hidden sm:contents">
           {links.map((link) => {
             const active = pathname === link.href;
@@ -81,9 +80,9 @@ export default function Nav() {
           })}
         </div>
 
-        {/* Mobile: every section collapses into one "Menu" trigger, so the
-            pill stays short enough to never run into the music toggle pinned
-            top-right. */}
+        {/* Mobile: both project sections collapse into one "Projects" trigger,
+            so the pill stays short enough to never run into the music toggle
+            pinned top-right. */}
         <div ref={menuRef} className="relative sm:hidden">
           <button
             type="button"
@@ -91,10 +90,10 @@ export default function Nav() {
             aria-expanded={menuOpen}
             aria-haspopup="true"
             className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs whitespace-nowrap transition-[color,background-color,transform] duration-150 active:scale-[0.97] motion-reduce:active:scale-100 ${
-              menuActive || menuOpen ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white'
+              projectsActive || menuOpen ? 'bg-white/10 text-white' : 'text-white/70 hover:text-white'
             }`}
           >
-            Menu
+            Projects
             <svg
               width="10"
               height="10"
