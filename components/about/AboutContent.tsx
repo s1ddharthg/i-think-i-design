@@ -30,20 +30,6 @@ const FOOTBALL_DETAIL = 'competitively, and have for about as long as I have des
 // EDIT ME — three or four artists you would actually name out loud.
 const ARTISTS = ['—', '—', '—'];
 
-const DISCIPLINES = [
-  'UI/UX design',
-  'Web & landing pages',
-  'SaaS & dashboards',
-  'Mobile apps',
-  'Wireframing & prototyping',
-  'User research',
-  'Interaction design',
-  'Visual design',
-  'Branding',
-  'Design systems',
-  'Responsive design',
-];
-
 export default function AboutContent() {
   const rootRef = useRef<HTMLElement>(null);
 
@@ -87,22 +73,20 @@ export default function AboutContent() {
           --------------------------------------------------------------- */}
           <section className="about-lead">
             <h1 className="max-w-4xl text-[clamp(2.4rem,6.5vw,5.5rem)] leading-[0.98] font-semibold tracking-tighter">
-              I&apos;m Sid, and I am{' '}
+              I&apos;m Sid. I want to know{' '}
               <span className="italic" style={{ color: 'var(--accent)' }}>
-                extremely nosy
+                why you clicked that one
               </span>{' '}
-              about why people do what they do.
+              and not the other.
             </h1>
             <p className="mt-10 max-w-xl text-lg leading-relaxed text-white/70">
-              That is the whole job, really. Watch someone hesitate over a
-              button, work out what they were bracing for, and take the reason
-              away. Everything else — the type, the grid, the motion — is in
-              service of that one moment going smoothly.
+              Watch someone hesitate over a button. Work out what they were
+              bracing for. Take the reason away. The type, the grid and the
+              motion all exist to make that half-second pass without friction.
             </p>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/70">
-              I work across design, technology and product. Good design is not
-              decoration on top of a product; it is the part that decides
-              whether the product is worth anyone&apos;s afternoon.
+              I work across design, technology and product. The interface is
+              where a product earns someone&apos;s afternoon.
             </p>
           </section>
 
@@ -122,39 +106,26 @@ export default function AboutContent() {
           {/* ---------------------------------------------------------------
               What I do
           --------------------------------------------------------------- */}
-          <section className="reveal mt-28 grid gap-12 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:gap-20">
-            <div>
-              <h2 className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight font-semibold tracking-tight">
-                What I actually do
-              </h2>
-              <p className="mt-6 text-base leading-relaxed text-white/70">
-                Interfaces, mostly. Startup sites, landing pages that have to
-                convert, e-commerce flows, SaaS products, dashboards dense
-                enough to be genuinely hard. I live in Figma, from the first
-                scrappy wireframe through research, prototyping and the design
-                system that keeps it all from drifting six months later.
+          <section className="reveal mt-28">
+            <h2 className="max-w-2xl text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight font-semibold tracking-tight">
+              The work
+            </h2>
+            <div className="mt-8 grid gap-10 sm:grid-cols-2 sm:gap-16">
+              <p className="text-base leading-relaxed text-white/70">
+                Interfaces. Startup sites, landing pages carrying a conversion
+                target, e-commerce checkouts, SaaS products, dashboards with
+                far too much on screen at once. I live in Figma, from the first
+                scrappy wireframe through research and prototyping to the
+                design system that stops the whole thing drifting six months
+                later.
               </p>
-              <p className="mt-6 text-base leading-relaxed text-white/70">
-                The part I care about is the journey — whether someone can get
-                where they were going without being clever. Usability and
-                engagement are the honest measures of that, and they happen to
-                be what the business wants too.
+              <p className="text-base leading-relaxed text-white/70">
+                What I care about is whether you get where you were going
+                without having to be clever about it. Usability and engagement
+                numbers measure that, and those are the numbers the business
+                already watches.
               </p>
             </div>
-
-            {/* Skills, deliberately quiet — a scannable column, not a tag
-                cloud. Recruiters need the keywords; the page does not need
-                to shout them. */}
-            <ul className="flex flex-col gap-0 self-start">
-              {DISCIPLINES.map((d) => (
-                <li
-                  key={d}
-                  className="border-b border-white/10 py-3 text-sm text-white/60 transition-colors hover:border-white/25 hover:text-white"
-                >
-                  {d}
-                </li>
-              ))}
-            </ul>
           </section>
 
           {/* ---------------------------------------------------------------
@@ -174,9 +145,10 @@ export default function AboutContent() {
                   Football
                 </span>
                 <p className="mt-4 text-base leading-relaxed text-white/70">
-                  I play football {FOOTBALL_DETAIL}. Eleven people solving one problem in
-                  real time, with no time to explain yourself — it has taught me
-                  more about working with a team than any process doc ever has.
+                  I play football {FOOTBALL_DETAIL}. Eleven people solve one
+                  problem in real time and nobody gets a second to explain
+                  themselves. It taught me more about working with people than
+                  any retro I have sat through.
                 </p>
               </div>
 
@@ -188,12 +160,11 @@ export default function AboutContent() {
                   Sound
                 </span>
                 <p className="mt-4 text-base leading-relaxed text-white/70">
-                  Something is always playing while I work.{' '}
+                  Something plays the entire time I work.{' '}
                   {ARTISTS.filter((a) => a && a !== '—').length
-                    ? `${ARTISTS.slice(0, -1).join(', ')} and ${ARTISTS[ARTISTS.length - 1]} do a lot of the heavy lifting.`
-                    : 'The playlist swings hard depending on whether I am exploring or executing.'}{' '}
-                  There is a whole toggle for it in the corner of this site, if
-                  you want the exact mood.
+                    ? `${ARTISTS.slice(0, -1).join(', ')} and ${ARTISTS[ARTISTS.length - 1]} carry most of it.`
+                    : 'The playlist swings depending on whether I am exploring or executing.'}{' '}
+                  Hit the toggle in the corner of this site for the mood.
                 </p>
               </div>
 
@@ -205,9 +176,9 @@ export default function AboutContent() {
                   Sneakers
                 </span>
                 <p className="mt-4 text-base leading-relaxed text-white/70">
-                  Full sneakerhead, and not sorry about it. It is the same
-                  instinct as the day job: someone agonised over that midsole
-                  stitch, and I want to know why they chose it.
+                  I collect sneakers. Somebody argued for weeks over the angle
+                  of that midsole stitch, and I want to know who won that
+                  argument.
                 </p>
               </div>
             </div>
@@ -240,8 +211,7 @@ export default function AboutContent() {
           --------------------------------------------------------------- */}
           <section className="reveal mt-32 border-t border-white/10 pt-16">
             <p className="max-w-2xl text-[clamp(1.4rem,3vw,2.25rem)] leading-snug font-medium tracking-tight text-white/90">
-              If any of that sounds like the kind of person you want on the
-              other side of the problem —
+              Tell me what you are building.
             </p>
             <Link
               href="/contact"
