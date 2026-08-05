@@ -46,20 +46,40 @@ type Status = 'idle' | 'sent';
  * default) to intrinsic width and a <select> contributes its longest option,
  * so either would have won the sizing and blown the field out to several times
  * the width of the text actually in it.
+ *
+ * Neither control paints its own text. A native <input>/<select> clips
+ * descenders (g, y, p) against its own box no matter what line-height is set
+ * on it, because the browser lays that text out with internal metrics the
+ * element's own CSS doesn't reach. A plain span doesn't have that problem, so
+ * a third layer draws the visible text; the control underneath stays only for
+ * its caret, focus ring, and — on the selects — the native picker.
  */
 function FieldShell({
   mirror,
+  display,
+  displayClassName = '',
+  displayStyle,
   className = '',
   children,
 }: {
   mirror: string;
+  display: string;
+  displayClassName?: string;
+  displayStyle?: React.CSSProperties;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
     <span className={`relative inline-block max-w-full align-baseline ${className}`}>
       <span aria-hidden className="invisible px-1 whitespace-pre">
-        {mirror || ' '}
+        {mirror || ' '}
+      </span>
+      <span
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 flex items-center whitespace-pre px-1 ${displayClassName}`}
+        style={displayStyle}
+      >
+        {display}
       </span>
       {children}
     </span>
@@ -119,15 +139,12 @@ export default function ContactPage() {
   };
 
   // Shared between both text inputs and both selects, so the sentence keeps
-  // one baseline no matter which control a word happens to be.
+  // one baseline no matter which control a word happens to be. Text and
+  // placeholder are transparent — FieldShell's display layer paints what the
+  // visitor sees — but the caret stays white so a text field still shows
+  // where typing lands.
   const fieldBase =
-    // leading-none matters: the control is stretched to the mirror's line box,
-    // which the sentence sets to 1.7em, and border-b-2 takes 2px back out of
-    // that content box. Inheriting the 1.7 line-height left the text one line
-    // box taller than the space it had, so glyphs clipped along the underline.
-    // At leading-none the line box is a comfortable margin shorter than the
-    // control, and the browser centres it.
-    'absolute inset-0 w-full min-w-0 rounded-none border-b-2 bg-transparent px-1 text-left leading-none transition-colors focus:outline-none';
+    'absolute inset-0 w-full min-w-0 rounded-none border-b-2 bg-transparent px-1 text-left text-transparent caret-white placeholder:text-transparent transition-colors focus:outline-none';
 
   return (
     <>
@@ -182,7 +199,11 @@ export default function ContactPage() {
             >
               <p className="text-[clamp(1.45rem,3.9vw,2.9rem)] leading-[1.7] font-medium tracking-tight text-white/85">
                 Hi Sid, I&apos;m{' '}
-                <FieldShell mirror={name || 'your name'}>
+                <FieldShell
+                  mirror={name || 'your name'}
+                  display={name || 'your name'}
+                  displayClassName={name ? 'text-white' : 'text-white/30'}
+                >
                   <input
                     required
                     value={name}
@@ -190,7 +211,7 @@ export default function ContactPage() {
                     placeholder="your name"
                     aria-label="Your name"
                     autoComplete="name"
-                    className={`${fieldBase} border-white/25 text-white placeholder:text-white/30 focus:border-[var(--accent)]`}
+                    className={`${fieldBase} border-white/25 focus:border-[var(--accent)]`}
                   />
                 </FieldShell>{' '}
                 and I&apos;m after{' '}
@@ -198,13 +219,17 @@ export default function ContactPage() {
                     It keeps full keyboard and screen-reader behaviour for
                     free, and on a phone it opens the OS picker, which beats
                     anything a custom overlay would do at that size. */}
-                <FieldShell mirror={service}>
+                <FieldShell
+                  mirror={service}
+                  display={service}
+                  displayClassName="font-semibold"
+                  displayStyle={{ color: 'var(--accent)' }}
+                >
                   <select
                     value={service}
                     onChange={(e) => setService(e.target.value)}
                     aria-label="What you are looking for"
                     className={`${fieldBase} cursor-pointer appearance-none border-[var(--accent)] font-semibold focus:border-white`}
-                    style={{ color: 'var(--accent)' }}
                   >
                     {SERVICES.map((s) => (
                       <option key={s} value={s} className="bg-neutral-900 text-white">
@@ -214,13 +239,17 @@ export default function ContactPage() {
                   </select>
                 </FieldShell>{' '}
                 help. My budget is{' '}
-                <FieldShell mirror={budget}>
+                <FieldShell
+                  mirror={budget}
+                  display={budget}
+                  displayClassName="font-semibold"
+                  displayStyle={{ color: 'var(--accent)' }}
+                >
                   <select
                     value={budget}
                     onChange={(e) => setBudget(e.target.value)}
                     aria-label="Your budget"
                     className={`${fieldBase} cursor-pointer appearance-none border-[var(--accent)] font-semibold focus:border-white`}
-                    style={{ color: 'var(--accent)' }}
                   >
                     {BUDGETS.map((b) => (
                       <option key={b} value={b} className="bg-neutral-900 text-white">
@@ -230,7 +259,11 @@ export default function ContactPage() {
                   </select>
                 </FieldShell>
                 . Reach me at{' '}
-                <FieldShell mirror={email || 'you@company.com'}>
+                <FieldShell
+                  mirror={email || 'you@company.com'}
+                  display={email || 'you@company.com'}
+                  displayClassName={email ? 'text-white' : 'text-white/30'}
+                >
                   <input
                     required
                     type="email"
@@ -239,7 +272,7 @@ export default function ContactPage() {
                     placeholder="you@company.com"
                     aria-label="Your email address"
                     autoComplete="email"
-                    className={`${fieldBase} border-white/25 text-white placeholder:text-white/30 focus:border-[var(--accent)]`}
+                    className={`${fieldBase} border-white/25 focus:border-[var(--accent)]`}
                   />
                 </FieldShell>
                 .
