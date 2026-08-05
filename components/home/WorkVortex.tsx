@@ -43,9 +43,10 @@ const SCROLL_SPAN = 3.6;
 // looks intentional rather than broken, which is how an earlier pass at 768
 // and 448 shipped without anyone noticing the real artwork had vanished.
 const COVER_WIDTH = { desktop: 1080, touch: 640 } as const;
-// Must appear in `images.qualities` in next.config.ts, or Next coerces it to
-// the nearest configured value.
-const COVER_QUALITY = 90;
+// Kept at Next's default quality (75, the only tier in images.qualities) so
+// a cover reuses the same cached image-optimizer variant the galleries
+// already requested, instead of writing a second one per image.
+const COVER_QUALITY = 75;
 
 // Distance from camera at which a plane is fully present, and the distance
 // over which it fades away behind it. The camera sits outside the tube
