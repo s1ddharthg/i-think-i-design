@@ -3,7 +3,7 @@
 // cards, and the work/[slug] hero (via <Poster />) so a project looks
 // identical everywhere. Seeded from the slug — never Math.random at render.
 
-function hashSeed(str: string): number {
+export function hashSeed(str: string): number {
   let h = 2166136261;
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
@@ -208,6 +208,84 @@ export function drawPoster(
   ctx.restore();
 }
 
+/**
+ * The whole realism budget for the 3D vortex, spent in 2D.
+ *
+ * The planes are flat `MeshBasicMaterial` quads and stay that way — real
+ * thickness, a lit material, or a postprocessing pass would each cost every
+ * frame on every device, and a phone GPU pays that cost worst. These four
+ * passes cost exactly one canvas draw per project, at texture-build time, and
+ * nothing afterwards: they are pixels in a texture the GPU was already going
+ * to sample.
+ *
+ * Applied to both categories after the artwork lands, so a photographic cover
+ * gets the same physical read as a generated poster.
+ */
+function drawPhysicality(ctx: CanvasRenderingContext2D, w: number, h: number, slug: string) {
+  const rnd = mulberry32(hashSeed('phys' + slug));
+  const min = Math.min(w, h);
+
+  ctx.save();
+
+  // 1 — gloss sweep. A wide, soft diagonal band of light across the surface,
+  // as if one off-camera source were raking across a print or a screen. Angle
+  // is seeded per project so a row of planes doesn't read as one flat sheet.
+  const ang = (rnd() - 0.5) * 0.9 - Math.PI / 4;
+  const r = Math.hypot(w, h);
+  const gx = Math.cos(ang) * r;
+  const gy = Math.sin(ang) * r;
+  const gloss = ctx.createLinearGradient(w / 2 - gx, h / 2 - gy, w / 2 + gx, h / 2 + gy);
+  const peak = 0.32 + rnd() * 0.3;
+  gloss.addColorStop(0, 'rgba(255,255,255,0)');
+  gloss.addColorStop(Math.max(peak - 0.16, 0.02), 'rgba(255,255,255,0)');
+  gloss.addColorStop(peak, 'rgba(255,255,255,0.115)');
+  gloss.addColorStop(Math.min(peak + 0.16, 0.98), 'rgba(255,255,255,0)');
+  gloss.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = gloss;
+  ctx.fillRect(0, 0, w, h);
+
+  // 2 — ink falloff. Real printed and photographed surfaces lose density
+  // toward their edges; a texture that stays uniformly bright to the very last
+  // pixel is the single strongest tell that something is a flat quad.
+  const fall = ctx.createRadialGradient(
+    w / 2,
+    h * 0.46,
+    min * 0.2,
+    w / 2,
+    h * 0.5,
+    Math.hypot(w, h) * 0.62
+  );
+  fall.addColorStop(0, 'rgba(0,0,0,0)');
+  fall.addColorStop(0.62, 'rgba(0,0,0,0.1)');
+  fall.addColorStop(1, 'rgba(0,0,0,0.46)');
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = fall;
+  ctx.fillRect(0, 0, w, h);
+
+  // 3 — bevel. A lit top-left edge and a shadowed bottom-right one give the
+  // plane an implied thickness and a light direction consistent with the gloss
+  // sweep above. Two hairlines, no geometry.
+  const bev = Math.max(Math.round(min * 0.006), 2);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.fillRect(0, 0, w, bev);
+  ctx.fillRect(0, 0, bev, h);
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.fillRect(0, h - bev, w, bev);
+  ctx.fillRect(w - bev, 0, bev, h);
+
+  // 4 — grain, over everything. `drawPoster` grains its own generated
+  // artwork, but photographic covers previously arrived perfectly clean and
+  // read as digital next to them. One shared surface noise unifies both.
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = 0.055;
+  ctx.fillStyle = ctx.createPattern(getNoiseTile(), 'repeat')!;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.restore();
+}
+
 // CSS object-fit: cover, drawn manually since canvas has no such primitive.
 function drawCoverFit(
   ctx: CanvasRenderingContext2D,
@@ -309,6 +387,8 @@ export function drawFramedArtwork(
       drawPoster(ctx, w, h, slug, accent);
     }
   }
+
+  drawPhysicality(ctx, w, h, slug);
 
   ctx.restore();
 }
