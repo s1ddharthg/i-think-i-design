@@ -38,17 +38,22 @@ const nextConfig: NextConfig = {
     // default since it can carry inline script; sandbox it via CSP instead.
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Default minimumCacheTTL is 60s — every optimized variant revalidates,
-    // and re-writes, about once a minute under any real traffic. That dwarfs
-    // the (width × quality) combinatorics for the ~20 source images this site
-    // has; it was the actual driver behind the account's image-cache-write
-    // count, not the srcset breakpoints. These images are static build
-    // output — a new deploy is the only time they change — so cache them for
-    // a year instead of revalidating every minute.
+    // minimumCacheTTL/formats stay set below even though unoptimized makes
+    // them inert right now — if optimization ever comes back on, they come
+    // back correct rather than reverting to the 60s-TTL/two-format defaults
+    // that caused this in the first place.
     minimumCacheTTL: 31536000,
-    // Avif buys little over webp for photographic covers here and doubles
-    // every write (one per format). One format, one write per variant.
     formats: ['image/webp'],
+    // Per-request writes to the optimizer cache (one per new url/width/
+    // quality/format combo) were the account's cost driver, not a leak —
+    // there was no bug generating unbounded variants. unoptimized stops
+    // writes completely instead of just bounding them: every <Image> and
+    // both manual optimizedSrc() calls (WorkVortex, VortexTransition) now
+    // serve the original file straight from /public, unresized. That
+    // reopens the VRAM regression 30450ca fixed for the vortex covers
+    // (~280MB of texture memory instead of ~100MB) — accepted trade-off
+    // for a hard stop on writes, not an oversight.
+    unoptimized: true,
   },
   async headers() {
     return [{ source: '/(.*)', headers: SECURITY_HEADERS }];

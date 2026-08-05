@@ -33,20 +33,12 @@ const ROW_SPEEDS = [0.55, 0.95, 1.35, 0.75];
 // camera travels for (SCROLL_SPAN - 1) viewports of scrolling.
 const SCROLL_SPAN = 3.6;
 
-// Cover resolution per device tier.
-//
-// These MUST be values Next's image optimizer accepts, which is
-// `images.imageSizes` concatenated with `images.deviceSizes` — by default
-// {32,48,64,96,128,256,384} ∪ {640,750,828,1080,1200,1920,2048,3840}. Any
-// other width makes /_next/image return 400, the cover never loads, and every
-// plane quietly keeps the generated poster it was seeded with. That failure
-// looks intentional rather than broken, which is how an earlier pass at 768
-// and 448 shipped without anyone noticing the real artwork had vanished.
+// Cover resolution per device tier. images.unoptimized is on site-wide now
+// (next.config.ts), so optimizedSrc no longer resizes the fetched file —
+// the fetch itself comes back full source resolution. COVER_WIDTH still
+// caps VRAM the same as before: it sizes the destination <canvas> the cover
+// gets drawn into below, and the GPU texture is that canvas, not the image.
 const COVER_WIDTH = { desktop: 1080, touch: 640 } as const;
-// Kept at Next's default quality (75, the only tier in images.qualities) so
-// a cover reuses the same cached image-optimizer variant the galleries
-// already requested, instead of writing a second one per image.
-const COVER_QUALITY = 75;
 
 // Distance from camera at which a plane is fully present, and the distance
 // over which it fades away behind it. The camera sits outside the tube
@@ -171,10 +163,10 @@ function useCoverTextures(items: VortexItem[], lowCost: boolean) {
       const texture = map.get(item.slug);
       if (!texture) return;
       const img = new window.Image();
-      img.src = optimizedSrc(item.cover, COVER_WIDTH[lowCost ? 'touch' : 'desktop'], COVER_QUALITY);
-      // Without this the tube silently falls back to the generated poster for
-      // any cover that fails, which is exactly how a 400 from the image
-      // optimizer went unnoticed — the planes still looked deliberate.
+      img.src = optimizedSrc(item.cover);
+      // Without this the tube silently falls back to the generated poster
+      // for any cover that fails to load, and the planes still look
+      // deliberate — a failure here is easy to miss without it.
       img.onerror = () => {
         if (process.env.NODE_ENV !== 'production') {
           console.error(`WorkVortex: cover for "${item.slug}" failed to load — ${img.src}`);

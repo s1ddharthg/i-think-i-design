@@ -1,27 +1,11 @@
 // Local /public covers are multi-megabyte source PNGs. Two spots load them
 // as raw <img>/CSS background instead of next/image (a canvas texture needs
-// a real HTMLImageElement, and the vortex dive clone is a plain styled div) —
-// both were pulling the full source file even though neither ever renders
-// near that resolution. Routing through Next's own image-optimizer endpoint
-// gets the same resize + automatic webp/avif re-encode <Image> would give,
-// from a plain string URL.
-// The optimizer rejects any width outside images.imageSizes + images.deviceSizes
-// with a 400 rather than rounding to the nearest one, and callers here pass a
-// plain number instead of going through <Image>'s sizes machinery, so nothing
-// stops a typo'd width. Since both callers use the result as an <img> src, a
-// rejected width surfaces only as an image that never loads.
-const ALLOWED_WIDTHS = [
-  32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840,
-];
-
-export function optimizedSrc(src: string, width: number, quality = 75) {
-  if (!src.startsWith('/')) return src; // remote/data URLs: nothing to optimize
-  if (process.env.NODE_ENV !== 'production' && !ALLOWED_WIDTHS.includes(width)) {
-    console.error(
-      `optimizedSrc: width ${width} is not in next.config.ts images sizes — ` +
-        `/_next/image will 400 and "${src}" will never load. ` +
-        `Use one of ${ALLOWED_WIDTHS.join(', ')}.`
-    );
-  }
-  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=${quality}`;
+// a real HTMLImageElement, and the vortex dive clone is a plain styled div).
+// This used to route through Next's image-optimizer endpoint to resize them
+// down first, but images.unoptimized is now on site-wide (to stop image
+// cache writes), which makes Next's optimizer 400 any request instead of
+// passing it through — so there is no resize left to route to. Both callers
+// now just get the raw file at full resolution.
+export function optimizedSrc(src: string) {
+  return src;
 }

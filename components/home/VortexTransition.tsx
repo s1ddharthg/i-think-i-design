@@ -68,10 +68,7 @@ export default function VortexTransition() {
         originWidth: rect.width,
         originHeight: rect.height,
       };
-      // The clone flies up to full-viewport scale, but stays blurred/backdrop-
-      // covered for nearly all of that flight and fades over the destination's
-      // own <Image> right after landing — it never needs source resolution.
-      setSrc(optimizedSrc(src, window.innerWidth <= 768 ? 750 : 1920));
+      setSrc(optimizedSrc(src));
 
       if (imgRef.current) {
         Object.assign(imgRef.current.style, {
