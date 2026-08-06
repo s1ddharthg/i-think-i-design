@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import { Category, getByCategory, Project } from '@/lib/projects';
 import Poster from '@/components/Poster';
 

@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import { graphicProjects, type GraphicProject } from '@/lib/graphicDesign';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];

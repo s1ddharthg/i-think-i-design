@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import { Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
 
 const HeartIcon = ({ filled }: { filled?: boolean }) => (

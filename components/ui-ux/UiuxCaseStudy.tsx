@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import { ExternalLink, Quote } from 'lucide-react';
 import type { UiuxProject } from '@/lib/uiux';
 import { uiuxProjects } from '@/lib/uiux';

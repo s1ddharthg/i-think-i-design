@@ -16,6 +16,7 @@
   --color-accent-ink: var(--accent-ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-hand: var(--font-caveat);
 }
 
 /* A custom cursor takes over on fine-pointer devices — hide the native one. */
@@ -23,6 +24,76 @@
   html.has-custom-cursor,
   html.has-custom-cursor * {
     cursor: none !important;
+  }
+}
+
+/* The About page's travel map: a slow ring leaving the Chennai marker, the one
+   thing on that stage that moves without being scrolled. Chennai is home, so
+   home is the pin that keeps breathing. */
+.travel-home-pulse {
+  animation: travel-home-pulse 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes travel-home-pulse {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  70%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.7);
+  }
+}
+
+/* The travel map's active pin. A reticle ring that keeps sweeping outward, so
+   the stop being read is the one piece of the map still alive. */
+.travel-pin-scan {
+  animation: travel-pin-scan 1.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes travel-pin-scan {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.55);
+  }
+  70%, 100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* The About hero's gravity trail. GSAP owns every transform on these, so the
+   only thing set here is the resting geometry — a square that crops whatever
+   it is handed, sized off the viewport so the trail reads the same on a phone
+   and a 27". Nothing here animates; see components/about/GravityTrail.tsx. */
+.gravity-trail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10vw;
+  height: 10vw;
+  object-fit: cover;
+  border-radius: 4%;
+  /* The images are decoration falling behind the headline, and the headline
+     has to stay readable while they pile up against the floor. */
+  pointer-events: none;
+  user-select: none;
+}
+@media (max-width: 768px) {
+  .gravity-trail img {
+    width: 26vw;
+    height: 26vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .travel-home-pulse {
+    animation: none;
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  .travel-pin-scan {
+    animation: none;
+    opacity: 0.35;
+    transform: scale(1);
   }
 }
 

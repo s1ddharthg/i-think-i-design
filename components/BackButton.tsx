@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 
 // Fixed to the same vertical band as the nav pill, offset to the left edge
 // instead of competing with it for center space — stays reachable the whole

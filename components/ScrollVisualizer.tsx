@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useTransform, type MotionValue } from 'framer-motion';
+import { motion, useAnimationFrame, useMotionValue, useTransform, type MotionValue } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import { audioBus } from '@/lib/audioBus';
 
 const BAR_COUNT = 14;

@@ -1,6 +1,7 @@
 'use client';
 
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 
 // A small vortex ring, fixed to the viewport — the same circular-motion
 // language driving the home page's vortex artwork, condensed into a reading

@@ -6,10 +6,10 @@ import {
   AnimatePresence,
   motion,
   useMotionValueEvent,
-  useReducedMotion,
   useScroll,
   useTransform,
 } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import type { Screen, Section } from '@/lib/uiux';
 import DeviceMockup from '@/components/ui-ux/DeviceMockup';
 

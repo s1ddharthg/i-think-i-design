@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useRef, useState } from 'react';
-import { motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import RollingEmail from '@/components/RollingEmail';
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];

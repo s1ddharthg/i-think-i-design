@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import { ExternalLink, Quote } from 'lucide-react';
 import type { GraphicProject } from '@/lib/graphicDesign';
 import VisualSequence from '@/components/graphic-design/VisualSequence';

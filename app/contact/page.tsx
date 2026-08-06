@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import Footer from '@/components/Footer';
 import { CONTACT_EMAIL } from '@/components/RollingEmail';
 

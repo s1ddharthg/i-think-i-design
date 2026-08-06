@@ -3,15 +3,24 @@
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 
-type Mode = 'default' | 'link' | 'arrow' | 'send';
+type Mode = 'default' | 'link' | 'arrow' | 'send' | 'greet';
 
-function modeFor(el: Element | null): Mode {
-  if (!el) return 'default';
-  if (el.closest('[data-cursor="send"], button[type="submit"]')) return 'send';
-  if (el.closest('a[href^="/work/"], [data-cursor="arrow"]')) return 'arrow';
+/**
+ * `greet` is checked first: it sits on plain prose that is not a link, and the
+ * label rides along on the element so a section can pick its own word.
+ */
+function cursorFor(el: Element | null): { mode: Mode; label: string } {
+  if (!el) return { mode: 'default', label: '' };
+  const greet = el.closest('[data-cursor="greet"]');
+  if (greet)
+    return { mode: 'greet', label: greet.getAttribute('data-cursor-label') || 'hi' };
+  if (el.closest('[data-cursor="send"], button[type="submit"]'))
+    return { mode: 'send', label: '' };
+  if (el.closest('a[href^="/work/"], [data-cursor="arrow"]'))
+    return { mode: 'arrow', label: '' };
   if (el.closest('a, button, [role="button"], input, textarea, select, label, [data-cursor="link"]'))
-    return 'link';
-  return 'default';
+    return { mode: 'link', label: '' };
+  return { mode: 'default', label: '' };
 }
 
 function onLightSurface(el: Element | null): boolean {
@@ -21,6 +30,7 @@ function onLightSurface(el: Element | null): boolean {
 export default function CustomCursor() {
   const [enabled, setEnabled] = useState(false);
   const [mode, setMode] = useState<Mode>('default');
+  const [label, setLabel] = useState('');
   const [light, setLight] = useState(false);
   const [down, setDown] = useState(false);
 
@@ -42,7 +52,9 @@ export default function CustomCursor() {
       x.set(e.clientX);
       y.set(e.clientY);
       const target = e.target as Element;
-      setMode(modeFor(target));
+      const next = cursorFor(target);
+      setMode(next.mode);
+      if (next.label) setLabel(next.label);
       setLight(onLightSurface(target));
     };
     const onDown = () => setDown(true);
@@ -62,6 +74,10 @@ export default function CustomCursor() {
 
   const isPill = mode === 'arrow' || mode === 'send';
   const size = mode === 'default' ? 14 : mode === 'link' ? 46 : 58;
+  // Measured off the label rather than animated to `auto` — framer cannot
+  // interpolate to an intrinsic width, and a greeting is short enough that
+  // an advance-width estimate lands within a pixel or two.
+  const greetWidth = Math.round(label.length * 9.5 + 34);
 
   return (
     <motion.div
@@ -72,10 +88,10 @@ export default function CustomCursor() {
       <motion.div
         className="flex items-center justify-center rounded-full"
         animate={{
-          width: isPill ? 64 : size,
-          height: isPill ? 64 : size,
+          width: mode === 'greet' ? greetWidth : isPill ? 64 : size,
+          height: mode === 'greet' ? 44 : isPill ? 64 : size,
           backgroundColor:
-            mode === 'arrow' || mode === 'send'
+            mode === 'arrow' || mode === 'send' || mode === 'greet'
               ? 'var(--accent)'
               : mode === 'link'
                 ? light
@@ -116,6 +132,19 @@ export default function CustomCursor() {
               <path d="M7 17L17 7" />
               <path d="M8 7h9v9" />
             </motion.svg>
+          )}
+          {mode === 'greet' && (
+            <motion.span
+              key="greet"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.6 }}
+              transition={{ duration: 0.18 }}
+              className="px-2 text-[13px] font-semibold whitespace-nowrap"
+              style={{ color: 'var(--accent-ink)' }}
+            >
+              {label}
+            </motion.span>
           )}
           {mode === 'send' && (
             <motion.span

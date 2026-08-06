@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/reducedMotion';
 import type { Visual } from '@/lib/graphicDesign';
 import { InstagramPost, InstagramGrid } from '@/components/graphic-design/InstagramMockups';
 

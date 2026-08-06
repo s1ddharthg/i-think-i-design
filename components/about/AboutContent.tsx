@@ -5,40 +5,76 @@ import Image from 'next/image';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Footer from '@/components/Footer';
+import TravelMap from '@/components/about/TravelMap';
+import GravityTrail from '@/components/about/GravityTrail';
+import { useHeroSnap } from '@/components/about/useHeroSnap';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ---------------------------------------------------------------------------
-// The bits only Sid can supply. Everything else is written; these stay as data
-// so filling them in is a one-line edit.
-// ---------------------------------------------------------------------------
+// The masthead spec strip. Four cells, hairline-ruled, read like the header
+// block on a drawing rather than a bio.
+const SPEC = [
+  { k: 'Name', v: 'Siddharth G' },
+  { k: 'Practice', v: 'UI/UX · Product · Graphic' },
+  { k: 'Based', v: 'Chennai, IN' },
+  { k: 'Coordinates', v: '13.0827° N / 80.2707° E' },
+];
 
-// EDIT ME — the level and position, in your own words. Anything specific beats
-// anything general here; "left back, state league" reads as true in a way
-// "played competitively" never will.
-const FOOTBALL_DETAIL = 'competitively, and have for about as long as I have designed';
-
-// EDIT ME — three or four artists you would actually name out loud.
-const ARTISTS = ['—', '—', '—'];
-
-// EDIT ME — whatever you would have scrawled on the white strip.
-const PHOTO_CAPTION = 'Tokyo';
+/**
+ * The four columns. Every icon is a real file pulled off the internet rather
+ * than a path drawn here — the Barça crest from Wikimedia, the other three
+ * from Microsoft's Fluent Emoji set (MIT). They carry their own colour, which
+ * is the point: these four are objects on the page, not UI.
+ */
+const INTERESTS = [
+  {
+    label: 'Football',
+    src: '/images/about/barca.svg',
+    alt: 'FC Barcelona crest',
+    body: "Midfield, eight years, school team then college team. I support Barça, which is less a hobby than a standing appointment with disappointment — and the reason I care how a thing gets done more than whether it worked.",
+  },
+  {
+    label: 'Guitar',
+    src: '/images/about/guitar.svg',
+    alt: 'Electric guitar',
+    body: 'Acoustic and electric, right through school and college. Badly out of practice now, a sentence I keep saying in the tone of something that happened to me rather than something I chose.',
+  },
+  {
+    label: 'Music',
+    src: '/images/about/headphones.svg',
+    alt: 'Headphones',
+    body: "AC/DC, Guns N' Roses, JPEGMAFIA, Tyler. No, that is not a coherent taste. Something is playing the entire time I work and it quietly decides how the file turns out.",
+  },
+  {
+    label: 'Sneakers',
+    src: '/images/about/sneaker.svg',
+    alt: 'Sneaker',
+    body: 'Not the resale. The tooling. Somebody argued for six weeks about that midsole stitch and lost the argument, and I would genuinely like to know who they were.',
+  },
+];
 
 export default function AboutContent() {
   const rootRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+
+  useHeroSnap(heroRef);
 
   useEffect(() => {
     const mm = gsap.matchMedia(rootRef);
     // Reduced-motion users get the page exactly as it renders — animations are
     // only ever registered inside this branch, so there is nothing to undo.
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      gsap.from('.about-lead > *', {
-        opacity: 0,
-        y: 40,
-        duration: 1.1,
-        stagger: 0.1,
+      // Each headline line sits in its own overflow-hidden band, so the line
+      // rises out from behind a hard edge instead of fading in on the spot.
+      // Brutalist type wants a mask, not a dissolve.
+      gsap.from('.mask-line > span', {
+        yPercent: 115,
+        duration: 1.15,
+        stagger: 0.075,
         ease: 'expo.out',
       });
+      gsap.from('.lede', { opacity: 0, y: 24, duration: 0.9, delay: 0.45, ease: 'expo.out' });
+
       gsap.utils.toArray<HTMLElement>('.reveal').forEach((el) => {
         gsap.from(el, {
           opacity: 0,
@@ -48,17 +84,16 @@ export default function AboutContent() {
           scrollTrigger: { trigger: el, start: 'top 85%' },
         });
       });
-      // The polaroid lands rather than fades: the wrapper arrives rotated
-      // further than it rests and unwinds to zero, which reads against the
-      // figure's own static -2deg as the card settling like something dropped
-      // on a desk.
-      gsap.from('.polaroid', {
+
+      // The four columns arrive left to right rather than all at once, so the
+      // row reads as a sentence instead of a table appearing.
+      gsap.from('.interest', {
         opacity: 0,
-        y: 60,
-        rotate: -7,
-        duration: 1.2,
+        y: 40,
+        duration: 0.9,
+        stagger: 0.11,
         ease: 'expo.out',
-        scrollTrigger: { trigger: '.polaroid', start: 'top 85%' },
+        scrollTrigger: { trigger: '.interests', start: 'top 78%' },
       });
     });
     return () => mm.revert();
@@ -66,158 +101,144 @@ export default function AboutContent() {
 
   return (
     <>
-      <main ref={rootRef} className="relative px-6 pt-36 pb-24 text-white md:px-10">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-[24vh] left-1/2 h-[52vh] w-[90vw] -translate-x-1/2 rounded-full blur-[150px]"
-          style={{ background: 'var(--accent)', opacity: 0.1 }}
-        />
+      <main ref={rootRef} className="relative text-white">
+        {/* -----------------------------------------------------------------
+            Hero. One screen, nothing in it but the sentence and whatever the
+            cursor knocks loose. The photograph that used to sit beside the
+            words is gone, and with it the reason for the words to hug the
+            left edge — so they take the middle of an empty screen, which is
+            the only arrangement that survives having images fall through it.
+        ----------------------------------------------------------------- */}
+        <section
+          ref={heroRef}
+          className="relative flex h-[100svh] items-center justify-center overflow-hidden px-6 md:px-10"
+        >
+          <GravityTrail scope={heroRef} />
 
-        <div className="relative mx-auto w-full max-w-[1100px]">
-          {/* ---------------------------------------------------------------
-              Opening
-          --------------------------------------------------------------- */}
-          <section className="about-lead">
-            <h1 className="max-w-4xl text-[clamp(2.4rem,6.5vw,5.5rem)] leading-[0.98] font-semibold tracking-tighter">
-              I&apos;m Sid. I want to know{' '}
-              <span className="italic" style={{ color: 'var(--accent)' }}>
-                why you clicked that one
-              </span>{' '}
-              and not the other.
-            </h1>
-            <p className="mt-10 max-w-xl text-lg leading-relaxed text-white/70">
-              Watch someone hesitate over a button. Work out what they were
-              bracing for. Take the reason away. That is most of the job.
-            </p>
-          </section>
-
-          {/* ---------------------------------------------------------------
-              Fourth wall
-          --------------------------------------------------------------- */}
-          <section className="reveal mt-28 border-t border-white/10 pt-16 sm:mt-36">
-            <p className="max-w-3xl text-[clamp(1.15rem,2.4vw,1.75rem)] leading-snug text-white/60">
-              You&apos;re probably thinking, &ldquo;omg this page has no
-              correlation to the entire website, such
-            </p>
-            <p
-              className="-ml-[0.04em] mt-2 text-[clamp(2.6rem,11vw,8.5rem)] leading-[0.86] font-semibold tracking-tighter"
-              style={{ color: 'var(--accent)' }}
+          <div className="relative z-10 w-full max-w-[62rem] text-center">
+            <h1
+              data-cursor="greet"
+              data-cursor-label="hey there"
+              className="text-[clamp(1.85rem,5vw,4.5rem)] leading-[0.94] font-semibold tracking-tighter"
             >
-              lack of
-              <br />
-              consistency&rdquo;
-            </p>
-            <p className="mt-10 max-w-xl text-lg leading-relaxed text-white/70">
-              But no. On purpose. This is about as close as I&apos;ll ever get
-              to a personal vlog, and this corner of the internet is where I
-              talk about myself.
-            </p>
-          </section>
+              <span className="mask-line block overflow-hidden pb-[0.06em]">
+                <span className="block">I&apos;m Sid, and this</span>
+              </span>
+              <span className="mask-line block overflow-hidden pb-[0.06em]">
+                <span className="block">little corner of the internet</span>
+              </span>
+              <span className="mask-line block overflow-hidden pb-[0.06em]">
+                <span className="block">is where I showcase</span>
+              </span>
+              {/* Italic still carries the turn in the sentence; it does not
+                  need colour to do it. */}
+              <span className="mask-line block overflow-hidden pb-[0.06em] italic text-white/55">
+                <span className="block">things I&apos;m proud of.</span>
+              </span>
+            </h1>
 
-          {/* ---------------------------------------------------------------
-              The photo. One, and it gets to be an object rather than a slot.
-          --------------------------------------------------------------- */}
-          <section className="mt-24 flex justify-center sm:mt-32">
-            {/* The wrapper is what GSAP animates; the tilt lives on the figure
-                inside it as an inline style. Putting both on one element let
-                the entrance tween overwrite the resting angle, and the card
-                landed square. */}
-            <div className="polaroid">
-              {/* Fixed paddings, not percentages: percentage padding resolves
-                  against the containing block's inline size, which here is the
-                  full centred row rather than the card, so 5% would have been
-                  ~55px of white on a 352px photo. */}
-              <figure
-                style={{ rotate: '-2deg' }}
-                className="w-[22rem] max-w-[78vw] bg-[#f6f4ef] p-4 pb-16 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.85)]"
-              >
-                <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-900">
-                  <Image
-                    src="/images/about/sid.jpg"
-                    alt="Sid, sitting on a wall below Tokyo Tower"
-                    fill
-                    sizes="(max-width: 640px) 78vw, 22rem"
-                    priority
-                    className="object-cover"
-                  />
+            <p
+              data-cursor="greet"
+              data-cursor-label="hi"
+              className="lede mx-auto mt-10 max-w-[34rem] text-lg leading-relaxed text-white/70 md:text-xl"
+            >
+              The rest of the site is the work. This page is the person who
+              made it, which is a harder brief and pays nothing.
+            </p>
+          </div>
+
+          {/* The hero now ends in a hard edge and the next screen arrives in
+              one jump, so there is no partial glimpse of what follows to do
+              the work a scroll cue used to do for free. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-8 z-10 text-center font-mono text-[0.55rem] tracking-[0.4em] text-white/25 uppercase"
+          >
+            Scroll
+          </span>
+        </section>
+
+        {/* -----------------------------------------------------------------
+            Masthead spec strip — what the hero snaps down onto.
+        ----------------------------------------------------------------- */}
+        <header className="relative px-6 pt-6 md:px-10 md:pt-10">
+          <div className="mx-auto w-full max-w-[1600px]">
+            <div className="grid grid-cols-2 border-y border-white/12 md:grid-cols-4">
+              {SPEC.map(({ k, v }, i) => (
+                <div
+                  key={k}
+                  className={`px-4 py-4 md:px-5 ${
+                    i % 2 === 0 ? 'border-r border-white/12' : ''
+                  } ${i < 2 ? 'border-b border-white/12 md:border-b-0' : ''} md:border-r md:last:border-r-0`}
+                >
+                  <span className="block font-mono text-[0.55rem] tracking-[0.3em] text-white/30 uppercase">
+                    {k}
+                  </span>
+                  <span className="mt-2 block font-mono text-[0.68rem] tracking-[0.16em] text-white/70 uppercase">
+                    {v}
+                  </span>
                 </div>
-                <figcaption className="mt-5 text-center font-mono text-[0.7rem] tracking-[0.28em] text-neutral-500 uppercase">
-                  {PHOTO_CAPTION}
-                </figcaption>
-              </figure>
+              ))}
             </div>
-          </section>
+          </div>
+        </header>
 
-          {/* ---------------------------------------------------------------
-              The work
-          --------------------------------------------------------------- */}
-          <section className="reveal mt-28 sm:mt-36">
-            <h2 className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight font-semibold tracking-tight">
-              The work
-            </h2>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/70">
-              Interfaces. Startup sites, landing pages carrying a conversion
-              target, e-commerce checkouts, SaaS products, dashboards with far
-              too much on screen at once. Figma from the first scrappy wireframe
-              through to the design system that stops the whole thing drifting
-              six months later.
-            </p>
-          </section>
+        {/* -----------------------------------------------------------------
+            Four columns
+        ----------------------------------------------------------------- */}
+        <section className="px-6 pt-36 md:px-10 md:pt-56">
+          <div className="mx-auto w-full max-w-[1600px]">
+            <div className="interests grid grid-cols-1 gap-x-10 gap-y-20 sm:grid-cols-2 md:grid-cols-4">
+              {INTERESTS.map(({ label, src, alt, body }) => (
+                <div key={label} className="interest">
+                  <div className="flex h-24 items-end md:h-28">
+                    <Image
+                      src={src}
+                      alt={alt}
+                      width={256}
+                      height={256}
+                      className="h-20 w-auto md:h-24"
+                    />
+                  </div>
 
-          {/* ---------------------------------------------------------------
-              Off the clock
-          --------------------------------------------------------------- */}
-          <section className="reveal mt-24">
-            <h2 className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight font-semibold tracking-tight">
-              Off the clock
-            </h2>
-
-            <div className="mt-10 grid gap-10 sm:grid-cols-3 sm:gap-10">
-              <div>
-                <span
-                  className="text-xs tracking-[0.24em] uppercase"
-                  style={{ color: 'var(--accent)' }}
-                >
-                  Football
-                </span>
-                <p className="mt-4 text-base leading-relaxed text-white/70">
-                  I play football {FOOTBALL_DETAIL}. Eleven people solving one
-                  problem with no time to explain themselves.
-                </p>
-              </div>
-
-              <div>
-                <span
-                  className="text-xs tracking-[0.24em] uppercase"
-                  style={{ color: 'var(--accent)' }}
-                >
-                  Sound
-                </span>
-                <p className="mt-4 text-base leading-relaxed text-white/70">
-                  Something plays the entire time I work.{' '}
-                  {ARTISTS.filter((a) => a && a !== '—').length
-                    ? `${ARTISTS.slice(0, -1).join(', ')} and ${ARTISTS[ARTISTS.length - 1]} carry most of it.`
-                    : 'Hit the toggle in the corner for the mood.'}
-                </p>
-              </div>
-
-              <div>
-                <span
-                  className="text-xs tracking-[0.24em] uppercase"
-                  style={{ color: 'var(--accent)' }}
-                >
-                  Sneakers
-                </span>
-                <p className="mt-4 text-base leading-relaxed text-white/70">
-                  I collect sneakers. Somebody argued for weeks over that
-                  midsole stitch and I want to know who won.
-                </p>
-              </div>
+                  <h2 className="mt-9 font-mono text-[0.7rem] tracking-[0.3em] text-white/45 uppercase">
+                    {label}
+                  </h2>
+                  <p
+                    data-cursor="greet"
+                    data-cursor-label="hi"
+                    className="mt-5 text-[1.0625rem] leading-relaxed text-white/70"
+                  >
+                    {body}
+                  </p>
+                </div>
+              ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-        </div>
+        {/* -----------------------------------------------------------------
+            Travel
+        ----------------------------------------------------------------- */}
+        <section className="px-6 pt-40 pb-16 md:px-10 md:pt-56 md:pb-24">
+          <div className="mx-auto w-full max-w-[1600px]">
+            <h2 className="reveal">
+              <span className="block text-[clamp(1rem,2vw,1.5rem)] leading-none text-white/45">
+                oh and did I mention,
+              </span>
+              <span
+                className="mt-4 block text-[clamp(2.6rem,10vw,8.5rem)] leading-[0.86] font-semibold tracking-tighter uppercase"
+                style={{ color: 'var(--accent)' }}
+              >
+                I love to travel
+              </span>
+            </h2>
+          </div>
+        </section>
       </main>
+
+      <TravelMap />
+
       {/* The full footer already closes with "Have an idea worth building?"
           and the magnetic CTA, so this page does not repeat itself with a
           second call to action of its own. */}
